@@ -1,0 +1,9 @@
+# Put US English localized achievement name and description in this file.
+# You must create other files for other languages. For example, create pt-BR.hson to translate to Brazilian portuguese.
+
+Achievements: {
+	NEW_ACHIEVEMENT_1_Name: New Achievement 1
+	NEW_ACHIEVEMENT_2_Description: This is the first new achievement.
+	NEW_ACHIEVEMENT_2_Name: New Achievement 2
+	NEW_ACHIEVEMENT_2_Description: This is the second new achievement.
+}
