@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// Unique achievement name header
         /// </summary>
-        protected abstract string AchievementHeader { get; }
+        protected abstract string Identifier { get; }
 
         /// <summary>
         /// Achievement icon texture path
@@ -53,6 +53,8 @@ namespace TerrariaAchievementLib.Systems
         {
             RegisterNewAchievements();
             LoadNewTexture();
+            //LoadData(_savePath);
+            LoadSaveData();
 
             On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor += AchievementUnlockedPopup_ctor;
@@ -78,11 +80,11 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="name">Achievement name</param>
         /// <param name="conds">Achievement conditions</param>
         /// <param name="cat">Achievement category</param>
-        protected void RegisterNewAchievement(string name, List<AchievementCondition> conds, AchievementCategory cat)
+        protected void RegisterNewAchievement(string name, List<AchievementCondition> conds, AchievementCategory cat, bool useTracker)
         {
             // Add unique achievement header to the name if needed
-            if (!name.Contains(AchievementHeader))
-                name = $"{AchievementHeader}{name}";
+            if (!name.Contains(Identifier))
+                name = $"{Identifier}{name}";
 
             Achievement ach = new(name);
             if (!IsNewAchievement(ach))
@@ -90,6 +92,9 @@ namespace TerrariaAchievementLib.Systems
 
             foreach (AchievementCondition condition in conds)
                 ach.AddCondition(condition);
+
+            if (useTracker)
+                ach.UseConditionsCompletedTracker();
 
             Main.Achievements.Register(ach);
             Main.Achievements.RegisterAchievementCategory(name, cat);
@@ -103,7 +108,7 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         /// <param name="ach">Achievement to check</param>
         /// <returns>True if the achievement is new to this system</returns>
-        private bool IsNewAchievement(Achievement ach) => ach.Name.Contains(AchievementHeader);
+        private bool IsNewAchievement(Achievement ach) => ach.Name.Contains(Identifier);
 
         /// <summary>
         /// Unregister all achievements that were added from this system
@@ -141,6 +146,24 @@ namespace TerrariaAchievementLib.Systems
         /// Load the achievement texture from the provided abstract path
         /// </summary>
         private void LoadNewTexture() => _texture = ModContent.Request<Texture2D>(TexturePath);
+
+        /// <summary>
+        /// Load any save data from achievements.dat if applicable
+        /// </summary>
+        private static void LoadSaveData()
+        {
+            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
+            if (info == null)
+                return;
+            Dictionary<string, Achievement> achievements = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
+
+            // Clear existing achievement progress before loading again
+            // Bug in the vanilla code causes issues during two consecutive loads
+            foreach (KeyValuePair<string, Achievement> achievement in achievements)
+                achievement.Value.ClearProgress();
+
+            Main.Achievements.Load();
+        }
 
         /// <summary>
         /// Detour to replace the vanilla achievement texture when a UIAchievementListItem is created

@@ -3,7 +3,6 @@
 
 Achievements: {
 	NEW_ACHIEVEMENT_1_Name: New Achievement 1
-	NEW_ACHIEVEMENT_2_Description: This is the first new achievement.
-	NEW_ACHIEVEMENT_2_Name: New Achievement 2
 	NEW_ACHIEVEMENT_2_Description: This is the second new achievement.
+	NEW_ACHIEVEMENT_2_Name: New Achievement 2
 }
