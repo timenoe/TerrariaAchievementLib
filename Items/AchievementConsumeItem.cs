@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using System.Collections.Generic;
+using Terraria;
 using Terraria.ModLoader;
 using TerrariaAchievementLib.Achievements;
 
@@ -10,11 +11,11 @@ namespace TerrariaAchievementLib.Items
     public abstract class AchievementConsumeItem : GlobalItem
     {
         /// <summary>
-        /// Item ID to consume
+        /// Item IDs to consume
         /// </summary>
-        protected abstract short Id { get; }
+        protected abstract List<int> ItemIds { get; }
 
-        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == Id;
+        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => ItemIds.Contains(entity.type);
 
         public override void OnConsumeItem(Item item, Player player)
         { 

@@ -21,16 +21,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
 
         /// <summary>
-        /// Extended game mode requirement
+        /// Condition requirements that must be met
         /// </summary>
-        public readonly int GameMode;
+        public readonly ConditionRequirements Reqs;
 
         /// <summary>
         /// NPC IDs that need to be killed to satisfy the condition
         /// </summary>
         public readonly short[] NpcIds;
-
-        public readonly bool Zenith;
 
         /// <summary>
         /// True if the class has been hooked to the helper event
@@ -46,13 +44,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Creates a condition that listens for the NPC to be killed
         /// </summary>
-        /// <param name="gameMode">Game mode requirement; -1 to ignore</param>
-        /// <param name="zenith">True if the world should have the Zenith secret seed</param>
+        /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID to listen for</param>
-        private ExtendedNpcKillCondition(int gameMode, bool zenith, short npcId) : base($"{Identifier}_{gameMode}-{zenith}-{npcId}")
+        private ExtendedNpcKillCondition(ConditionRequirements reqs, short npcId) : base($"{Identifier}_{reqs.Identifier}-{npcId}")
         {
-            GameMode = gameMode;
-            Zenith = zenith;
+            Reqs = reqs;
             NpcIds = [npcId];
             ListenForNpcKill(this);
         }
@@ -60,13 +56,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Creates a condition that listens for any of the NPCs to be killed
         /// </summary>
-        /// <param name="gameMode">Game mode requirement; -1 to ignore</param>
-        /// <param name="zenith">True if the world should have the Zenith secret seed</param>
+        /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcIds">NPC IDs to listen for</param>
-        private ExtendedNpcKillCondition(int gameMode, bool zenith, short[] npcIds) : base($"{Identifier}_{gameMode}-{zenith}-{string.Join(",", npcIds)}")
+        private ExtendedNpcKillCondition(ConditionRequirements reqs, short[] npcIds) : base($"{Identifier}_{reqs.Identifier}-{string.Join(",", npcIds)}")
         {
-            GameMode = gameMode;
-            Zenith = zenith;
+            Reqs = reqs;
             NpcIds = npcIds;
             ListenForNpcKill(this);
         }
@@ -75,33 +69,30 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Helper to create a condition that listens for the NPC to be killed
         /// </summary>
-        /// <param name="gameMode">Game mode requirement; -1 to ignore</param>
-        /// <param name="zenith">True if the world should have the Zenith secret seed</param>
+        /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID to listen for</param>
         /// <returns>NPC kill achievement condition</returns>
-        public static AchievementCondition Kill(int gameMode, bool zenith, short npcId) => new ExtendedNpcKillCondition(gameMode, zenith, npcId);
+        public static AchievementCondition Kill(ConditionRequirements reqs, short npcId) => new ExtendedNpcKillCondition(reqs, npcId);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the NPCs to be killed
         /// </summary>
-        /// <param name="gameMode">Game mode requirement; -1 to ignore</param>
-        /// <param name="zenith">True if the world should have the Zenith secret seed</param>
+        /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcIds">NPC IDs to listen for</param>
         /// <returns>NPC kill achievement condition</returns>
-        public static AchievementCondition KillAny(int gameMode, bool zenith, params short[] npcIds) => new ExtendedNpcKillCondition(gameMode, zenith, npcIds);
+        public static AchievementCondition KillAny(ConditionRequirements reqs, params short[] npcIds) => new ExtendedNpcKillCondition(reqs, npcIds);
 
         /// <summary>
         /// Helper to create conditions that listens for all of the NPCs to be killed
         /// </summary>
-        /// <param name="gameMode">Game mode requirement; -1 to ignore</param>
-        /// <param name="zenith">True if the world should have the Zenith secret seed</param>
+        /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcIds">NPC IDs</param>
         /// <returns>NPC kill achievement conditions</returns>
-        public static List<AchievementCondition> KillAll(int gameMode, bool zenith, params short[] npcIds)
+        public static List<AchievementCondition> KillAll(ConditionRequirements reqs, params short[] npcIds)
         {
             List<AchievementCondition> conditions = [];
             foreach (short npcId in npcIds)
-                conditions.Add(new ExtendedNpcKillCondition(gameMode, zenith, npcId));
+                conditions.Add(new ExtendedNpcKillCondition(reqs, npcId));
             return conditions;
         }
 
@@ -148,29 +139,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that was killed</param>
         private static void AchievementsHelper_OnNPCKilled(Player player, short npcId)
         {
-            if (player != Main.LocalPlayer)
-                return;
-
             if (!IsListeningForNpcKill(npcId, out var conditions))
                 return;
 
             foreach (var condition in conditions)
             {
-                if (condition.CheckGameMode() && condition.CheckZenith())
+                if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
         }
-
-        /// <summary>
-        /// Checks if the current game mode satisfies the requirement
-        /// </summary>
-        /// <returns>True if the current game mode satisfies the requirement</returns>
-        private bool CheckGameMode() => GameMode < GameModeID.Normal || GameMode == Main.GameMode;
-
-        /// <summary>
-        /// Checks for the Zenith secret world seed if applicable
-        /// </summary>
-        /// <returns>True if the world seed is Zenith if applicable</returns>
-        private bool CheckZenith() => !Zenith || Main.zenithWorld;
     }
 }

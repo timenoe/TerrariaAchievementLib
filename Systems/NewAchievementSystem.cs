@@ -53,7 +53,6 @@ namespace TerrariaAchievementLib.Systems
         {
             RegisterNewAchievements();
             LoadNewTexture();
-            //LoadData(_savePath);
             LoadSaveData();
 
             On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;

@@ -16,6 +16,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
 
         /// <summary>
+        /// Condition requirements that must be met
+        /// </summary>
+        public readonly ConditionRequirements Reqs;
+
+        /// <summary>
         /// Buff IDs that need to be activated to satisfy the condition
         /// </summary>
         public readonly int[] BuffIds;
@@ -34,9 +39,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Creates a condition that listens for the buff to be activated
         /// </summary>
+        /// <param name="reqs">Condition requirements that must be met</param>
         /// <param name="buffId">Buff ID to listen for</param>
-        private BuffActivateCondition(int buffId) : base($"{Identifier}_{buffId}")
+        private BuffActivateCondition(ConditionRequirements reqs, int buffId) : base($"{Identifier}_{reqs.Identifier}-{buffId}")
         {
+            Reqs = reqs;
             BuffIds = [buffId];
             ListenForBuffActivation(this);
         }
@@ -44,9 +51,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Creates a condition that listens for any of the buffs to be activated
         /// </summary>
+        /// <param name="reqs">Condition requirements that must be met</param>
         /// <param name="buffIds">Buff IDs to listen for</param>
-        private BuffActivateCondition(int[] buffIds) : base($"{Identifier}_{string.Join(",", buffIds)}")
+        private BuffActivateCondition(ConditionRequirements reqs, int[] buffIds) : base($"{Identifier}_{reqs.Identifier}-{string.Join(",", buffIds)}")
         {
+            Reqs = reqs;
             BuffIds = buffIds;
             ListenForBuffActivation(this);
         }
@@ -55,28 +64,31 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Helper to create a condition that listens for the buff to be activated
         /// </summary>
+        /// <param name="reqs">Condition requirements that must be met</param>
         /// <param name="buffId">Buff ID to listen for</param>
         /// <returns>Buff activate achievement condition</returns>
-        public static AchievementCondition Activate(int buffId) => new BuffActivateCondition(buffId);
+        public static AchievementCondition Activate(ConditionRequirements reqs, int buffId) => new BuffActivateCondition(reqs, buffId);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the buffs to be activated
         /// </summary>
+        /// <param name="reqs">Condition requirements that must be met</param>
         /// <param name="buffIds">Buff IDs to listen for</param>
         /// <returns>Buff activate achievement condition</returns>
-        public static AchievementCondition ActivateAny(params int[] buffIds) => new BuffActivateCondition(buffIds);
+        public static AchievementCondition ActivateAny(ConditionRequirements reqs, params int[] buffIds) => new BuffActivateCondition(reqs, buffIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the buffs to be activated
         /// </summary>
+        /// <param name="reqs">Condition requirements that must be met</param>
         /// <param name="buffIds">Buff IDs to listen for</param>
         /// <returns>Buff activate achievement conditions</returns>
-        public static AchievementCondition[] ActivateAll(params int[] buffIds)
+        public static AchievementCondition[] ActivateAll(ConditionRequirements reqs, params int[] buffIds)
         {
             AchievementCondition[] array = new AchievementCondition[buffIds.Length];
 
             for (int i = 0; i < buffIds.Length; i++)
-                array[i] = new BuffActivateCondition(buffIds[i]);
+                array[i] = new BuffActivateCondition(reqs, buffIds[i]);
 
             return array;
         }
@@ -116,14 +128,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="buffId">Buff ID that was activated</param>
         private static void NewAchievementsHelper_OnBuffActivation(Player player, int buffId)
         {
-            if (player.whoAmI != Main.myPlayer)
+            if (!_listeners.TryGetValue(buffId, out var conditions))
                 return;
 
-            if (!_listeners.TryGetValue(buffId, out List<BuffActivateCondition> conditions))
-                return;
-
-            foreach (BuffActivateCondition condition in conditions)
-                condition.Complete();
+            foreach (var condition in conditions)
+            {
+                if (condition.Reqs.Pass(player))
+                    condition.Complete();
+            }
         }
     }
 }

@@ -45,6 +45,6 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         /// <param name="player">Player that consumed the item</param>
         /// <param name="itemId">Item ID that was consumed</param>
-        public static void NotifyItemConsume(Player player, int itemId) => OnBuffActivation?.Invoke(player, itemId);
+        public static void NotifyItemConsume(Player player, int itemId) => OnItemConsume?.Invoke(player, itemId);
     }
 }
