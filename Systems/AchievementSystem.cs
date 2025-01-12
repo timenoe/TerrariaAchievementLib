@@ -5,16 +5,18 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Achievements;
+using Terraria.GameContent.Achievements;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrariaAchievementLib.Achievements;
 
 namespace TerrariaAchievementLib.Systems
 {
     /// <summary>
     /// Used to add new achievements to the in-game list
     /// </summary>
-    public abstract class NewAchievementSystem : ModSystem
+    public abstract class AchievementSystem : ModSystem
     {
         /// <summary>
         /// Flags to use during reflection
@@ -55,6 +57,7 @@ namespace TerrariaAchievementLib.Systems
             LoadNewTexture();
             LoadSaveData();
 
+            On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
             On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor += AchievementUnlockedPopup_ctor;
         }
@@ -72,6 +75,7 @@ namespace TerrariaAchievementLib.Systems
         /// Involves consecutive calls to RegisterNewAchievement
         /// </summary>
         protected abstract void RegisterNewAchievements();
+
 
         /// <summary>
         /// Register a new achievement to the in-game list
@@ -162,6 +166,20 @@ namespace TerrariaAchievementLib.Systems
                 achievement.Value.ClearProgress();
 
             Main.Achievements.Load();
+        }
+
+        /// <summary>
+        /// Detour to notify achievement conditions when a special flag is raised<br/><br/>
+        /// The vanilla game didn't to this, and instead opted for manually named flags<br/>
+        /// in the conditions, even though special flag IDs are used elsewhere in the code
+        /// </summary>
+        /// <param name="orig">Original HandleSpecialEvent</param>
+        /// <param name="player">Player that raised the special event</param>
+        /// <param name="eventID">Special event ID</param>
+        private void On_AchievementsHelper_HandleSpecialEvent(On_AchievementsHelper.orig_HandleSpecialEvent orig, Player player, int eventID)
+        {
+            orig.Invoke(player, eventID);
+            CustomAchievementsHelper.NotifySpecialFlag(player, eventID);
         }
 
         /// <summary>

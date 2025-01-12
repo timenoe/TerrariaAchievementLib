@@ -5,7 +5,7 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// Helper to notify achievement conditions when specific events occur
     /// </summary>
-    public class NewAchievementsHelper
+    public class CustomAchievementsHelper
     {
         /// <summary>
         /// Signature that defines a buff activation event
@@ -21,6 +21,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="itemId">Item ID that was consumed</param>
         public delegate void ItemConsumeEvent(Player player, int itemId);
 
+        /// <summary>
+        /// Signature that defines a special flag event
+        /// </summary>
+        /// <param name="player">Player that raised the special flag</param>
+        /// <param name="specialFlag">Special flag ID</param>
+        public delegate void SpecialFlagEvent(Player player, int specialFlag);
+
 
         /// <summary>
         /// Event that is invoked when a buff is activated
@@ -31,6 +38,11 @@ namespace TerrariaAchievementLib.Achievements
         /// Event that is invoked when an item is consumed
         /// </summary>
         public static event ItemConsumeEvent OnItemConsume;
+
+        /// <summary>
+        /// Event that is invoked when a special flag is raised
+        /// </summary>
+        public static event SpecialFlagEvent OnSpecialFlag;
 
 
         /// <summary>
@@ -46,5 +58,12 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that consumed the item</param>
         /// <param name="itemId">Item ID that was consumed</param>
         public static void NotifyItemConsume(Player player, int itemId) => OnItemConsume?.Invoke(player, itemId);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when a special flag is raised
+        /// </summary>
+        /// <param name="player">Player that raised the special flag</param>
+        /// <param name="specialFlag">Special flag ID</param>
+        public static void NotifySpecialFlag(Player player, int specialFlag) => OnSpecialFlag?.Invoke(player, specialFlag);
     }
 }

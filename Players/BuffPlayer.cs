@@ -7,11 +7,12 @@ namespace TerrariaAchievementLib.Players
     /// <summary>
     /// Sends notifications to achievement conditions when the local player activates a buff
     /// </summary>
-    public class AchievementBuffActivatePlayer : ModPlayer
+    public class BuffPlayer : ModPlayer
     {
         public override void Load() => On_Player.AddBuff += On_Player_AddBuff;
 
         public override void Unload() => On_Player.AddBuff -= On_Player_AddBuff;
+
 
         /// <summary>
         /// Detour to send a notification when the local player activates a buff
@@ -27,7 +28,7 @@ namespace TerrariaAchievementLib.Players
             orig.Invoke(self, type, timeToAdd, quiet, foodHack);
 
             if (self == Main.LocalPlayer)
-                NewAchievementsHelper.NotifyBuffActivation(self, type);
+                CustomAchievementsHelper.NotifyBuffActivation(self, type);
         }
     }
 }

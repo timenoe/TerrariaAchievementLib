@@ -1,13 +1,14 @@
 ﻿using Terraria;
+using Terraria.Achievements;
 using Terraria.ID;
 
-namespace TerrariaAchievementLib.Achievements.Conditions
+namespace TerrariaAchievementLib.Achievements
 {
     /// <summary>
     /// Player difficulty identifier
     /// </summary>
     public enum PlayerDifficulty
-    { 
+    {
         Classic,
         Mediumcore,
         Hardcore,
@@ -29,7 +30,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// Special world seed identifier
     /// </summary>
     public enum SpecialSeed
-    { 
+    {
         None = -1,
         Bees,
         Drunk,
@@ -44,7 +45,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Common condition requirements<br/><br/>
     /// Notes:<br/>
-    /// If the SpecialSeed is set to None, the 10th Anniversary seed still cannot be used
+    /// If PlayerDifficulty is set to Classic, only Journey Mode cannot be used<br/>
+    /// If WorldDifficulty is set to Classic, only Journey Mode cannot be used<br/>
+    /// If SpecialSeed is set to None, only the 10th Anniversary seed cannot be used
     /// </summary>
     /// <param name="pdiff">Player difficulty requirement</param>
     /// <param name="wdiff">World difficulty requirement</param>
@@ -106,7 +109,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                     break;
 
             }
-               
+
             switch (WorldDiff)
             {
                 case WorldDifficulty.Classic:
@@ -180,5 +183,13 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
             return true;
         }
+    }
+
+    public class CustomAchievementCondition(string name, ConditionRequirements reqs) : AchievementCondition(name)
+    {
+        /// <summary>
+        /// Condition requirements that must be met
+        /// </summary>
+        public readonly ConditionRequirements Reqs = reqs;
     }
 }
