@@ -20,30 +20,25 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         private static bool _isHooked;
 
+        /// <summary>
+        /// IDs and the conditions that are listening for them to be triggered
+        /// </summary>
+        protected static readonly Dictionary<int, List<CustomNpcKillCondition>> _listeners = [];
+
 
         /// <summary>
         /// Creates a condition that listens for the NPC to be killed
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">NPC ID to listen for</param>
-        private CustomNpcKillCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) { }
+        private CustomNpcKillCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the NPCs to be killed
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
-        private CustomNpcKillCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) { }
-
-
-        protected override void HookIdEvent()
-        {
-            if (!_isHooked)
-            {
-                AchievementsHelper.OnNPCKilled += AchievementsHelper_OnNPCKilled;
-                _isHooked = true;
-            }
-        }
+        private CustomNpcKillCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -83,7 +78,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="id">NPC ID that was killed</param>
         private static void AchievementsHelper_OnNPCKilled(Player player, short id)
         {
-            if (!IsListeningForId(id, out var conditions))
+            if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
@@ -91,6 +86,20 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
+        }
+
+        /// <summary>
+        /// Listen for events so the condition can be completed
+        /// </summary>
+        private void Listen()
+        {
+            if (!_isHooked)
+            {
+                AchievementsHelper.OnNPCKilled += AchievementsHelper_OnNPCKilled;
+                _isHooked = true;
+            }
+
+            ListenForId(this, _listeners);
         }
     }
 }

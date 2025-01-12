@@ -20,30 +20,26 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         private static bool _isHooked;
 
+        /// <summary>
+        /// IDs and the conditions that are listening for them to be triggered
+        /// </summary>
+        protected static readonly Dictionary<int, List<CustomSpecialFlagCondition>> _listeners = [];
+
 
         /// <summary>
         /// Creates a condition that listens for the special flag to be set
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Special flag ID to listen for</param>
-        private CustomSpecialFlagCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) { }
+        private CustomSpecialFlagCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the special flags to be set
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Special flag IDs to listen for</param>
-        private CustomSpecialFlagCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) { }
+        private CustomSpecialFlagCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
-
-        protected override void HookIdEvent()
-        {
-            if (!_isHooked)
-            {
-                CustomAchievementsHelper.OnSpecialFlag += CustomAchievementsHelper_OnSpecialFlag;
-                _isHooked = true;
-            }
-        }
 
         /// <summary>
         /// Helper to create a condition that listens for the special flag to be set
@@ -82,7 +78,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="id">Flag ID that was set</param>
         private static void CustomAchievementsHelper_OnSpecialFlag(Player player, int id)
         {
-            if (!IsListeningForId(id, out var conditions))
+            if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
@@ -90,6 +86,20 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
+        }
+
+        /// <summary>
+        /// Listen for events so the condition can be completed
+        /// </summary>
+        private void Listen()
+        {
+            if (!_isHooked)
+            {
+                CustomAchievementsHelper.OnSpecialFlag += CustomAchievementsHelper_OnSpecialFlag;
+                _isHooked = true;
+            }
+
+            ListenForId(this, _listeners);
         }
     }
 }

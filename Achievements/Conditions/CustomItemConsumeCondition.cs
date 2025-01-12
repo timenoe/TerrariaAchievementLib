@@ -21,30 +21,25 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         private static bool _isHooked;
 
+        /// <summary>
+        /// IDs and the conditions that are listening for them to be triggered
+        /// </summary>
+        protected static readonly Dictionary<int, List<CustomItemConsumeCondition>> _listeners = [];
+
 
         /// <summary>
         /// Creates a condition that listens for the item to be consumed
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private CustomItemConsumeCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => RegisterConsumeItem([id]);
+        private CustomItemConsumeCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be consumed
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private CustomItemConsumeCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => RegisterConsumeItem([..ids]);
-
-
-        protected override void HookIdEvent()
-        {
-            if (!_isHooked)
-            { 
-                CustomAchievementsHelper.OnItemConsume += NewAchievementsHelper_OnItemConsume; 
-                _isHooked = true;
-            }
-        }
+        private CustomItemConsumeCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -84,7 +79,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="itemId">Item ID that was consumed</param>
         private static void NewAchievementsHelper_OnItemConsume(Player player, int itemId)
         {
-            if (!IsListeningForId(itemId, out var conditions))
+            if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
@@ -98,10 +93,24 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Register item IDs to send notifications when they are consumed
         /// </summary>
         /// <param name="itemIds">Item IDs to send notifications when they are consumed</param>
-        private static void RegisterConsumeItem(List<int> itemIds)
+        //private static void RegisterConsumeItem(List<int> itemIds)
+        //{
+        //    ConsumeItem manager = ModContent.GetInstance<ConsumeItem>();
+        //    manager.RegisterItems(itemIds);
+        //}
+
+        /// <summary>
+        /// Listen for events so the condition can be completed
+        /// </summary>
+        private void Listen()
         {
-            ConsumeItem manager = ModContent.GetInstance<ConsumeItem>();
-            manager.RegisterItems(itemIds);
+            if (!_isHooked)
+            {
+                CustomAchievementsHelper.OnItemConsume += NewAchievementsHelper_OnItemConsume;
+                _isHooked = true;
+            }
+
+            ListenForId(this, _listeners);
         }
     }
 }

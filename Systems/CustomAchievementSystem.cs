@@ -111,7 +111,7 @@ namespace TerrariaAchievementLib.Systems
         {
             // Add unique achievement header to the name if needed
             if (!name.Contains(Identifier))
-                name = $"{Identifier}{name}";
+                name = $"{Identifier}_{name}";
 
             Achievement ach = new(name);
             if (!IsCustomAchievement(ach))
