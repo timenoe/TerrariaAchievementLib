@@ -6,7 +6,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for buff(s) to be added
     /// </summary>
-    public class BuffAddCondition : AchievementIdCondition
+    public class BuffAddCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -30,14 +30,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Buff ID to listen for</param>
-        private BuffAddCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private BuffAddCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the buffs to be added
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
-        private BuffAddCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private BuffAddCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
         /// <summary>
         /// Helper to create a condition that listens for the buff to be added
@@ -45,7 +45,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Buff ID to listen for</param>
         /// <returns>Buff add achievement condition</returns>
-        public static AchCondition Add(ConditionRequirements reqs, int id) => new BuffAddCondition(reqs, id);
+        public static AchCondition Add(ConditionReqs reqs, int id) => new BuffAddCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the buffs to be added
@@ -53,7 +53,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
         /// <returns>Buff add achievement condition</returns>
-        public static AchCondition AddAny(ConditionRequirements reqs, params int[] ids) => new BuffAddCondition(reqs, ids);
+        public static AchCondition AddAny(ConditionReqs reqs, params int[] ids) => new BuffAddCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the buffs to be added
@@ -61,7 +61,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
         /// <returns>Buff add achievement conditions</returns>
-        public static List<AchCondition> AddAll(ConditionRequirements reqs, params int[] ids)
+        public static List<AchCondition> AddAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)

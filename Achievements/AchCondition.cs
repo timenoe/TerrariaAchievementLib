@@ -7,7 +7,7 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// Player difficulty identifier
     /// </summary>
-    public enum PlayerDifficulty
+    public enum PlayerDiff
     {
         Classic,
         Mediumcore,
@@ -18,7 +18,7 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// World difficulty identifier
     /// </summary>
-    public enum WorldDifficulty
+    public enum WorldDiff
     {
         Classic,
         Expert,
@@ -53,17 +53,17 @@ namespace TerrariaAchievementLib.Achievements
     /// <param name="pdiff">Player difficulty requirement</param>
     /// <param name="wdiff">World difficulty requirement</param>
     /// <param name="sseed">Special world seed requirement</param>
-    public class ConditionRequirements(PlayerDifficulty pdiff, WorldDifficulty wdiff, SpecialSeed sseed)
+    public class ConditionReqs(PlayerDiff pdiff, WorldDiff wdiff, SpecialSeed sseed)
     {
         /// <summary>
         /// Player difficulty requirement
         /// </summary>
-        public readonly PlayerDifficulty PlayerDiff = pdiff;
+        public readonly PlayerDiff PlayerDiff = pdiff;
 
         /// <summary>
         /// World difficulty requirement
         /// </summary>
-        public readonly WorldDifficulty WorldDiff = wdiff;
+        public readonly WorldDiff WorldDiff = wdiff;
 
         /// <summary>
         /// Special world seed requirement
@@ -89,22 +89,22 @@ namespace TerrariaAchievementLib.Achievements
 
             switch (PlayerDiff)
             {
-                case PlayerDifficulty.Classic:
+                case PlayerDiff.Classic:
                     if (player.difficulty == PlayerDifficultyID.Creative)
                         return false;
                     break;
 
-                case PlayerDifficulty.Mediumcore:
+                case PlayerDiff.Mediumcore:
                     if (player.difficulty != PlayerDifficultyID.MediumCore && player.difficulty != PlayerDifficultyID.Hardcore)
                         return false;
                     break;
 
-                case PlayerDifficulty.Hardcore:
+                case PlayerDiff.Hardcore:
                     if (player.difficulty != PlayerDifficultyID.Hardcore)
                         return false;
                     break;
 
-                case PlayerDifficulty.Journey:
+                case PlayerDiff.Journey:
                     if (player.difficulty != PlayerDifficultyID.Creative)
                         return false;
                     break;
@@ -113,22 +113,22 @@ namespace TerrariaAchievementLib.Achievements
 
             switch (WorldDiff)
             {
-                case WorldDifficulty.Classic:
+                case WorldDiff.Classic:
                     if (Main.GameMode == GameModeID.Creative)
                         return false;
                     break;
 
-                case WorldDifficulty.Expert:
+                case WorldDiff.Expert:
                     if (Main.GameMode != GameModeID.Expert && Main.GameMode != GameModeID.Master)
                         return false;
                     break;
 
-                case WorldDifficulty.Master:
+                case WorldDiff.Master:
                     if (Main.GameMode != GameModeID.Master)
                         return false;
                     break;
 
-                case WorldDifficulty.Journey:
+                case WorldDiff.Journey:
                     if (Main.GameMode != GameModeID.Creative)
                         return false;
                     break;
@@ -191,18 +191,18 @@ namespace TerrariaAchievementLib.Achievements
     /// </summary>
     /// <param name="name">Name of the condition</param>
     /// <param name="reqs">Extra base requirements</param>
-    public class AchCondition(string name, ConditionRequirements reqs) : Terraria.Achievements.AchievementCondition(name)
+    public class AchCondition(string name, ConditionReqs reqs) : Terraria.Achievements.AchievementCondition(name)
     {
         /// <summary>
         /// Condition requirements that must be met
         /// </summary>
-        public readonly ConditionRequirements Reqs = reqs;
+        public readonly ConditionReqs Reqs = reqs;
     }
 
     /// <summary>
     /// Base class for achievement conditions that are triggered by ID events
     /// </summary>
-    public class AchievementIdCondition : AchCondition
+    public class AchIdCondition : AchCondition
     {
         /// <summary>
         /// IDs that need to be triggered to satisfy the condition
@@ -213,7 +213,7 @@ namespace TerrariaAchievementLib.Achievements
         /// <summary>
         /// Constructor to initialize the base condition
         /// </summary>
-        protected AchievementIdCondition(string name, ConditionRequirements reqs, int[] ids) : base($"{name}_{reqs.Identifier}-{string.Join(",", ids)}", reqs) => Ids = ids;
+        protected AchIdCondition(string name, ConditionReqs reqs, int[] ids) : base($"{name}_{reqs.Identifier}-{string.Join(",", ids)}", reqs) => Ids = ids;
 
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for tiles to drop item(s)
     /// </summary>
-    public class TileDropCondition : AchievementIdCondition
+    public class TileDropCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -30,14 +30,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private TileDropCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private TileDropCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be dropped
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private TileDropCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private TileDropCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item drop achievement condition</returns>
-        public static AchCondition Drop(ConditionRequirements reqs, int id) => new TileDropCondition(reqs, id);
+        public static AchCondition Drop(ConditionReqs reqs, int id) => new TileDropCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be dropped
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item drop achievement condition</returns>
-        public static AchCondition DropAny(ConditionRequirements reqs, params int[] ids) => new TileDropCondition(reqs, ids);
+        public static AchCondition DropAny(ConditionReqs reqs, params int[] ids) => new TileDropCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be dropped
@@ -62,7 +62,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item drop achievement conditions</returns>
-        public static List<AchCondition> DropAll(ConditionRequirements reqs, params int[] ids)
+        public static List<AchCondition> DropAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)

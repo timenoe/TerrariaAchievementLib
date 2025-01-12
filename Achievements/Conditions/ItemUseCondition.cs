@@ -7,7 +7,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for item(s) to be used
     /// </summary>
-    public class ItemUseCondition : AchievementIdCondition
+    public class ItemUseCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -31,14 +31,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private ItemUseCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private ItemUseCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be used
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private ItemUseCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private ItemUseCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item use achievement condition</returns>
-        public static AchCondition Use(ConditionRequirements reqs, int id) => new ItemUseCondition(reqs, id);
+        public static AchCondition Use(ConditionReqs reqs, int id) => new ItemUseCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be used
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item use achievement condition</returns>
-        public static AchCondition UseAny(ConditionRequirements reqs, params int[] ids) => new ItemUseCondition(reqs, ids);
+        public static AchCondition UseAny(ConditionReqs reqs, params int[] ids) => new ItemUseCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be used
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item use achievement conditions</returns>
-        public static List<AchCondition> UseAll(ConditionRequirements reqs, params int[] ids)
+        public static List<AchCondition> UseAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)

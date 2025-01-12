@@ -7,7 +7,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for NPC(s) to be killed
     /// </summary>
-    public class NpcKillCondition : AchievementIdCondition
+    public class NpcKillCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -31,14 +31,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">NPC ID to listen for</param>
-        private NpcKillCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private NpcKillCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the NPCs to be killed
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
-        private NpcKillCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private NpcKillCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">NPC ID to listen for</param>
         /// <returns>NPC kill achievement condition</returns>
-        public static AchCondition Kill(ConditionRequirements reqs, int id) => new NpcKillCondition(reqs, id);
+        public static AchCondition Kill(ConditionReqs reqs, int id) => new NpcKillCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the NPCs to be killed
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC kill achievement condition</returns>
-        public static AchCondition KillAny(ConditionRequirements reqs, params int[] ids) => new NpcKillCondition(reqs, ids);
+        public static AchCondition KillAny(ConditionReqs reqs, params int[] ids) => new NpcKillCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the NPCs to be killed
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC kill achievement conditions</returns>
-        public static List<AchCondition> KillAll(ConditionRequirements reqs, params int[] ids)
+        public static List<AchCondition> KillAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)

@@ -7,7 +7,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for tile(s) to be destroyed
     /// </summary>
-    public class TileDestroyCondition : AchievementIdCondition
+    public class TileDestroyCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -31,14 +31,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Tile ID to listen for</param>
-        private TileDestroyCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private TileDestroyCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the tiles to be destroyed
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Tile IDs to listen for</param>
-        private TileDestroyCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private TileDestroyCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Tile ID to listen for</param>
         /// <returns>Tile destroy achievement condition</returns>
-        public static AchCondition Destroy(ConditionRequirements reqs, int id) => new TileDestroyCondition(reqs, id);
+        public static AchCondition Destroy(ConditionReqs reqs, int id) => new TileDestroyCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the tiles to be destroyed
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Tile IDs to listen for</param>
         /// <returns>Tile destroy achievement condition</returns>
-        public static AchCondition DestroyAny(ConditionRequirements reqs, params int[] ids) => new TileDestroyCondition(reqs, ids);
+        public static AchCondition DestroyAny(ConditionReqs reqs, params int[] ids) => new TileDestroyCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the tiles to be destroyed
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Tile IDs to listen for</param>
         /// <returns>Tile destroy achievement conditions</returns>
-        public static List<AchCondition> DestroyAll(ConditionRequirements reqs, params int[] ids)
+        public static List<AchCondition> DestroyAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)

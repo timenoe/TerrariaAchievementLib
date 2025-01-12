@@ -6,7 +6,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for NPC(s) to be caught
     /// </summary>
-    public class NpcCatchCondition : AchievementIdCondition
+    public class NpcCatchCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -30,14 +30,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">NPC ID to listen for</param>
-        private NpcCatchCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private NpcCatchCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the NPCs to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
-        private NpcCatchCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private NpcCatchCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">NPC ID to listen for</param>
         /// <returns>NPC catch achievement condition</returns>
-        public static AchCondition Catch(ConditionRequirements reqs, int id) => new NpcCatchCondition(reqs, id);
+        public static AchCondition Catch(ConditionReqs reqs, int id) => new NpcCatchCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the NPCs to be caught
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC catch achievement condition</returns>
-        public static AchCondition CatchAny(ConditionRequirements reqs, params int[] ids) => new NpcCatchCondition(reqs, ids);
+        public static AchCondition CatchAny(ConditionReqs reqs, params int[] ids) => new NpcCatchCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the NPCs to be caught
@@ -62,7 +62,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC catch achievement conditions</returns>
-        public static List<AchCondition> CatchAll(ConditionRequirements reqs, params int[] ids)
+        public static List<AchCondition> CatchAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)
