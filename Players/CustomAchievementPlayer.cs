@@ -23,6 +23,9 @@ namespace TerrariaAchievementLib.Players
 
         public override void ModifyCaughtFish(Item fish)
         {
+            if (this.Player == Main.LocalPlayer)
+                CustomAchievementsHelper.NotifyFishCatch(Player, fish.type);
+
             base.ModifyCaughtFish(fish);
         }
 

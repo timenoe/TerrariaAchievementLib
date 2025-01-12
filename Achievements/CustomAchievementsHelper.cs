@@ -15,6 +15,13 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void BuffActivationEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines a fish catch event
+        /// </summary>
+        /// <param name="player">Player that caught the fish</param>
+        /// <param name="id">Item ID that was caught</param>
+        public delegate void FishCatchEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines a NPC buy event
         /// </summary>
         /// <param name="player">Player that bought the item</param>
@@ -63,6 +70,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event BuffActivationEvent OnBuffActivation;
 
         /// <summary>
+        /// Event that is invoked when a fish is caught
+        /// </summary>
+        public static event FishCatchEvent OnFishCatch;
+
+        /// <summary>
         /// Event that is invoked when an item is bought from an NPC
         /// </summary>
         public static event NpcBuyEvent OnNpcBuy;
@@ -99,6 +111,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that activated the Buff</param>
         /// <param name="id">Buff ID that was activated</param>
         public static void NotifyBuffActivation(Player player, int id) => OnBuffActivation?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when a fish is caught
+        /// </summary>
+        /// <param name="player">Player that caught the fish</param>
+        /// <param name="id">Item ID that was caught</param>
+        public static void NotifyFishCatch(Player player, int id) => OnFishCatch?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when a item is bought from an NPC

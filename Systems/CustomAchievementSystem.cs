@@ -83,7 +83,7 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="name">Achievement name</param>
         /// <param name="cond">Achievement condition</param>
         /// <param name="cat">Achievement category</param>
-        protected void RegisterCustomAchievement(string name, CustomAchievementCondition cond, AchievementCategory cat)
+        protected void RegisterCustomAchievement(string name, Achievements.CustomAchievementCondition cond, AchievementCategory cat)
         {
             // Add unique achievement header to the name if needed
             if (!name.Contains(Identifier))
@@ -107,7 +107,7 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="conds">Achievement conditions</param>
         /// <param name="track">True if tracking completed conditions total in the in-game menu</param>
         /// <param name="cat">Achievement category</param>
-        protected void RegisterCustomAchievement(string name, List<CustomAchievementCondition> conds, bool track, AchievementCategory cat)
+        protected void RegisterCustomAchievement(string name, List<Achievements.CustomAchievementCondition> conds, bool track, AchievementCategory cat)
         {
             // Add unique achievement header to the name if needed
             if (!name.Contains(Identifier))
@@ -117,7 +117,7 @@ namespace TerrariaAchievementLib.Systems
             if (!IsCustomAchievement(ach))
                 return;
 
-            foreach (AchievementCondition condition in conds)
+            foreach (Terraria.Achievements.AchievementCondition condition in conds)
                 ach.AddCondition(condition);
 
             if (track)
