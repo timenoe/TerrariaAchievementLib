@@ -16,7 +16,7 @@ namespace TerrariaAchievementLib.Systems
     /// <summary>
     /// Used to add new achievements to the in-game list
     /// </summary>
-    public abstract class AchievementSystem : ModSystem
+    public abstract class CustomAchievementSystem : ModSystem
     {
         /// <summary>
         /// Flags to use during reflection
@@ -53,9 +53,9 @@ namespace TerrariaAchievementLib.Systems
 
         public override void OnModLoad()
         {
-            RegisterNewAchievements();
-            LoadNewTexture();
-            LoadSaveData();
+            RegisterCustomAchievements();
+            LoadCustomTexture();
+            LoadCustomSaveData();
 
             On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
             On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
@@ -64,7 +64,7 @@ namespace TerrariaAchievementLib.Systems
 
         public override void OnModUnload()
         {
-            UnregisterNewAchievements();
+            UnregisterCustomAchievements();
 
             On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor -= AchievementUnlockedPopup_ctor;
@@ -74,29 +74,53 @@ namespace TerrariaAchievementLib.Systems
         /// Register new achievements to the in-game list<br/>
         /// Involves consecutive calls to RegisterNewAchievement
         /// </summary>
-        protected abstract void RegisterNewAchievements();
+        protected abstract void RegisterCustomAchievements();
 
 
         /// <summary>
-        /// Register a new achievement to the in-game list
+        /// Register a new achievement with one condition to the in-game list
+        /// </summary>
+        /// <param name="name">Achievement name</param>
+        /// <param name="cond">Achievement condition</param>
+        /// <param name="cat">Achievement category</param>
+        protected void RegisterCustomAchievement(string name, CustomAchievementCondition cond, AchievementCategory cat)
+        {
+            // Add unique achievement header to the name if needed
+            if (!name.Contains(Identifier))
+                name = $"{Identifier}_{name}";
+
+            Achievement ach = new(name);
+            if (!IsCustomAchievement(ach))
+                return;
+
+            ach.AddCondition(cond);
+
+            Main.Achievements.Register(ach);
+            Main.Achievements.RegisterAchievementCategory(name, cat);
+            Main.Achievements.RegisterIconIndex(name, _iconIndex++);
+        }
+
+        /// <summary>
+        /// Register a new achievement with multiple conditions to the in-game list
         /// </summary>
         /// <param name="name">Achievement name</param>
         /// <param name="conds">Achievement conditions</param>
+        /// <param name="track">True if tracking completed conditions total in the in-game menu</param>
         /// <param name="cat">Achievement category</param>
-        protected void RegisterNewAchievement(string name, List<AchievementCondition> conds, AchievementCategory cat, bool useTracker)
+        protected void RegisterCustomAchievement(string name, List<CustomAchievementCondition> conds, bool track, AchievementCategory cat)
         {
             // Add unique achievement header to the name if needed
             if (!name.Contains(Identifier))
                 name = $"{Identifier}{name}";
 
             Achievement ach = new(name);
-            if (!IsNewAchievement(ach))
+            if (!IsCustomAchievement(ach))
                 return;
 
             foreach (AchievementCondition condition in conds)
                 ach.AddCondition(condition);
 
-            if (useTracker)
+            if (track)
                 ach.UseConditionsCompletedTracker();
 
             Main.Achievements.Register(ach);
@@ -111,12 +135,12 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         /// <param name="ach">Achievement to check</param>
         /// <returns>True if the achievement is new to this system</returns>
-        private bool IsNewAchievement(Achievement ach) => ach.Name.Contains(Identifier);
+        private bool IsCustomAchievement(Achievement ach) => ach.Name.Contains(Identifier);
 
         /// <summary>
         /// Unregister all achievements that were added from this system
         /// </summary>
-        private void UnregisterNewAchievements()
+        private void UnregisterCustomAchievements()
         {
             FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
             if (info == null)
@@ -137,7 +161,7 @@ namespace TerrariaAchievementLib.Systems
             Dictionary<string, Achievement> achs_copy = new(achs);
             foreach (KeyValuePair<string, Achievement> ach in achs_copy)
             {
-                if (!IsNewAchievement(ach.Value))
+                if (!IsCustomAchievement(ach.Value))
                     continue;
 
                 achs.Remove(ach.Key);
@@ -148,12 +172,12 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// Load the achievement texture from the provided abstract path
         /// </summary>
-        private void LoadNewTexture() => _texture = ModContent.Request<Texture2D>(TexturePath);
+        private void LoadCustomTexture() => _texture = ModContent.Request<Texture2D>(TexturePath);
 
         /// <summary>
         /// Load any save data from achievements.dat if applicable
         /// </summary>
-        private static void LoadSaveData()
+        private static void LoadCustomSaveData()
         {
             FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
             if (info == null)
@@ -193,7 +217,7 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(self, achievement, largeForOtherLanguages);
 
-            if (!IsNewAchievement(achievement))
+            if (!IsCustomAchievement(achievement))
                 return;
 
             // Get icon frame
@@ -240,7 +264,7 @@ namespace TerrariaAchievementLib.Systems
             orig.Invoke(self, achievement);
 
             // Don't modify vanilla achievement textures
-            if (!IsNewAchievement(achievement))
+            if (!IsCustomAchievement(achievement))
                 return;
 
             FieldInfo info = typeof(InGamePopups.AchievementUnlockedPopup).GetField("_achievementTexture", ReflectionFlags);
