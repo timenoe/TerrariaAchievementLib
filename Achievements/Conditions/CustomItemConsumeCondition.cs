@@ -76,10 +76,10 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Hook that is called when an item is consumed
         /// </summary>
         /// <param name="player">Player that consumed the item</param>
-        /// <param name="itemId">Item ID that was consumed</param>
-        private static void NewAchievementsHelper_OnItemConsume(Player player, int itemId)
+        /// <param name="id">Item ID that was consumed</param>
+        private static void NewAchievementsHelper_OnItemConsume(Player player, int id)
         {
-            if (!IsListeningForId(itemId, _listeners, out var conditions))
+            if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)

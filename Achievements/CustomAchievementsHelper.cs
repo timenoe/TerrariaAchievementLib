@@ -11,22 +11,22 @@ namespace TerrariaAchievementLib.Achievements
         /// Signature that defines a buff activation event
         /// </summary>
         /// <param name="player">Player that activated the buff</param>
-        /// <param name="buffId">Buff ID that was activated</param>
-        public delegate void BuffActivationEvent(Player player, int buffId);
+        /// <param name="id">Buff ID that was activated</param>
+        public delegate void BuffActivationEvent(Player player, int id);
 
         /// <summary>
         /// Signature that defines an item consume event
         /// </summary>
         /// <param name="player">Player that consumed the item</param>
-        /// <param name="itemId">Item ID that was consumed</param>
-        public delegate void ItemConsumeEvent(Player player, int itemId);
+        /// <param name="id">Item ID that was consumed</param>
+        public delegate void ItemConsumeEvent(Player player, int id);
 
         /// <summary>
         /// Signature that defines a special flag event
         /// </summary>
         /// <param name="player">Player that raised the special flag</param>
-        /// <param name="specialFlag">Special flag ID</param>
-        public delegate void SpecialFlagEvent(Player player, int specialFlag);
+        /// <param name="id">Special flag ID</param>
+        public delegate void SpecialFlagEvent(Player player, int id);
 
 
         /// <summary>
@@ -49,21 +49,21 @@ namespace TerrariaAchievementLib.Achievements
         /// Helper to notify achievement conditions when a buff is activated
         /// </summary>
         /// <param name="player">Player that activated the Buff</param>
-        /// <param name="buffId">Buff ID that was activated</param>
-        public static void NotifyBuffActivation(Player player, int itemId) => OnBuffActivation?.Invoke(player, itemId);
+        /// <param name="id">Buff ID that was activated</param>
+        public static void NotifyBuffActivation(Player player, int id) => OnBuffActivation?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is consumed
         /// </summary>
         /// <param name="player">Player that consumed the item</param>
-        /// <param name="itemId">Item ID that was consumed</param>
-        public static void NotifyItemConsume(Player player, int itemId) => OnItemConsume?.Invoke(player, itemId);
+        /// <param name="id">Item ID that was consumed</param>
+        public static void NotifyItemConsume(Player player, int id) => OnItemConsume?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when a special flag is raised
         /// </summary>
         /// <param name="player">Player that raised the special flag</param>
-        /// <param name="specialFlag">Special flag ID</param>
-        public static void NotifySpecialFlag(Player player, int specialFlag) => OnSpecialFlag?.Invoke(player, specialFlag);
+        /// <param name="id">Special flag ID</param>
+        public static void NotifySpecialFlag(Player player, int id) => OnSpecialFlag?.Invoke(player, id);
     }
 }
