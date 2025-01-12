@@ -92,10 +92,17 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
             foreach (var condition in conditions)
             {
-                if (condition.Reqs.Pass(Main.LocalPlayer) && _npcs.Contains((short)npc.type))
+                if (condition.Reqs.Pass(Main.LocalPlayer) && IsNpcValid(npc))
                     condition.Complete();
             }
         }
+
+        /// <summary>
+        /// Check if the NPC that dropped the loot is valid
+        /// </summary>
+        /// <param name="npc">NPC that dropped the loot</param>
+        /// <returns>True if the NPC is valid</returns>
+        private static bool IsNpcValid(NPC npc) => _npcs.Count == 0 || _npcs.Contains((short)npc.type);
 
         /// <summary>
         /// Listen for events so the condition can be completed

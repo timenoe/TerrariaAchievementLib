@@ -35,6 +35,12 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="id">Special flag ID</param>
         public delegate void SpecialFlagEvent(Player player, int id);
 
+        /// <summary>
+        /// Signature that defines a tile drop event
+        /// </summary>
+        /// <param name="id">Item ID of the drop</param>
+        public delegate void TileDropEvent(int id);
+
 
         /// <summary>
         /// Event that is invoked when a buff is activated
@@ -56,6 +62,11 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         public static event SpecialFlagEvent OnSpecialFlag;
 
+        /// <summary>
+        /// Event that is invoked when a tile drops an item
+        /// </summary>
+        public static event TileDropEvent OnTileDrop;
+
 
         /// <summary>
         /// Helper to notify achievement conditions when a buff is activated
@@ -64,7 +75,6 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="id">Buff ID that was activated</param>
         public static void NotifyBuffActivation(Player player, int id) => OnBuffActivation?.Invoke(player, id);
 
-        
         /// <summary>
         /// Helper to notify achievement conditions when a buff is activated
         /// </summary>
@@ -85,5 +95,11 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that raised the special flag</param>
         /// <param name="id">Special flag ID</param>
         public static void NotifySpecialFlag(Player player, int id) => OnSpecialFlag?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when a tile has dropped an item
+        /// </summary>
+        /// <param name="id">Item ID of the drop</param>
+        public static void NotifyTileDrop(int id) => OnTileDrop?.Invoke(id);
     }
 }

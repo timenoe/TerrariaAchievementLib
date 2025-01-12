@@ -14,6 +14,9 @@ namespace TerrariaAchievementLib.Items
                 if (loot.Entity is NPC npc)
                     CustomAchievementsHelper.NotifyNpcLoot(npc, item.type);
             }
+
+            else if (source is EntitySource_TileBreak tile)
+                CustomAchievementsHelper.NotifyTileDrop(item.type);
         }
     }
 }
