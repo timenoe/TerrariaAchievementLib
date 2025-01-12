@@ -13,10 +13,24 @@ namespace TerrariaAchievementLib.Players
 
         public override void Unload() => On_Player.AddBuff -= On_Player_AddBuff;
 
+        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item)
+        {
+            if (this.Player == Main.LocalPlayer)
+                CustomAchievementsHelper.NotifyNpcBuy(this.Player, vendor, item.type);
+
+            base.PostBuyItem(vendor, shopInventory, item);
+        }
+
+        public override void ModifyCaughtFish(Item fish)
+        {
+            base.ModifyCaughtFish(fish);
+        }
+
         public override bool? CanCatchNPC(NPC target, Item item)
         {
             if (this.Player == Main.LocalPlayer)
-            
+                CustomAchievementsHelper.NotifyNpcCatch(this.Player, target.type);
+
             return base.CanCatchNPC(target, item);
         }
 
