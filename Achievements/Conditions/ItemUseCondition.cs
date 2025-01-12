@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Achievements;
+using Terraria.ModLoader;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
     /// <summary>
-    /// Helper to create a condition that listens for item(s) to be grabbed
+    /// Helper to create a condition that listens for item(s) to be used
     /// </summary>
-    public class CustomItemGrabCondition : CustomIdCondition
+    public class ItemUseCondition : AchievementIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
         /// </summary>
-        private const string CustomName = "CUSTOM_ITEM_GRAB";
+        private const string CustomName = "CUSTOM_ITEM_USE";
 
 
         /// <summary>
@@ -23,61 +23,60 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<CustomItemGrabCondition>> _listeners = [];
+        protected static readonly Dictionary<int, List<ItemUseCondition>> _listeners = [];
 
 
         /// <summary>
-        /// Creates a condition that listens for the item to be grabbed
+        /// Creates a condition that listens for the item to be used
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private CustomItemGrabCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private ItemUseCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
-        /// Creates a condition that listens for any of the items to be grabbed
+        /// Creates a condition that listens for any of the items to be used
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private CustomItemGrabCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private ItemUseCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
-        /// Helper to create a condition that listens for the item to be grabbed
+        /// Helper to create a condition that listens for the item to be used
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        /// <returns>Item pickup achievement condition</returns>
-        public static CustomAchievementCondition Grab(ConditionRequirements reqs, int id) => new CustomItemGrabCondition(reqs, id);
+        /// <returns>Item use achievement condition</returns>
+        public static AchCondition Use(ConditionRequirements reqs, int id) => new ItemUseCondition(reqs, id);
 
         /// <summary>
-        /// Helper to create a condition that listens for any of the items to be grabbed
+        /// Helper to create a condition that listens for any of the items to be used
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>Item pickup achievement condition</returns>
-        public static CustomAchievementCondition GrabAny(ConditionRequirements reqs, params int[] ids) => new CustomItemGrabCondition(reqs, ids);
+        /// <returns>Item use achievement condition</returns>
+        public static AchCondition UseAny(ConditionRequirements reqs, params int[] ids) => new ItemUseCondition(reqs, ids);
 
         /// <summary>
-        /// Helper to create a condition that listens for all of the items to be grabbed
+        /// Helper to create a condition that listens for all of the items to be used
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>Item pickup achievement conditions</returns>
-        public static List<CustomAchievementCondition> GrabAll(ConditionRequirements reqs, params int[] ids)
+        /// <returns>Item use achievement conditions</returns>
+        public static List<AchCondition> UseAll(ConditionRequirements reqs, params int[] ids)
         {
-            List<CustomAchievementCondition> conditions = [];
+            List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new CustomItemGrabCondition(reqs, id));
+                conditions.Add(new ItemUseCondition(reqs, id));
             return conditions;
         }
 
         /// <summary>
-        /// Hook that is called when an item is picked up
+        /// Hook that is called when an item is used
         /// </summary>
-        /// <param name="player">Player that grabbed the item</param>
-        /// <param name="id">Item ID that was grabbed</param>
-        /// <param name="id">Count of the grabbed item(s)</param>
-        private static void AchievementsHelper_OnItemPickup(Player player, short id, int count)
+        /// <param name="player">Player that used the item</param>
+        /// <param name="id">Item ID that was used</param>
+        private static void NewAchievementsHelper_OnItemUse(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -96,7 +95,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchievementsHelper.OnItemPickup += AchievementsHelper_OnItemPickup;
+                AchHelper.OnItemUse += NewAchievementsHelper_OnItemUse;
                 _isHooked = true;
             }
 

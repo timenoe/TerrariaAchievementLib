@@ -1,5 +1,5 @@
-﻿using Terraria;
-using Terraria.Achievements;
+﻿using System.Collections.Generic;
+using Terraria;
 using Terraria.ID;
 
 namespace TerrariaAchievementLib.Achievements
@@ -41,6 +41,7 @@ namespace TerrariaAchievementLib.Achievements
         Worthy,
         Zenith
     }
+
 
     /// <summary>
     /// Common condition requirements<br/><br/>
@@ -185,11 +186,59 @@ namespace TerrariaAchievementLib.Achievements
         }
     }
 
-    public class CustomAchievementCondition(string name, ConditionRequirements reqs) : AchievementCondition(name)
+    /// <summary>
+    /// Base class for achievement conditions that have extended requirements
+    /// </summary>
+    /// <param name="name">Name of the condition</param>
+    /// <param name="reqs">Extra base requirements</param>
+    public class AchCondition(string name, ConditionRequirements reqs) : Terraria.Achievements.AchievementCondition(name)
     {
         /// <summary>
         /// Condition requirements that must be met
         /// </summary>
         public readonly ConditionRequirements Reqs = reqs;
+    }
+
+    /// <summary>
+    /// Base class for achievement conditions that are triggered by ID events
+    /// </summary>
+    public class AchievementIdCondition : AchCondition
+    {
+        /// <summary>
+        /// IDs that need to be triggered to satisfy the condition
+        /// </summary>
+        protected readonly int[] Ids;
+
+
+        /// <summary>
+        /// Constructor to initialize the base condition
+        /// </summary>
+        protected AchievementIdCondition(string name, ConditionRequirements reqs, int[] ids) : base($"{name}_{reqs.Identifier}-{string.Join(",", ids)}", reqs) => Ids = ids;
+
+
+        /// <summary>
+        /// Helper to check if any conditions are listening for the ID
+        /// </summary>
+        protected static bool IsListeningForId<T>(int id, Dictionary<int, List<T>> listeners, out List<T> conditions) => listeners.TryGetValue(id, out conditions);
+
+        /// <summary>
+        /// Registers a condition to listen to a list of IDs
+        /// </summary>
+        protected void ListenForId<T>(T condition, Dictionary<int, List<T>> listeners)
+        {
+            // Loop through all IDs in the condition
+            foreach (int id in Ids)
+            {
+                // Create empty list of listeners for the ID if there are none
+                if (!IsListeningForId(id, listeners, out var conditions))
+                {
+                    conditions = [];
+                    listeners.Add(id, conditions);
+                }
+
+                // Add the current condition to the listeners for this ID
+                conditions.Add(condition);
+            }
+        }
     }
 }

@@ -4,14 +4,14 @@ using Terraria;
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
     /// <summary>
-    /// Helper to create a condition that listens for an NPC to drop loot
+    /// Helper to create a condition that listens for NPC(s) to drop item(s)
     /// </summary>
-    public class CustomNpcLootCondition : CustomIdCondition
+    public class NpcDropCondition : AchievementIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
         /// </summary>
-        private const string CustomName = "CUSTOM_NPC_LOOT";
+        private const string CustomName = "CUSTOM_NPC_DROP";
 
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<CustomNpcLootCondition>> _listeners = [];
+        protected static readonly Dictionary<int, List<NpcDropCondition>> _listeners = [];
 
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcs">NPCs that drop the loot</param>
         /// <param name="id">Loot ID to listen for</param>
-        private CustomNpcLootCondition(ConditionRequirements reqs, List<short> npcs, int id) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, [id]) => Listen(npcs);
+        private NpcDropCondition(ConditionRequirements reqs, List<short> npcs, int id) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, [id]) => Listen(npcs);
 
         /// <summary>
         /// Creates a condition that listens for the NPC to drop any of the loot
@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcs">NPCs that drop the loot</param>
         /// <param name="ids">Loot IDs to listen for</param>
-        private CustomNpcLootCondition(ConditionRequirements reqs, List<short> npcs, int[] ids) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, ids) => Listen(npcs);
+        private NpcDropCondition(ConditionRequirements reqs, List<short> npcs, int[] ids) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, ids) => Listen(npcs);
 
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcs">NPCs that drop the loot</param>
         /// <param name="id">Loot ID to listen for</param>
         /// <returns>NPC loot achievement condition</returns>
-        public static CustomAchievementCondition Drop(ConditionRequirements reqs, List<short> npcs, int id) => new CustomNpcLootCondition(reqs, npcs, id);
+        public static AchCondition Drop(ConditionRequirements reqs, List<short> npcs, int id) => new NpcDropCondition(reqs, npcs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for the NPC to drop any of the loot
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcs">NPCs that drop the loot</param>
         /// <param name="ids">Loot IDs to listen for</param>
         /// <returns>NPC loot achievement condition</returns>
-        public static CustomAchievementCondition DropAny(ConditionRequirements reqs, List<short> npcs, params int[] ids) => new CustomNpcLootCondition(reqs, npcs, ids);
+        public static AchCondition DropAny(ConditionRequirements reqs, List<short> npcs, params int[] ids) => new NpcDropCondition(reqs, npcs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for the NPC to drop all of the loot
@@ -72,27 +72,28 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcs">NPCs that drop the loot</param>
         /// <param name="ids">Loot IDs to listen for</param>
         /// <returns>NPC loot achievement conditions</returns>
-        public static List<CustomAchievementCondition> DropAll(ConditionRequirements reqs, List<short> npcs, params int[] ids)
+        public static List<AchCondition> DropAll(ConditionRequirements reqs, List<short> npcs, params int[] ids)
         {
-            List<CustomAchievementCondition> conditions = [];
+            List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new CustomNpcLootCondition(reqs, npcs, id));
+                conditions.Add(new NpcDropCondition(reqs, npcs, id));
             return conditions;
         }
 
         /// <summary>
         /// Hook that is called when an NPC drops loot
         /// </summary>
+        /// <param name="player">Player that damaged the NPC</param>
         /// <param name="npc">NPC that dropped the loot</param>
         /// <param name="id">Item ID of the loot</param>
-        private void CustomAchievementsHelper_OnNpcLoot(NPC npc, int id)
+        private void CustomAchievementsHelper_OnNpcDrop(Player player, NPC npc, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
             {
-                if (condition.Reqs.Pass(Main.LocalPlayer) && IsNpcValid(npc))
+                if (condition.Reqs.Pass(player) && IsNpcValid(npc))
                     condition.Complete();
             }
         }
@@ -111,7 +112,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementsHelper.OnNpcLoot += CustomAchievementsHelper_OnNpcLoot;
+                AchHelper.OnNpcDrop += CustomAchievementsHelper_OnNpcDrop;
                 _isHooked = true;
             }
 

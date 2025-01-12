@@ -6,7 +6,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for fish to be caught
     /// </summary>
-    public class CustomFishCatchCondition : CustomIdCondition
+    public class FishCatchCondition : AchievementIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -22,7 +22,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<CustomFishCatchCondition>> _listeners = [];
+        protected static readonly Dictionary<int, List<FishCatchCondition>> _listeners = [];
 
 
         /// <summary>
@@ -30,14 +30,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private CustomFishCatchCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private FishCatchCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the fish to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private CustomFishCatchCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private FishCatchCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Fish catch achievement condition</returns>
-        public static CustomAchievementCondition Catch(ConditionRequirements reqs, int id) => new CustomFishCatchCondition(reqs, id);
+        public static AchCondition Catch(ConditionRequirements reqs, int id) => new FishCatchCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the fish to be caught
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Fish catch achievement condition</returns>
-        public static CustomAchievementCondition CatchAny(ConditionRequirements reqs, params int[] ids) => new CustomFishCatchCondition(reqs, ids);
+        public static AchCondition CatchAny(ConditionRequirements reqs, params int[] ids) => new FishCatchCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the fish to be caught
@@ -62,11 +62,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Fish catch achievement conditions</returns>
-        public static List<CustomAchievementCondition> CatchAll(ConditionRequirements reqs, params int[] ids)
+        public static List<AchCondition> CatchAll(ConditionRequirements reqs, params int[] ids)
         {
-            List<CustomAchievementCondition> conditions = [];
+            List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new CustomFishCatchCondition(reqs, id));
+                conditions.Add(new FishCatchCondition(reqs, id));
             return conditions;
         }
 
@@ -95,7 +95,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementsHelper.OnFishCatch += CustomAchievementsHelper_OnFishCatch;
+                AchHelper.OnFishCatch += CustomAchievementsHelper_OnFishCatch;
                 _isHooked = true;
             }
 

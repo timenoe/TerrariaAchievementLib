@@ -4,14 +4,14 @@ using Terraria;
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
     /// <summary>
-    /// Helper to create a condition that listens for buff(s) to be activated
+    /// Helper to create a condition that listens for buff(s) to be added
     /// </summary>
-    public class CustomBuffActivateCondition : CustomIdCondition
+    public class BuffAddCondition : AchievementIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
         /// </summary>
-        private const string CustomName = "CUSTOM_BUFF_ACTIVATE";
+        private const string CustomName = "CUSTOM_BUFF_ADD";
 
 
         /// <summary>
@@ -22,59 +22,59 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<CustomBuffActivateCondition>> _listeners = [];
+        protected static readonly Dictionary<int, List<BuffAddCondition>> _listeners = [];
 
 
         /// <summary>
-        /// Creates a condition that listens for the buff to be activated
+        /// Creates a condition that listens for the buff to be added
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Buff ID to listen for</param>
-        private CustomBuffActivateCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private BuffAddCondition(ConditionRequirements reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
-        /// Creates a condition that listens for any of the buffs to be activated
+        /// Creates a condition that listens for any of the buffs to be added
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
-        private CustomBuffActivateCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private BuffAddCondition(ConditionRequirements reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
         /// <summary>
-        /// Helper to create a condition that listens for the buff to be activated
+        /// Helper to create a condition that listens for the buff to be added
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Buff ID to listen for</param>
-        /// <returns>Buff activate achievement condition</returns>
-        public static CustomAchievementCondition Activate(ConditionRequirements reqs, int id) => new CustomBuffActivateCondition(reqs, id);
+        /// <returns>Buff add achievement condition</returns>
+        public static AchCondition Add(ConditionRequirements reqs, int id) => new BuffAddCondition(reqs, id);
 
         /// <summary>
-        /// Helper to create a condition that listens for any of the buffs to be activated
+        /// Helper to create a condition that listens for any of the buffs to be added
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
-        /// <returns>Buff activate achievement condition</returns>
-        public static CustomAchievementCondition ActivateAny(ConditionRequirements reqs, params int[] ids) => new CustomBuffActivateCondition(reqs, ids);
+        /// <returns>Buff add achievement condition</returns>
+        public static AchCondition AddAny(ConditionRequirements reqs, params int[] ids) => new BuffAddCondition(reqs, ids);
 
         /// <summary>
-        /// Helper to create a condition that listens for all of the buffs to be activated
+        /// Helper to create a condition that listens for all of the buffs to be added
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
-        /// <returns>Buff activate achievement conditions</returns>
-        public static List<CustomAchievementCondition> ActivateAll(ConditionRequirements reqs, params int[] ids)
+        /// <returns>Buff add achievement conditions</returns>
+        public static List<AchCondition> AddAll(ConditionRequirements reqs, params int[] ids)
         {
-            List<CustomAchievementCondition> conditions = [];
+            List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new CustomBuffActivateCondition(reqs, id));
+                conditions.Add(new BuffAddCondition(reqs, id));
             return conditions;
         }
 
         /// <summary>
-        /// Hook that is called when a buff is activated
+        /// Hook that is called when a buff is added
         /// </summary>
-        /// <param name="player">Player that activated the buff</param>
-        /// <param name="id">Buff ID that was activated</param>
-        private static void NewAchievementsHelper_OnBuffActivation(Player player, int id)
+        /// <param name="player">Player that added the buff</param>
+        /// <param name="id">Buff ID that was added</param>
+        private static void NewAchievementsHelper_OnBuffAdd(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -93,7 +93,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementsHelper.OnBuffActivation += NewAchievementsHelper_OnBuffActivation;
+                AchHelper.OnBuffAdd += NewAchievementsHelper_OnBuffAdd;
                 _isHooked = true;
             }
 

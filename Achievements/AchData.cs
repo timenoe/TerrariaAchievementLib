@@ -6,11 +6,11 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// Data that is commonly used in achievements
     /// </summary>
-    public class AchievementData
+    public class AchData
     {
         /// <summary>
-        /// NPC IDs that must be killed for a boss to be defeated<br/>
-        /// Most only have 1 ID to be defeated<br/>
+        /// NPC IDs that must be killed for a boss to be considered defeated<br/>
+        /// Most only have 1 ID that need to be defeated<br/>
         /// If an entry has more than 1 ID, any of them can be defeated
         /// </summary>
         public static readonly Dictionary<string, int[]> DefeatBossIds = new()
