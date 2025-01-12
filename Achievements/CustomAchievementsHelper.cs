@@ -15,6 +15,13 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void BuffActivationEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines a NPC loot drop event
+        /// </summary>
+        /// <param name="npc">NPC that dropped the loot</param>
+        /// <param name="id">Item ID of the loot</param>
+        public delegate void NpcLootEvent(NPC npc, int id);
+
+        /// <summary>
         /// Signature that defines an item consume event
         /// </summary>
         /// <param name="player">Player that consumed the item</param>
@@ -35,6 +42,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event BuffActivationEvent OnBuffActivation;
 
         /// <summary>
+        /// Event that is invoked when an NPC drops loot
+        /// </summary>
+        public static event NpcLootEvent OnNpcLoot;
+
+        /// <summary>
         /// Event that is invoked when an item is consumed
         /// </summary>
         public static event ItemConsumeEvent OnItemConsume;
@@ -51,6 +63,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that activated the Buff</param>
         /// <param name="id">Buff ID that was activated</param>
         public static void NotifyBuffActivation(Player player, int id) => OnBuffActivation?.Invoke(player, id);
+
+        
+        /// <summary>
+        /// Helper to notify achievement conditions when a buff is activated
+        /// </summary>
+        /// <param name="npc">NPC that dropped the loot</param>
+        /// <param name="id">Item ID of the loot</param>
+        public static void NotifyNpcLoot(NPC npc, int id) => OnNpcLoot?.Invoke(npc, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is consumed
