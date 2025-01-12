@@ -15,6 +15,13 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void BuffActivationEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines a NPC catch event
+        /// </summary>
+        /// <param name="player">Player that caught the NPC</param>
+        /// <param name="id">NPC ID that was caught</param>
+        public delegate void NpcCatchEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines a NPC loot drop event
         /// </summary>
         /// <param name="npc">NPC that dropped the loot</param>
@@ -48,6 +55,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event BuffActivationEvent OnBuffActivation;
 
         /// <summary>
+        /// Event that is invoked when an NPC is caught
+        /// </summary>
+        public static event NpcCatchEvent OnNpcCatch;
+
+        /// <summary>
         /// Event that is invoked when an NPC drops loot
         /// </summary>
         public static event NpcLootEvent OnNpcLoot;
@@ -74,6 +86,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that activated the Buff</param>
         /// <param name="id">Buff ID that was activated</param>
         public static void NotifyBuffActivation(Player player, int id) => OnBuffActivation?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an NPC is caught
+        /// </summary>
+        /// <param name="player">Player that activated the Buff</param>
+        /// <param name="id">NPC ID that was caught</param>
+        public static void NotifyNpcCatch(Player player, int id) => OnNpcCatch?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when a buff is activated

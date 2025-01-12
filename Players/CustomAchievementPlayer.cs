@@ -13,12 +13,19 @@ namespace TerrariaAchievementLib.Players
 
         public override void Unload() => On_Player.AddBuff -= On_Player_AddBuff;
 
+        public override bool? CanCatchNPC(NPC target, Item item)
+        {
+            if (this.Player == Main.LocalPlayer)
+            
+            return base.CanCatchNPC(target, item);
+        }
+
         public override bool CanUseItem(Item item)
         {
             if (this.Player == Main.LocalPlayer)
                 CustomAchievementsHelper.NotifyItemConsume(this.Player, item.type);
 
-            return true;
+            return base.CanUseItem(item);
         }
 
         /// <summary>
