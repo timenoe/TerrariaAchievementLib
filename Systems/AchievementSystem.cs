@@ -19,20 +19,31 @@ namespace TerrariaAchievementLib.Systems
     public abstract class AchievementSystem : ModSystem
     {
         /// <summary>
+        /// Maximum number of achievement icons in a texture
+        /// </summary>
+        private const int MaxAchievementIcons = 120;
+
+        /// <summary>
         /// Flags to use during reflection
         /// </summary>
         private const BindingFlags ReflectionFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
 
         /// <summary>
+        /// Achievement icon texture
+        /// </summary>
+        private readonly List<Asset<Texture2D>> _textures = [];
+
+        /// <summary>
+        /// True achievement icon index<br/>
+        /// Texture size cannot exceed vanilla, so this allows for reference of multiple textures
+        /// </summary>
+        private readonly Dictionary<string, int> _iconIndexes = [];
+
+        /// <summary>
         /// Current achievement icon index in the texture
         /// </summary>
         private int _iconIndex = 0;
-
-        /// <summary>
-        /// Achievement icon texture
-        /// </summary>
-        private Asset<Texture2D> _texture;
 
 
         /// <summary>
@@ -43,21 +54,21 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// Achievement icon texture path
         /// </summary>
-        protected abstract string TexturePath { get; }
+        protected abstract List<string> TexturePaths { get; }
 
         /// <summary>
         /// Achievement icon texture
         /// </summary>
-        public Asset<Texture2D> Texture => _texture;
+        public List<Asset<Texture2D>> Textures => _textures;
 
 
         public override void OnModLoad()
         {
             if (Main.dedServ)
                 return;
-            
+
             RegisterAchievements();
-            LoadAchTexture();
+            LoadAchTextures();
             LoadSaveData();
 
             On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
@@ -103,7 +114,10 @@ namespace TerrariaAchievementLib.Systems
 
             Main.Achievements.Register(ach);
             Main.Achievements.RegisterAchievementCategory(name, cat);
-            Main.Achievements.RegisterIconIndex(name, _iconIndex++);
+
+            // Achievement texture size cannot exceed vanilla, so cache true index
+            _iconIndexes[name] = _iconIndex;
+            Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
         }
 
         /// <summary>
@@ -131,7 +145,10 @@ namespace TerrariaAchievementLib.Systems
 
             Main.Achievements.Register(ach);
             Main.Achievements.RegisterAchievementCategory(name, cat);
-            Main.Achievements.RegisterIconIndex(name, _iconIndex++);
+
+            // Achievement texture size cannot exceed vanilla, so cache true index
+            _iconIndexes[name] = _iconIndex;
+            Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
         }
 
         /// <summary>
@@ -178,7 +195,11 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// Load the achievement texture from the provided abstract path
         /// </summary>
-        private void LoadAchTexture() => _texture = ModContent.Request<Texture2D>(TexturePath);
+        private void LoadAchTextures()
+        {
+            foreach (var path in TexturePaths)
+                _textures.Add(ModContent.Request<Texture2D>(path));
+        }
 
         /// <summary>
         /// Load any save data from achievements.dat if applicable
@@ -245,7 +266,7 @@ namespace TerrariaAchievementLib.Systems
                 return;
             UIImageFramed icon = (UIImageFramed)info.GetValue(self);
             icon.Remove();
-            icon = new(Texture, frame);
+            icon = new(Textures[_iconIndexes[achievement.Name] / MaxAchievementIcons], frame);
             icon.Left.Set(large.ToInt() * 6, 0f);
             icon.Top.Set(large.ToInt() * 12, 0f);
             info.SetValue(self, icon);
@@ -277,7 +298,7 @@ namespace TerrariaAchievementLib.Systems
             FieldInfo info = typeof(InGamePopups.AchievementUnlockedPopup).GetField("_achievementTexture", ReflectionFlags);
             if (info == null)
                 return;
-            info.SetValue(self, Texture);
+            info.SetValue(self, Textures[_iconIndexes[achievement.Name] / MaxAchievementIcons]);
         }
     }
 }
