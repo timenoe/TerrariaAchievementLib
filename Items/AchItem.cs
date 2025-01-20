@@ -16,7 +16,7 @@ namespace TerrariaAchievementLib.Items
             if (source is EntitySource_TileBreak)
             {
                 // Check that the local player is the one closest to the destroyed tile
-                if (Player.FindClosest(item.position, 1, 1) != Main.myPlayer)
+                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
                     return;
 
                 AchHelper.NotifyTileDrop(Main.LocalPlayer, item.type);

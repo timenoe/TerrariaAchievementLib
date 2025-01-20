@@ -20,14 +20,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         private static bool _isHooked;
 
         /// <summary>
-        /// NPC ID that should gift the item(s)
-        /// </summary>
-        private static short _npcId;
-
-        /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
         protected static readonly Dictionary<int, List<ItemGiftCondition>> _listeners = [];
+
+        /// <summary>
+        /// NPC ID that should gift the item(s)
+        /// </summary>
+        private short _npcId;
 
 
         /// <summary>
