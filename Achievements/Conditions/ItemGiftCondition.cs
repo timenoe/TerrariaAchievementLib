@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcs">NPCs that gift the items</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item gift achievement condition</returns>
-        public static AchCondition Buy(ConditionReqs reqs, List<short> npcs, int id) => new ItemGiftCondition(reqs, npcs, id);
+        public static AchCondition Gift(ConditionReqs reqs, List<short> npcs, int id) => new ItemGiftCondition(reqs, npcs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be gifted from NPC(s)
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcs">NPCs that gift the items</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item gift achievement condition</returns>
-        public static AchCondition BuyAny(ConditionReqs reqs, List<short> npcs, params int[] ids) => new ItemGiftCondition(reqs, npcs, ids);
+        public static AchCondition GiftAny(ConditionReqs reqs, List<short> npcs, params int[] ids) => new ItemGiftCondition(reqs, npcs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be gifted from NPC(s)
@@ -72,7 +72,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcs">NPCs that gift the items</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item gift achievement conditions</returns>
-        public static List<AchCondition> BuyAll(ConditionReqs reqs, List<short> npcs, params int[] ids)
+        public static List<AchCondition> GiftAll(ConditionReqs reqs, List<short> npcs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)
