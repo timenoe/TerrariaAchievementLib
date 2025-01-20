@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Achievements;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
     /// <summary>
-    /// Helper to create a condition that listens for item(s) to be grabbed
+    /// Helper to create a condition that listens for item(s) to be shaken from a tree
     /// </summary>
-    public class ItemGrabCondition : AchIdCondition
+    public class ItemShakeCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
         /// </summary>
-        private const string CustomName = "CUSTOM_ITEM_GRAB";
+        private const string CustomName = "CUSTOM_ITEM_SHAKE";
 
 
         /// <summary>
@@ -23,61 +22,60 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ItemGrabCondition>> _listeners = [];
+        protected static readonly Dictionary<int, List<ItemShakeCondition>> _listeners = [];
 
 
         /// <summary>
-        /// Creates a condition that listens for the item to be grabbed
+        /// Creates a condition that listens for the item to be shaken from a tree
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private ItemGrabCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private ItemShakeCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
-        /// Creates a condition that listens for any of the items to be grabbed
+        /// Creates a condition that listens for any of the items to be shaken from a tree
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private ItemGrabCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private ItemShakeCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
-        /// Helper to create a condition that listens for the item to be grabbed
+        /// Helper to create a condition that listens for the item to be shaken from a tree
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        /// <returns>Item grab achievement condition</returns>
-        public static AchCondition Grab(ConditionReqs reqs, int id) => new ItemGrabCondition(reqs, id);
+        /// <returns>Item shake achievement condition</returns>
+        public static AchCondition Shake(ConditionReqs reqs, int id) => new ItemShakeCondition(reqs, id);
 
         /// <summary>
-        /// Helper to create a condition that listens for any of the items to be grabbed
+        /// Helper to create a condition that listens for any of the items to be shaken from a tree
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>Item grab achievement condition</returns>
-        public static AchCondition GrabAny(ConditionReqs reqs, params int[] ids) => new ItemGrabCondition(reqs, ids);
+        /// <returns>Item shake achievement condition</returns>
+        public static AchCondition ShakeAny(ConditionReqs reqs, params int[] ids) => new ItemShakeCondition(reqs, ids);
 
         /// <summary>
-        /// Helper to create a condition that listens for all of the items to be grabbed
+        /// Helper to create a condition that listens for all of the items to be shaken from a tree
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>Item grab achievement conditions</returns>
-        public static List<AchCondition> GrabAll(ConditionReqs reqs, params int[] ids)
+        /// <returns>Item shake achievement conditions</returns>
+        public static List<AchCondition> ShakeAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new ItemGrabCondition(reqs, id));
+                conditions.Add(new ItemShakeCondition(reqs, id));
             return conditions;
         }
 
         /// <summary>
-        /// Hook that is called when an item is grabbed
+        /// Hook that is called when an item is shaken from a tree
         /// </summary>
-        /// <param name="player">Player that grabbed the item</param>
-        /// <param name="id">Item ID that was grabbed</param>
-        /// <param name="count">Count of the grabbed item(s)</param>
-        private static void AchievementsHelper_OnItemPickup(Player player, short id, int count)
+        /// <param name="player">Player that shook the tree</param>
+        /// <param name="id">Item ID that appeared</param>
+        private static void AchHelper_OnItemShake(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -96,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchievementsHelper.OnItemPickup += AchievementsHelper_OnItemPickup;
+                AchHelper.OnItemShake += AchHelper_OnItemShake;
                 _isHooked = true;
             }
 

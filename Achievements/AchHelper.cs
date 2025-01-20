@@ -44,6 +44,13 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void ItemGiftEvent(Player player, int npcId, int itemId);
 
         /// <summary>
+        /// Signature that defines an item tree shake event
+        /// </summary>
+        /// <param name="player">Player that shook the tree</param>
+        /// <param name="id">Item ID that appeared</param>
+        public delegate void ItemShakeEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines an item use event
         /// </summary>
         /// <param name="player">Player that used the item</param>
@@ -107,6 +114,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event ItemGiftEvent OnItemGift;
 
         /// <summary>
+        /// Event that is invoked when an item is shaken from a tree
+        /// </summary>
+        public static event ItemShakeEvent OnItemShake;
+
+        /// <summary>
         /// Event that is invoked when an item is used by the player
         /// </summary>
         public static event ItemUseEvent OnItemUse;
@@ -167,6 +179,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="npcId">NPC ID that gave the gift</param>
         /// <param name="itemId">Item ID that was gifted</param>
         public static void NotifyItemGift(Player player, int npcId, int itemId) => OnItemGift?.Invoke(player, npcId, itemId);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an item is shaken from a tree
+        /// </summary>
+        /// <param name="player">Player that shook the tree</param>
+        /// <param name="id">Item ID that appeared</param>
+        public static void NotifyItemShake(Player player, int id) => OnItemShake?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is used by the player
