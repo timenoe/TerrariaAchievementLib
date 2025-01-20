@@ -29,6 +29,15 @@ namespace TerrariaAchievementLib.Items
                     AchHelper.NotifyNpcDrop(Main.LocalPlayer, npc, item.type);
             }
 
+            else if (source is EntitySource_ShakeTree)
+            {
+                // Check that the local player is the one closest to the item
+                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
+                    return;
+
+                AchHelper.NotifyItemShake(Main.LocalPlayer, item.type);
+            }
+
             else if (source is EntitySource_Gift gift)
             {
                 // Check that the local player is the one closest to the gift
