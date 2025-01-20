@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 using TerrariaAchievementLib.Achievements;
 
@@ -12,20 +13,33 @@ namespace TerrariaAchievementLib.Items
     {
         public override void OnSpawn(Item item, IEntitySource source)
         {
-            if (source is EntitySource_Loot loot)
+            if (source is EntitySource_TileBreak tile)
+            {
+                // Check that the local player is the one closest to the destroyed tile
+                if (Player.FindClosest(item.position, 1, 1) != Main.myPlayer)
+                    return;
+
+                AchHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
+            }
+
+            else if (source is EntitySource_Loot loot)
             {
                 // Check that the local player has damaged the NPC
                 if (loot.Entity is NPC npc && npc.playerInteraction[Main.myPlayer])
                     AchHelper.NotifyNpcDrop(Main.LocalPlayer, npc, item.type);
             }
 
-            else if (source is EntitySource_TileBreak tile)
+            else if (source is EntitySource_Gift gift)
             {
-                // Check that the local player is the one closest to the destroyed tile
-                // Pretty sure this is similar to what vanilla does in similar situations
-                if (Player.FindClosest(tile.TileCoords.ToVector2(), 1, 1) == Main.myPlayer)
-                    AchHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
-            }  
+                // Check that the local player is the one closest to the gift
+                if (Player.FindClosest(item.position, 1, 1) != Main.myPlayer)
+                    return;
+
+                if (gift.Entity is NPC npc)
+                    AchHelper.NotifyItemGift(Main.LocalPlayer, npc.type, item.type);
+                else
+                    AchHelper.NotifyItemGift(Main.LocalPlayer, NPCID.None, item.type);
+            }   
         }
     }
 }

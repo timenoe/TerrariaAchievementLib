@@ -36,6 +36,14 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void ItemExtractEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines an item gift event
+        /// </summary>
+        /// <param name="player">Player that received the gift</param>
+        /// <param name="npcId">NPC ID that gave the gift</param>
+        /// <param name="itemId">Item ID that was gifted</param>
+        public delegate void ItemGiftEvent(Player player, int npcId, int itemId);
+
+        /// <summary>
         /// Signature that defines an item use event
         /// </summary>
         /// <param name="player">Player that used the item</param>
@@ -94,6 +102,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event ItemExtractEvent OnItemExtract;
 
         /// <summary>
+        /// Event that is invoked when an item is gifted to the player
+        /// </summary>
+        public static event ItemGiftEvent OnItemGift;
+
+        /// <summary>
         /// Event that is invoked when an item is used by the player
         /// </summary>
         public static event ItemUseEvent OnItemUse;
@@ -146,6 +159,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that extracted the item</param>
         /// <param name="id">Item ID that was extracted</param>
         public static void NotifyItemExtract(Player player, int id) => OnItemExtract?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an item is gifted to the player
+        /// </summary>
+        /// <param name="player">Player that received the gift</param>
+        /// <param name="npcId">NPC ID that gave the gift</param>
+        /// <param name="itemId">Item ID that was gifted</param>
+        public static void NotifyItemGift(Player player, int npcId, int itemId) => OnItemGift?.Invoke(player, npcId, itemId);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is used by the player

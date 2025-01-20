@@ -107,9 +107,6 @@ namespace TerrariaAchievementLib.Systems
                 name = $"{Identifier}_{name}";
 
             Achievement ach = new(name);
-            if (!IsMyAchievement(ach))
-                return;
-
             ach.AddCondition(cond);
 
             Main.Achievements.Register(ach);
@@ -134,10 +131,7 @@ namespace TerrariaAchievementLib.Systems
                 name = $"{Identifier}_{name}";
 
             Achievement ach = new(name);
-            if (!IsMyAchievement(ach))
-                return;
-
-            foreach (AchCondition condition in conds)
+            foreach (var condition in conds)
                 ach.AddCondition(condition);
 
             if (track)
