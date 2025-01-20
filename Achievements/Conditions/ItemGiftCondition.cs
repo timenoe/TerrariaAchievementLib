@@ -31,7 +31,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
 
         /// <summary>
-        /// Creates a condition that listens for an item to be gifted from NPC(s)
+        /// Creates a condition that listens for an item to be gifted from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that gifts the item</param>
@@ -39,7 +39,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         private ItemGiftCondition(ConditionReqs reqs, short npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(npcId);
 
         /// <summary>
-        /// Creates a condition that listens for any of the items to be gifted from NPC(s)
+        /// Creates a condition that listens for any of the items to be gifted from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that gifts the items</param>
@@ -48,7 +48,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
 
         /// <summary>
-        /// Helper to create a condition that listens for an item to be gifted from NPC(s)
+        /// Helper to create a condition that listens for an item to be gifted from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that gifts the items</param>
@@ -57,7 +57,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         public static AchCondition Gift(ConditionReqs reqs, short npcId, int itemID) => new ItemGiftCondition(reqs, npcId, itemID);
 
         /// <summary>
-        /// Helper to create a condition that listens for any of the items to be gifted from NPC(s)
+        /// Helper to create a condition that listens for any of the items to be gifted from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that gifts the items</param>
@@ -66,7 +66,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         public static AchCondition GiftAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new ItemGiftCondition(reqs, npcId, itemIds);
 
         /// <summary>
-        /// Helper to create a condition that listens for all of the items to be gifted from NPC(s)
+        /// Helper to create a condition that listens for all of the items to be gifted from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that gifts the items</param>

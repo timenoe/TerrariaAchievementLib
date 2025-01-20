@@ -21,7 +21,7 @@ namespace TerrariaAchievementLib.Items
 
                 AchHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
             }
-
+            
             else if (source is EntitySource_Loot loot)
             {
                 // Check that the local player has damaged the NPC

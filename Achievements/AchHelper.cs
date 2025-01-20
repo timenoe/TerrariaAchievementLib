@@ -44,6 +44,14 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void ItemGiftEvent(Player player, int npcId, int itemId);
 
         /// <summary>
+        /// Signature that defines an item open event
+        /// </summary>
+        /// <param name="player">Player that opened the grab bag</param>
+        /// <param name="bagId">Grab bag ID that was opened</param>
+        /// <param name="itemId">Item ID that was received</param>
+        public delegate void ItemOpenEvent(Player player, int bagId, int itemId);
+
+        /// <summary>
         /// Signature that defines an item tree shake event
         /// </summary>
         /// <param name="player">Player that shook the tree</param>
@@ -114,6 +122,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event ItemGiftEvent OnItemGift;
 
         /// <summary>
+        /// Event that is invoked when an item is opened from a grab bag
+        /// </summary>
+        public static event ItemOpenEvent OnItemOpen;
+
+        /// <summary>
         /// Event that is invoked when an item is shaken from a tree
         /// </summary>
         public static event ItemShakeEvent OnItemShake;
@@ -179,6 +192,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="npcId">NPC ID that gave the gift</param>
         /// <param name="itemId">Item ID that was gifted</param>
         public static void NotifyItemGift(Player player, int npcId, int itemId) => OnItemGift?.Invoke(player, npcId, itemId);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an item is opened from a grab bag
+        /// </summary>
+        /// <param name="player">Player that opened the grab bag</param>
+        /// <param name="bagId">Grab bag ID that was opened/param>
+        /// <param name="itemId">Item ID that was received</param>
+        public static void NotifyItemOpen(Player player, int bagId, int itemId) => OnItemOpen?.Invoke(player, bagId, itemId);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is shaken from a tree
