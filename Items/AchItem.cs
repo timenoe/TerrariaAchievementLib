@@ -13,7 +13,7 @@ namespace TerrariaAchievementLib.Items
     {
         public override void OnSpawn(Item item, IEntitySource source)
         {
-            if (source is EntitySource_TileBreak tile)
+            if (source is EntitySource_TileBreak)
             {
                 // Check that the local player is the one closest to the destroyed tile
                 if (Player.FindClosest(item.position, 1, 1) != Main.myPlayer)
@@ -32,7 +32,7 @@ namespace TerrariaAchievementLib.Items
             else if (source is EntitySource_Gift gift)
             {
                 // Check that the local player is the one closest to the gift
-                if (Player.FindClosest(item.position, 1, 1) != Main.myPlayer)
+                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
                     return;
 
                 if (gift.Entity is NPC npc)
