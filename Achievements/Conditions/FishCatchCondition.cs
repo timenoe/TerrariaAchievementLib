@@ -76,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that caught the fish</param>
         /// <param name="id">Item ID that was caught</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        private void CustomAchievementsHelper_OnFishCatch(Player player, int id)
+        private void AchHelper_OnFishCatch(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -95,7 +95,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnFishCatch += CustomAchievementsHelper_OnFishCatch;
+                AchHelper.OnFishCatch += AchHelper_OnFishCatch;
                 _isHooked = true;
             }
 

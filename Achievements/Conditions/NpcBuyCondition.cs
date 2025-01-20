@@ -86,7 +86,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that bought the item</param>
         /// <param name="npc">NPC that sold the item</param>
         /// <param name="id">Item ID of the bought item</param>
-        private void CustomAchievementsHelper_OnNpcBuy(Player player, NPC npc, int id)
+        private void AchHelper_OnNpcBuy(Player player, NPC npc, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -112,7 +112,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnNpcBuy += CustomAchievementsHelper_OnNpcBuy;
+                AchHelper.OnNpcBuy += AchHelper_OnNpcBuy;
                 _isHooked = true;
             }
 

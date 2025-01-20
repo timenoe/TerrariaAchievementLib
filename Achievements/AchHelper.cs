@@ -29,6 +29,20 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void FlagSpecialEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines an item extract event
+        /// </summary>
+        /// <param name="player">Player that extracts the item</param>
+        /// <param name="id">Item ID that was extracted</param>
+        public delegate void ItemExtractEvent(Player player, int id);
+
+        /// <summary>
+        /// Signature that defines an item use event
+        /// </summary>
+        /// <param name="player">Player that used the item</param>
+        /// <param name="id">Item ID that was used</param>
+        public delegate void ItemUseEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines a NPC buy event
         /// </summary>
         /// <param name="player">Player that bought the item</param>
@@ -52,13 +66,6 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void NpcDropEvent(Player player, NPC npc, int id);
 
         /// <summary>
-        /// Signature that defines an item use event
-        /// </summary>
-        /// <param name="player">Player that used the item</param>
-        /// <param name="id">Item ID that was used</param>
-        public delegate void ItemUseEvent(Player player, int id);
-
-        /// <summary>
         /// Signature that defines a tile drop event
         /// </summary>
         /// <param name="player">Player that likely broke the tile</param>
@@ -80,6 +87,11 @@ namespace TerrariaAchievementLib.Achievements
         /// Event that is invoked when a special flag is set by the player
         /// </summary>
         public static event FlagSpecialEvent OnFlagSpecial;
+
+        /// <summary>
+        /// Event that is invoked when an item is extracted by the player
+        /// </summary>
+        public static event ItemExtractEvent OnItemExtract;
 
         /// <summary>
         /// Event that is invoked when an item is used by the player
@@ -127,6 +139,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that set the special flag</param>
         /// <param name="id">Flag ID that was set</param>
         public static void NotifyFlagSpecial(Player player, int id) => OnFlagSpecial?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an item is extracted by the player
+        /// </summary>
+        /// <param name="player">Player that extracted the item</param>
+        /// <param name="id">Item ID that was extracted</param>
+        public static void NotifyItemExtract(Player player, int id) => OnItemExtract?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is used by the player

@@ -74,7 +74,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that added the buff</param>
         /// <param name="id">Buff ID that was added</param>
-        private static void NewAchievementsHelper_OnBuffAdd(Player player, int id)
+        private static void AchHelper_OnBuffAdd(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -93,7 +93,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnBuffAdd += NewAchievementsHelper_OnBuffAdd;
+                AchHelper.OnBuffAdd += AchHelper_OnBuffAdd;
                 _isHooked = true;
             }
 

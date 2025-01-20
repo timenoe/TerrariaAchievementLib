@@ -9,9 +9,17 @@ namespace TerrariaAchievementLib.Players
     /// </summary>
     public class AchPlayer : ModPlayer
     {
-        public override void Load() => On_Player.AddBuff += On_Player_AddBuff;
+        public override void Load()
+        {
+            On_Player.AddBuff += On_Player_AddBuff;
+            On_Player.DropItemFromExtractinator += On_Player_DropItemFromExtractinator;
+        }
 
-        public override void Unload() => On_Player.AddBuff -= On_Player_AddBuff;
+        public override void Unload()
+        {
+            On_Player.AddBuff -= On_Player_AddBuff;
+            On_Player.DropItemFromExtractinator -= On_Player_DropItemFromExtractinator;
+        }
 
         public override bool CanUseItem(Item item)
         {
@@ -44,6 +52,21 @@ namespace TerrariaAchievementLib.Players
             AchHelper.NotifyBuffUse(self, type);
 
             orig.Invoke(self, type, timeToAdd, quiet, foodHack);
+        }
+
+        /// <summary>
+        /// Detour to send a notification when the local player gets an item from an extractinator
+        /// </summary>
+        /// <param name="orig">Original DropItemFromExtractinator</param>
+        /// <param name="self">Player getting the item from the extractinator</param>
+        /// <param name="itemType">itemType DropItemFromExtractinator parameter</param>
+        /// <param name="stack">stack DropItemFromExtractinator parameter</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private void On_Player_DropItemFromExtractinator(On_Player.orig_DropItemFromExtractinator orig, Player self, int itemType, int stack)
+        {
+            AchHelper.NotifyItemExtract(self, itemType);
+
+            orig.Invoke(self, itemType, stack);
         }
     }
 }
