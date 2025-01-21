@@ -26,7 +26,7 @@ namespace TerrariaAchievementLib.Items
             {
                 // Check that the local player has damaged the NPC
                 if (loot.Entity is NPC npc && npc.playerInteraction[Main.myPlayer])
-                    AchHelper.NotifyNpcDrop(Main.LocalPlayer, npc, item.type);
+                    AchHelper.NotifyNpcDrop(Main.LocalPlayer, (short)npc.type, item.type);
             }
 
             else if (source is EntitySource_ShakeTree)
