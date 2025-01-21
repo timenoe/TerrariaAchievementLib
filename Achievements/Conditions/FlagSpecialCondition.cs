@@ -7,7 +7,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for special flag(s) to be set
     /// </summary>
-    public class SpecialFlagCondition : AchIdCondition
+    public class FlagSpecialCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        private static readonly Dictionary<int, List<SpecialFlagCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<FlagSpecialCondition>> _listeners = [];
 
 
         /// <summary>
@@ -31,14 +31,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Special flag ID to listen for</param>
-        private SpecialFlagCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private FlagSpecialCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the special flags to be set
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Special flag IDs to listen for</param>
-        private SpecialFlagCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private FlagSpecialCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Special flag ID to listen for</param>
         /// <returns>Special flag set achievement condition</returns>
-        public static AchCondition Set(ConditionReqs reqs, int id) => new SpecialFlagCondition(reqs, id);
+        public static AchCondition Set(ConditionReqs reqs, int id) => new FlagSpecialCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the special flags to be set
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Special flag IDs to listen for</param>
         /// <returns>Special flag set achievement condition</returns>
-        public static AchCondition SetAny(ConditionReqs reqs, params int[] ids) => new SpecialFlagCondition(reqs, ids);
+        public static AchCondition SetAny(ConditionReqs reqs, params int[] ids) => new FlagSpecialCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the special flags to be set
@@ -67,7 +67,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new SpecialFlagCondition(reqs, id));
+                conditions.Add(new FlagSpecialCondition(reqs, id));
             return conditions;
         }
 

@@ -31,52 +31,52 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
 
         /// <summary>
-        /// Creates a condition that listens for an item to be bought from NPC(s)
+        /// Creates a condition that listens for an item to be bought from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that sell the item</param>
-        /// <param name="id">Item ID to listen for</param>
-        private NpcBuyCondition(ConditionReqs reqs, List<short> npcs, int id) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, [id]) => Listen(npcs);
+        /// <param name="npcId">NPC ID that sells the item</param>
+        /// <param name="itemId">Item ID to listen for</param>
+        private NpcBuyCondition(ConditionReqs reqs, short npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(npcId);
 
         /// <summary>
-        /// Creates a condition that listens for any of the items to be bought from NPC(s)
+        /// Creates a condition that listens for any of the items to be bought from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that sell the items</param>
-        /// <param name="ids">Item IDs to listen for</param>
-        private NpcBuyCondition(ConditionReqs reqs, List<short> npcs, int[] ids) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, ids) => Listen(npcs);
+        /// <param name="npcId">NPC ID that sells the items</param>
+        /// <param name="itemIds">Item IDs to listen for</param>
+        private NpcBuyCondition(ConditionReqs reqs, short npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(npcId);
 
 
         /// <summary>
-        /// Helper to create a condition that listens for an item to be bought from NPC(s)
+        /// Helper to create a condition that listens for an item to be bought from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that sell the items</param>
-        /// <param name="id">Item ID to listen for</param>
-        /// <returns>NPC buy achievement condition</returns>
-        public static AchCondition Buy(ConditionReqs reqs, List<short> npcs, int id) => new NpcBuyCondition(reqs, npcs, id);
+        /// <param name="npcId">NPC ID that sells the item</param>
+        /// <param name="itemId">Item ID to listen for</param>
+        /// <returns>NPC item buy achievement condition</returns>
+        public static AchCondition Buy(ConditionReqs reqs, short npcId, int itemId) => new NpcBuyCondition(reqs, npcId, itemId);
 
         /// <summary>
-        /// Helper to create a condition that listens for any of the items to be bought from NPC(s)
+        /// Helper to create a condition that listens for any of the items to be bought from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that sell the items</param>
-        /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>NPC buy achievement condition</returns>
-        public static AchCondition BuyAny(ConditionReqs reqs, List<short> npcs, params int[] ids) => new NpcBuyCondition(reqs, npcs, ids);
+        /// <param name="npcId">NPC ID that sell the items</param>
+        /// <param name="itemIds">Item IDs to listen for</param>
+        /// <returns>NPC item buy achievement condition</returns>
+        public static AchCondition BuyAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcBuyCondition(reqs, npcId, itemIds);
 
         /// <summary>
-        /// Helper to create a condition that listens for all of the items to be bought from NPC(s)
+        /// Helper to create a condition that listens for all of the items to be bought from an NPC
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that sell the items</param>
-        /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>NPC buy achievement conditions</returns>
-        public static List<AchCondition> BuyAll(ConditionReqs reqs, List<short> npcs, params int[] ids)
+        /// <param name="npcId">NPC ID that sells the items</param>
+        /// <param name="itemIds">Item IDs to listen for</param>
+        /// <returns>NPC item buy achievement conditions</returns>
+        public static List<AchCondition> BuyAll(ConditionReqs reqs, short npcId, params int[] itemIds)
         {
             List<AchCondition> conditions = [];
-            foreach (var id in ids)
-                conditions.Add(new NpcBuyCondition(reqs, npcs, id));
+            foreach (var itemId in itemIds)
+                conditions.Add(new NpcBuyCondition(reqs, npcId, itemId));
             return conditions;
         }
 
@@ -85,10 +85,10 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that bought the item</param>
         /// <param name="npcId">NPC ID that sold the item</param>
-        /// <param name="id">Item ID of the bought item</param>
-        private void AchHelper_OnNpcBuy(Player player, short npcId, int id)
+        /// <param name="itemId">Item ID that was bought</param>
+        private void AchHelper_OnNpcBuy(Player player, short npcId, int itemId)
         {
-            if (!IsListeningForId(id, _listeners, out var conditions))
+            if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)

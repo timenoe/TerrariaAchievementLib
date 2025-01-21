@@ -31,64 +31,64 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
 
         /// <summary>
-        /// Creates a condition that listens for the NPC to drop loot
+        /// Creates a condition that listens for the NPC to drop an item
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that drop the loot</param>
-        /// <param name="id">Loot ID to listen for</param>
-        private NpcDropCondition(ConditionReqs reqs, List<short> npcs, int id) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, [id]) => Listen(npcs);
+        /// <param name="npcId">NPCs that drop the loot</param>
+        /// <param name="itemId">Item ID to listen for</param>
+        private NpcDropCondition(ConditionReqs reqs, short npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(npcId);
 
         /// <summary>
-        /// Creates a condition that listens for the NPC to drop any of the loot
+        /// Creates a condition that listens for the NPC to drop any of the items
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that drop the loot</param>
-        /// <param name="ids">Loot IDs to listen for</param>
-        private NpcDropCondition(ConditionReqs reqs, List<short> npcs, int[] ids) : base($"{CustomName}_{string.Join(",", npcs)}", reqs, ids) => Listen(npcs);
+        /// <param name="npcId">NPCs that drop the loot</param>
+        /// <param name="itemIds">Item IDs to listen for</param>
+        private NpcDropCondition(ConditionReqs reqs, short npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(npcId);
 
 
         /// <summary>
-        /// Helper to create a condition that listens for the NPC to drop loot
+        /// Helper to create a condition that listens for the NPC to drop an item
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that drop the loot</param>
-        /// <param name="id">Loot ID to listen for</param>
-        /// <returns>NPC loot achievement condition</returns>
-        public static AchCondition Drop(ConditionReqs reqs, List<short> npcs, int id) => new NpcDropCondition(reqs, npcs, id);
+        /// <param name="npcId">NPC ID that drops the item</param>
+        /// <param name="itemId">Item ID to listen for</param>
+        /// <returns>NPC item drop achievement condition</returns>
+        public static AchCondition Drop(ConditionReqs reqs, short npcId, int itemId) => new NpcDropCondition(reqs, npcId, itemId);
 
         /// <summary>
-        /// Helper to create a condition that listens for the NPC to drop any of the loot
+        /// Helper to create a condition that listens for the NPC to drop any of the items
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that drop the loot</param>
-        /// <param name="ids">Loot IDs to listen for</param>
-        /// <returns>NPC loot achievement condition</returns>
-        public static AchCondition DropAny(ConditionReqs reqs, List<short> npcs, params int[] ids) => new NpcDropCondition(reqs, npcs, ids);
+        /// <param name="npcId">NPC ID that drops the item</param>
+        /// <param name="itemIds">Item IDs to listen for</param>
+        /// <returns>NPC item drop achievement condition</returns>
+        public static AchCondition DropAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcDropCondition(reqs, npcId, itemIds);
 
         /// <summary>
-        /// Helper to create a condition that listens for the NPC to drop all of the loot
+        /// Helper to create a condition that listens for the NPC to drop all of the items
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
-        /// <param name="npcs">NPCs that drop the loot</param>
-        /// <param name="ids">Loot IDs to listen for</param>
-        /// <returns>NPC loot achievement conditions</returns>
-        public static List<AchCondition> DropAll(ConditionReqs reqs, List<short> npcs, params int[] ids)
+        /// <param name="npcId">NPC ID that drops the item</param>
+        /// <param name="itemIds">Item IDs to listen for</param>
+        /// <returns>NPC item drop achievement conditions</returns>
+        public static List<AchCondition> DropAll(ConditionReqs reqs, short npcId, params int[] itemIds)
         {
             List<AchCondition> conditions = [];
-            foreach (var id in ids)
-                conditions.Add(new NpcDropCondition(reqs, npcs, id));
+            foreach (var itemId in itemIds)
+                conditions.Add(new NpcDropCondition(reqs, npcId, itemId));
             return conditions;
         }
 
         /// <summary>
-        /// Hook that is called when an NPC drops loot
+        /// Hook that is called when an NPC drops an item
         /// </summary>
         /// <param name="player">Player that damaged the NPC</param>
-        /// <param name="npcId">NPC ID that dropped the loot</param>
-        /// <param name="id">Item ID of the loot</param>
-        private void AchHelper_OnNpcDrop(Player player, short npcId, int id)
+        /// <param name="npcId">NPC ID that dropped the item</param>
+        /// <param name="itemId">Item ID that was dropped</param>
+        private void AchHelper_OnNpcDrop(Player player, short npcId, int itemId)
         {
-            if (!IsListeningForId(id, _listeners, out var conditions))
+            if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)

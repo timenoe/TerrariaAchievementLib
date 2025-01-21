@@ -70,8 +70,8 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         /// <param name="player">Player that bought the item</param>
         /// <param name="npcId">NPC that sold the item</param>
-        /// <param name="id">Item ID that was bought</param>
-        public delegate void NpcBuyEvent(Player player, short npcId, int id);
+        /// <param name="itemId">Item ID that was bought</param>
+        public delegate void NpcBuyEvent(Player player, short npcId, int itemId);
 
         /// <summary>
         /// Signature that defines a NPC catch event
@@ -83,10 +83,10 @@ namespace TerrariaAchievementLib.Achievements
         /// <summary>
         /// Signature that defines a NPC drop event
         /// </summary>
-        /// <param name="player">NPC that interacted with the NPC</param>
+        /// <param name="player">NPC that damaged the NPC</param>
         /// <param name="npcId">NPC ID that dropped the item</param>
-        /// <param name="id">Item ID that was dropped</param>
-        public delegate void NpcDropEvent(Player player, short npcId, int id);
+        /// <param name="itemId">Item ID that was dropped</param>
+        public delegate void NpcDropEvent(Player player, short npcId, int itemId);
 
         /// <summary>
         /// Signature that defines a tile drop event
@@ -233,7 +233,7 @@ namespace TerrariaAchievementLib.Achievements
         /// <summary>
         /// Helper to notify achievement conditions when an NPC drops an item
         /// </summary>
-        /// <param name="player">Player that interacted with the NPC</param>
+        /// <param name="player">Player that damaged the NPC</param>
         /// <param name="npcId">NPC ID that dropped the item</param>
         /// <param name="itemId">Item ID that was dropped</param>
         public static void NotifyNpcDrop(Player player, short npcId, int itemId) => OnNpcDrop?.Invoke(player, npcId, itemId);

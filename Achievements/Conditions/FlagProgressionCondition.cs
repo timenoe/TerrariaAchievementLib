@@ -7,7 +7,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
     /// <summary>
     /// Helper to create a condition that listens for progression flag(s) to be set
     /// </summary>
-    public class ProgressionFlagCondition : AchIdCondition
+    public class FlagProgressionCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        private static readonly Dictionary<int, List<ProgressionFlagCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<FlagProgressionCondition>> _listeners = [];
 
 
         /// <summary>
@@ -31,14 +31,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Progression flag ID to listen for</param>
-        private ProgressionFlagCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private FlagProgressionCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
 
         /// <summary>
         /// Creates a condition that listens for any of the progression flags to be set
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Progression flag IDs to listen for</param>
-        private ProgressionFlagCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private FlagProgressionCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
 
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Progression flag ID to listen for</param>
         /// <returns>Progression flag set achievement condition</returns>
-        public static AchCondition Set(ConditionReqs reqs, int id) => new ProgressionFlagCondition(reqs, id);
+        public static AchCondition Set(ConditionReqs reqs, int id) => new FlagProgressionCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the progression flags to be set
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Progression flag IDs to listen for</param>
         /// <returns>Progression flag set achievement condition</returns>
-        public static AchCondition SetAny(ConditionReqs reqs, params int[] ids) => new ProgressionFlagCondition(reqs, ids);
+        public static AchCondition SetAny(ConditionReqs reqs, params int[] ids) => new FlagProgressionCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the progression flags to be set
@@ -67,7 +67,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new ProgressionFlagCondition(reqs, id));
+                conditions.Add(new FlagProgressionCondition(reqs, id));
             return conditions;
         }
 
