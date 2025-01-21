@@ -35,7 +35,7 @@ namespace TerrariaAchievementLib.Players
                 AchHelper.NotifyNpcCatch(Player, npc.type);
         }
 
-        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => AchHelper.NotifyNpcBuy(Player, vendor, item.type);
+        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => AchHelper.NotifyNpcBuy(Player, (short)vendor.type, item.type);
 
 
         /// <summary>
