@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ItemUseCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ItemUseCondition>> _listeners = [];
 
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that used the item</param>
         /// <param name="id">Item ID that was used</param>
-        private static void AchHelper_OnItemUse(Player player, int id)
+        private void AchHelper_OnItemUse(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;

@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<SpecialFlagCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<SpecialFlagCondition>> _listeners = [];
 
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that set the special flag</param>
         /// <param name="id">Flag ID that was set</param>
-        private static void AchHelper_OnFlagSpecial(Player player, int id)
+        private void AchHelper_OnFlagSpecial(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;

@@ -22,7 +22,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ItemGiftCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ItemGiftCondition>> _listeners = [];
 
         /// <summary>
         /// NPC ID that should gift the item(s)

@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ItemGrabCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ItemGrabCondition>> _listeners = [];
 
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that grabbed the item</param>
         /// <param name="id">Item ID that was grabbed</param>
         /// <param name="count">Count of the grabbed item(s)</param>
-        private static void AchievementsHelper_OnItemPickup(Player player, short id, int count)
+        private void AchievementsHelper_OnItemPickup(Player player, short id, int count)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;

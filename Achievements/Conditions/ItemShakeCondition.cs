@@ -22,7 +22,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ItemShakeCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ItemShakeCondition>> _listeners = [];
 
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that shook the tree</param>
         /// <param name="id">Item ID that appeared</param>
-        private static void AchHelper_OnItemShake(Player player, int id)
+        private void AchHelper_OnItemShake(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;

@@ -22,7 +22,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ItemOpenCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ItemOpenCondition>> _listeners = [];
 
         /// <summary>
         /// Bag ID that should give the item(s)
@@ -94,7 +94,8 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
             foreach (var condition in conditions)
             {
-                if (condition.Reqs.Pass(player) && bagId == _bagId)
+                bool validBag = _bagId == 0 || bagId == _bagId;
+                if (condition.Reqs.Pass(player) && validBag)
                     condition.Complete();
             }
         }

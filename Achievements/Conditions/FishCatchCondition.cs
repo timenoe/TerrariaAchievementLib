@@ -22,7 +22,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<FishCatchCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<FishCatchCondition>> _listeners = [];
 
 
         /// <summary>

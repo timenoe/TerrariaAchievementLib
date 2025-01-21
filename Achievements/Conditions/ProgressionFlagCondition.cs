@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ProgressionFlagCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ProgressionFlagCondition>> _listeners = [];
 
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Hook that is called when a progression flag is set
         /// </summary>
         /// <param name="id">Flag ID that was set</param>
-        private static void AchievementsHelper_OnProgressionEvent(int id)
+        private void AchievementsHelper_OnProgressionEvent(int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;

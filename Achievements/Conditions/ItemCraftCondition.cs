@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<ItemCraftCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ItemCraftCondition>> _listeners = [];
 
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="id">Item ID that was crafted</param>
         /// <param name="count">Count of the crafted item</param>
-        private static void AchievementsHelper_OnItemCraft(short id, int count)
+        private void AchievementsHelper_OnItemCraft(short id, int count)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;

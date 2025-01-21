@@ -23,7 +23,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<NpcKillCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<NpcKillCondition>> _listeners = [];
 
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that killed the NPC</param>
         /// <param name="id">NPC ID that was killed</param>
-        private static void AchievementsHelper_OnNPCKilled(Player player, short id)
+        private void AchievementsHelper_OnNPCKilled(Player player, short id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;

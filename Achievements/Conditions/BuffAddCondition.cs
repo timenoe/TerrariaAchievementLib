@@ -22,7 +22,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        protected static readonly Dictionary<int, List<BuffAddCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<BuffAddCondition>> _listeners = [];
 
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that added the buff</param>
         /// <param name="id">Buff ID that was added</param>
-        private static void AchHelper_OnBuffAdd(Player player, int id)
+        private void AchHelper_OnBuffAdd(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
