@@ -83,6 +83,7 @@ namespace TerrariaAchievementLib.Systems
 
             UnregisterAchievements();
 
+            On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
             On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor -= AchievementUnlockedPopup_ctor;
         }
@@ -115,6 +116,9 @@ namespace TerrariaAchievementLib.Systems
             // Achievement texture size cannot exceed vanilla, so cache true index
             _iconIndexes[name] = _iconIndex;
             Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
+
+            if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
+                throw new System.Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
         }
 
         /// <summary>
@@ -143,6 +147,9 @@ namespace TerrariaAchievementLib.Systems
             // Achievement texture size cannot exceed vanilla, so cache true index
             _iconIndexes[name] = _iconIndex;
             Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
+
+            if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
+                throw new System.Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
         }
 
         /// <summary>
