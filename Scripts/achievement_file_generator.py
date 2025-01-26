@@ -19,6 +19,7 @@ class AchievementFileGenerator:
 
         self.file: str
         self.id: str
+        self.subset: str
 
     def run(self) -> None:
         """
@@ -39,9 +40,11 @@ class AchievementFileGenerator:
         parser.add_argument(
             "id", help="Achievement name identifier prefix (COMPLETIONIST, etc.)"
         )
+        parser.add_argument("--subset", help="Achievement subset", default="")
         args = parser.parse_args()
         self.file = args.file
         self.id = args.id
+        self.subset = args.subset
 
     def create_files(self) -> None:
         """
@@ -64,7 +67,7 @@ class AchievementFileGenerator:
                             "Category": 5,
                             "Id": 0,
                             "Badge": "00000",
-                            "Subset": "Completionist",
+                            "Subset": self.subset,
                         }
                         ach = {"Name": line[0], "Category": "Collector", "Ra": ra}
                         data_out.append(ach)
