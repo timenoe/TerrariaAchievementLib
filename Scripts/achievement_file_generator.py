@@ -5,6 +5,7 @@ CSV format: Name, Title, Description, Points
 """
 
 import argparse
+import csv
 import json
 
 
@@ -34,9 +35,9 @@ class AchievementFileGenerator:
         """
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("file", "Achievement CSV file")
+        parser.add_argument("file", help="Achievement CSV file")
         parser.add_argument(
-            "id", "Achievement name identifier prefix (COMPLETIONIST, etc.)"
+            "id", help="Achievement name identifier prefix (COMPLETIONIST, etc.)"
         )
         args = parser.parse_args()
         self.file = args.file
@@ -47,33 +48,32 @@ class AchievementFileGenerator:
         Create Terraria localization and RetroAchievements mod integration files
         """
 
-        with open(self.file, encoding="utf-8") as f:
-            data_in = f.readlines()
-
-        with open("en-US.hjson", "w", encoding="utf-8") as f:
-            f.write("Achievements: {\n")
+        with open(self.file, newline="", encoding="utf-8") as f:
+            data_in = csv.reader(f)
             data_out = []
-            for line in data_in:
-                split = line.strip().split(",")
-                if split[0] != "Name":
-                    ra = {
-                        "Title": split[1],
-                        "Description": split[2],
-                        "Points": split[3],
-                        "Type": "",
-                        "Category": 5,
-                        "Id": 0,
-                        "Badge": "00000",
-                        "Subset": "Completionist",
-                    }
-                    ach = {"Name": split[0], "Category": "Collector", "Ra": ra}
-                    data_out.append(ach)
-                    f.write(f"\t{self.id}_{split[0]}_Name: {split[1]}\n")
-                    f.write(f"\t{self.id}_{split[0]}_Description: {split[2]}\n")
-            f.write("}")
 
-        with open("RetroAchievements.json", "w", encoding="utf-8") as f:
-            json.dump(data_out, f, indent=4)
+            with open("en-US.hjson", "w", encoding="utf-8") as f:
+                f.write("Achievements: {\n")
+                for line in data_in:
+                    if len(line) == 4 and line[0] != "Name":
+                        ra = {
+                            "Title": line[1],
+                            "Description": line[2],
+                            "Points": int(line[3]),
+                            "Type": "",
+                            "Category": 5,
+                            "Id": 0,
+                            "Badge": "00000",
+                            "Subset": "Completionist",
+                        }
+                        ach = {"Name": line[0], "Category": "Collector", "Ra": ra}
+                        data_out.append(ach)
+                        f.write(f"\t{self.id}_{line[0]}_Name: {line[1]}\n")
+                        f.write(f"\t{self.id}_{line[0]}_Description: {line[2]}\n")
+                f.write("}")
+
+            with open("achievements.json", "w", encoding="utf-8") as f:
+                json.dump(data_out, f, indent=4)
 
 
 def main() -> None:
