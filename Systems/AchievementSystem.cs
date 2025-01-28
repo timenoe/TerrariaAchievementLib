@@ -104,7 +104,7 @@ namespace TerrariaAchievementLib.Systems
         protected void RegisterAchievement(string name, AchCondition cond, AchievementCategory cat)
         {
             // Add unique achievement header to the name if needed
-            if (!name.Contains(Identifier))
+            if (!name.StartsWith(Identifier))
                 name = $"{Identifier}_{name}";
 
             Achievement ach = new(name);
@@ -131,7 +131,7 @@ namespace TerrariaAchievementLib.Systems
         protected void RegisterAchievement(string name, List<AchCondition> conds, bool track, AchievementCategory cat)
         {
             // Add unique achievement header to the name if needed
-            if (!name.Contains(Identifier))
+            if (!name.StartsWith(Identifier))
                 name = $"{Identifier}_{name}";
 
             Achievement ach = new(name);
@@ -159,7 +159,7 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         /// <param name="ach">Achievement to check</param>
         /// <returns>True if the achievement is new to this system</returns>
-        private bool IsMyAchievement(Achievement ach) => ach.Name.Contains(Identifier);
+        private bool IsMyAchievement(Achievement ach) => ach.Name.StartsWith(Identifier);
 
         /// <summary>
         /// Unregister all achievements that were added from this system
