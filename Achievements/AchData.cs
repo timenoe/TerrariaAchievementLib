@@ -54,22 +54,9 @@ namespace TerrariaAchievementLib.Achievements
         /// <summary>
         /// Defines progression consumables
         /// </summary>
-        private static readonly Dictionary<ProgressionState, int[]> ProgressionConsumables = new()
+        private static readonly Dictionary<ProgressionState, int[]> ProgressionConsumable = new()
         {
-            { ProgressionState.Hardmode, [ItemID.LifeFruit, ItemID.DemonHeart, ItemID.AegisFruit, ItemID.CombatBookVolumeTwo, ItemID.MinecartPowerup] },
-            { ProgressionState.PostMechanicalTrio, [] },
-            { ProgressionState.PostPlantera, [] },
-            { ProgressionState.PostGolem, [] },
-            { ProgressionState.PostLunaticCultist, [] },
-            { ProgressionState.PostMoonLord, [] },
-        };
-
-        /// <summary>
-        /// Defines progression potions
-        /// </summary>
-        private static readonly Dictionary<ProgressionState, int[]> ProgressionPotions = new()
-        {
-            { ProgressionState.Hardmode, [ItemID.GreaterHealingPotion, ItemID.GreaterManaPotion, ItemID.SuperManaPotion, ItemID.FlaskofCursedFlames, ItemID.FlaskofIchor] },
+            { ProgressionState.Hardmode, [ItemID.LifeFruit, ItemID.DemonHeart, ItemID.AegisFruit, ItemID.CombatBookVolumeTwo, ItemID.MinecartPowerup, ItemID.GreaterHealingPotion, ItemID.GreaterManaPotion, ItemID.SuperManaPotion, ItemID.FlaskofCursedFlames, ItemID.FlaskofIchor] },
             { ProgressionState.PostMechanicalTrio, [] },
             { ProgressionState.PostPlantera, [ItemID.FlaskofNanites, ItemID.FlaskofVenom] },
             { ProgressionState.PostGolem, [] },
@@ -91,19 +78,6 @@ namespace TerrariaAchievementLib.Achievements
         };
 
         /// <summary>
-        /// Defines progression ammo
-        /// </summary>
-        private static readonly Dictionary<ProgressionState, int[]> ProgressionAmmo = new()
-        {
-            { ProgressionState.Hardmode, [ItemID.CrystalBullet, ItemID.CursedBullet, ItemID.HighVelocityBullet, ItemID.IchorBullet, ItemID.ExplodingBullet, ItemID.GoldenBullet, ItemID.EndlessMusketPouch, ItemID.CursedArrow, ItemID.IchorArrow, ItemID.EndlessQuiver, ItemID.CrystalDart, ItemID.CursedDart, ItemID.IchorDart] },
-            { ProgressionState.PostMechanicalTrio, [ItemID.ChlorophyteBullet, ItemID.ChlorophyteArrow] },
-            { ProgressionState.PostPlantera, [ItemID.VenomBullet, ItemID.NanoBullet, ItemID.VenomArrow, ItemID.RocketI, ItemID.RocketII, ItemID.RocketIII, ItemID.RocketIV, ItemID.ClusterRocketI, ItemID.ClusterRocketII, ItemID.DryRocket, ItemID.WetRocket, ItemID.LavaRocket, ItemID.HoneyRocket, ItemID.MiniNukeI, ItemID.MiniNukeII] },
-            { ProgressionState.PostGolem, [] },
-            { ProgressionState.PostLunaticCultist, [] },
-            { ProgressionState.PostMoonLord, [ItemID.MoonlordBullet, ItemID.MoonlordArrow] },
-        };
-
-        /// <summary>
         /// Defines progression tools
         /// </summary>
         private static readonly Dictionary<ProgressionState, int[]> ProgressionTools = new()
@@ -117,16 +91,16 @@ namespace TerrariaAchievementLib.Achievements
         };
 
         /// <summary>
-        /// Defines progression hooks
+        /// Defines progression ammo
         /// </summary>
-        private static readonly Dictionary<ProgressionState, int[]> ProgressionHooks = new()
+        private static readonly Dictionary<ProgressionState, int[]> ProgressionAmmo = new()
         {
-            { ProgressionState.Hardmode, [ItemID.DualHook, ItemID.TendonHook, ItemID.IlluminantHook, ItemID.WormHook, ItemID.StaticHook, ItemID.QueenSlimeHook] },
-            { ProgressionState.PostMechanicalTrio, [] },
-            { ProgressionState.PostPlantera, [ItemID.SpookyHook, ItemID.ChristmasHook, ItemID.ThornHook] },
-            { ProgressionState.PostGolem, [ItemID.AntiGravityHook] },
-            { ProgressionState.PostLunaticCultist, [ItemID.LunarHook] },
-            { ProgressionState.PostMoonLord, [] },
+            { ProgressionState.Hardmode, [ItemID.CrystalBullet, ItemID.CursedBullet, ItemID.HighVelocityBullet, ItemID.IchorBullet, ItemID.ExplodingBullet, ItemID.GoldenBullet, ItemID.EndlessMusketPouch, ItemID.CursedArrow, ItemID.IchorArrow, ItemID.EndlessQuiver, ItemID.CrystalDart, ItemID.CursedDart, ItemID.IchorDart] },
+            { ProgressionState.PostMechanicalTrio, [ItemID.ChlorophyteBullet, ItemID.ChlorophyteArrow] },
+            { ProgressionState.PostPlantera, [ItemID.VenomBullet, ItemID.NanoBullet, ItemID.VenomArrow, ItemID.RocketI, ItemID.RocketII, ItemID.RocketIII, ItemID.RocketIV, ItemID.ClusterRocketI, ItemID.ClusterRocketII, ItemID.DryRocket, ItemID.WetRocket, ItemID.LavaRocket, ItemID.HoneyRocket, ItemID.MiniNukeI, ItemID.MiniNukeII] },
+            { ProgressionState.PostGolem, [] },
+            { ProgressionState.PostLunaticCultist, [] },
+            { ProgressionState.PostMoonLord, [ItemID.MoonlordBullet, ItemID.MoonlordArrow] },
         };
 
         /// <summary>
@@ -147,25 +121,25 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         private static readonly Dictionary<ProgressionState, int[]> ProgressionAccessories = new()
         {
-            { ProgressionState.Hardmode, [ItemID.NeptunesShell, ItemID.MoonCharm, ItemID.MoonShell, ItemID.WarriorEmblem, ItemID.RangerEmblem, ItemID.SorcererEmblem, ItemID.SummonerEmblem, ItemID.AvengerEmblem, ItemID.CelestialEmblem, ItemID.MoonStone, ItemID.TitanGlove, ItemID.PowerGlove, ItemID.BerserkerGlove, ItemID.MechanicalGlove, ItemID.FireGauntlet, ItemID.PhilosophersStone, ItemID.CharmofMyths, ItemID.PutridScent, ItemID.MagicQuiver, ItemID.StalkersQuiver, ItemID.MoltenQuiver, ItemID.ArcaneFlower, ItemID.StarCloak, ItemID.BeeCloak, ItemID.ShimmerCloak, ItemID.ManaCloak, ItemID.ArmorPolish, ItemID.Blindfold, ItemID.FastClock, ItemID.PocketMirror, ItemID.TrifoldMap, ItemID.ArmorBracing, ItemID.ReflectiveShades, ItemID.ThePlan, ItemID.Vitamins, ItemID.AnkhCharm, ItemID.AnkhShield, ItemID.CrossNecklace, ItemID.StarVeil, ItemID.FleshKnuckles, ItemID.FrozenTurtleShell, ItemID.DiscountCard, ItemID.LuckyCoin, ItemID.GoldRing, ItemID.CoinRing, ItemID.GreedyRing] },
+            { ProgressionState.Hardmode, [ItemID.NeptunesShell, ItemID.MoonCharm, ItemID.MoonShell, ItemID.WarriorEmblem, ItemID.RangerEmblem, ItemID.SorcererEmblem, ItemID.SummonerEmblem, ItemID.AvengerEmblem, ItemID.CelestialEmblem, ItemID.MoonStone, ItemID.TitanGlove, ItemID.PowerGlove, ItemID.BerserkerGlove, ItemID.MechanicalGlove, ItemID.FireGauntlet, ItemID.PhilosophersStone, ItemID.CharmofMyths, ItemID.PutridScent, ItemID.MagicQuiver, ItemID.StalkersQuiver, ItemID.MoltenQuiver, ItemID.ArcaneFlower, ItemID.StarCloak, ItemID.BeeCloak, ItemID.ShimmerCloak, ItemID.ManaCloak, ItemID.ArmorPolish, ItemID.Blindfold, ItemID.FastClock, ItemID.PocketMirror, ItemID.TrifoldMap, ItemID.ArmorBracing, ItemID.ReflectiveShades, ItemID.ThePlan, ItemID.Vitamins, ItemID.AnkhCharm, ItemID.AnkhShield, ItemID.CrossNecklace, ItemID.StarVeil, ItemID.FleshKnuckles, ItemID.FrozenTurtleShell, ItemID.DiscountCard, ItemID.LuckyCoin, ItemID.GoldRing, ItemID.CoinRing, ItemID.GreedyRing, ItemID.AngelWings, ItemID.DemonWings, ItemID.FairyWings, ItemID.FinWings, ItemID.FrozenWings, ItemID.HarpyWings, ItemID.Jetpack, ItemID.BatWings, ItemID.BeeWings, ItemID.ButterflyWings, ItemID.FlameWings, ItemID.SteampunkWings, ItemID.FishronWings, ItemID.RedsWings, ItemID.DTownsWings, ItemID.WillsWings, ItemID.CrownosWings, ItemID.CenxsWings, ItemID.BejeweledValkyrieWing, ItemID.Yoraiz0rWings, ItemID.JimsWings, ItemID.SkiphsWings, ItemID.LokisWings, ItemID.ArkhalisWings, ItemID.LeinforsWings, ItemID.GhostarsWings, ItemID.SafemanWings, ItemID.FoodBarbarianWings, ItemID.GroxTheGreatWings] },
             { ProgressionState.PostMechanicalTrio, [] },
-            { ProgressionState.PostPlantera, [ItemID.BlackBelt, ItemID.Tabi, ItemID.MasterNinjaGear, ItemID.RifleScope, ItemID.HerculesBeetle, ItemID.PapyrusScarab, ItemID.NecromanticScroll, ItemID.PaladinsShield, ItemID.HeroShield, ItemID.FrozenShield] },
-            { ProgressionState.PostGolem, [ItemID.DestroyerEmblem, ItemID.SunStone, ItemID.CelestialStone, ItemID.CelestialShell, ItemID.EyeoftheGolem, ItemID.SniperScope, ItemID.ReconScope] },
+            { ProgressionState.PostPlantera, [ItemID.BlackBelt, ItemID.Tabi, ItemID.MasterNinjaGear, ItemID.RifleScope, ItemID.HerculesBeetle, ItemID.PapyrusScarab, ItemID.NecromanticScroll, ItemID.PaladinsShield, ItemID.HeroShield, ItemID.FrozenShield, ItemID.LeafWings, ItemID.Hoverboard, ItemID.BoneWings, ItemID.MothronWings, ItemID.GhostWings, ItemID.FestiveWings, ItemID.SpookyWings, ItemID.TatteredFairyWings, ItemID.RainbowWings] },
+            { ProgressionState.PostGolem, [ItemID.DestroyerEmblem, ItemID.SunStone, ItemID.CelestialStone, ItemID.CelestialShell, ItemID.EyeoftheGolem, ItemID.SniperScope, ItemID.ReconScope, ItemID.BeetleWings, ItemID.BetsyWings] },
             { ProgressionState.PostLunaticCultist, [] },
-            { ProgressionState.PostMoonLord, [] },
+            { ProgressionState.PostMoonLord, [ItemID.WingsNebula, ItemID.WingsVortex, ItemID.WingsSolar, ItemID.WingsStardust, ItemID.LongRainbowTrailWings] },
         };
 
         /// <summary>
-        /// Defines progression wings
+        /// Defines progression hooks
         /// </summary>
-        private static readonly Dictionary<ProgressionState, int[]> ProgressionWings = new()
+        private static readonly Dictionary<ProgressionState, int[]> ProgressionHooks = new()
         {
-            { ProgressionState.Hardmode, [ItemID.AngelWings, ItemID.DemonWings, ItemID.FairyWings, ItemID.FinWings, ItemID.FrozenWings, ItemID.HarpyWings, ItemID.Jetpack, ItemID.BatWings, ItemID.BeeWings, ItemID.ButterflyWings, ItemID.FlameWings, ItemID.SteampunkWings, ItemID.FishronWings, ItemID.RedsWings, ItemID.DTownsWings, ItemID.WillsWings, ItemID.CrownosWings, ItemID.CenxsWings, ItemID.BejeweledValkyrieWing, ItemID.Yoraiz0rWings, ItemID.JimsWings, ItemID.SkiphsWings, ItemID.LokisWings, ItemID.ArkhalisWings, ItemID.LeinforsWings, ItemID.GhostarsWings, ItemID.SafemanWings, ItemID.FoodBarbarianWings, ItemID.GroxTheGreatWings] },
+            { ProgressionState.Hardmode, [ItemID.DualHook, ItemID.TendonHook, ItemID.IlluminantHook, ItemID.WormHook, ItemID.StaticHook, ItemID.QueenSlimeHook] },
             { ProgressionState.PostMechanicalTrio, [] },
-            { ProgressionState.PostPlantera, [ItemID.LeafWings, ItemID.Hoverboard, ItemID.BoneWings, ItemID.MothronWings, ItemID.GhostWings, ItemID.FestiveWings, ItemID.SpookyWings, ItemID.TatteredFairyWings, ItemID.RainbowWings] },
-            { ProgressionState.PostGolem, [ItemID.BeetleWings, ItemID.BetsyWings] },
-            { ProgressionState.PostLunaticCultist, [] },
-            { ProgressionState.PostMoonLord, [ItemID.WingsNebula, ItemID.WingsVortex, ItemID.WingsSolar, ItemID.WingsStardust, ItemID.LongRainbowTrailWings] },
+            { ProgressionState.PostPlantera, [ItemID.SpookyHook, ItemID.ChristmasHook, ItemID.ThornHook] },
+            { ProgressionState.PostGolem, [ItemID.AntiGravityHook] },
+            { ProgressionState.PostLunaticCultist, [ItemID.LunarHook] },
+            { ProgressionState.PostMoonLord, [] },
         };
 
         /// <summary>
@@ -187,15 +161,11 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         public enum ProgressionItem
         { 
-            Consumable,
-            Potion,
-            Weapon,
+            Usable,
             Ammo,
-            Tool,
-            Hook,
             Armor,
             Accessory,
-            Wings,
+            Hook,
             Mount
         }
 
@@ -249,57 +219,46 @@ namespace TerrariaAchievementLib.Achievements
         /// <returns>True if the item is allowed</returns>
         public static bool IsItemAllowed(ProgressionItem type, int item)
         {
-            Dictionary<ProgressionState, int[]> items;
+            List<Dictionary<ProgressionState, int[]>> allItems = [];
             switch (type)
             {
-                case ProgressionItem.Consumable:
-                    items = ProgressionConsumables;
-                    break;
-
-                case ProgressionItem.Potion:
-                    items = ProgressionPotions;
-                    break;
-
-                case ProgressionItem.Weapon:
-                    items = ProgressionWeapons;
+                case ProgressionItem.Usable:
+                    allItems.Add(ProgressionConsumable);
+                    allItems.Add(ProgressionWeapons);
+                    allItems.Add(ProgressionTools);
                     break;
 
                 case ProgressionItem.Ammo:
-                    items = ProgressionAmmo;
-                    break;
-
-                case ProgressionItem.Tool:
-                    items = ProgressionTools;
-                    break;
-
-                case ProgressionItem.Hook:
-                    items = ProgressionHooks;
+                    allItems.Add(ProgressionAmmo);
                     break;
 
                 case ProgressionItem.Armor:
-                    items = ProgressionArmor;
+                    allItems.Add(ProgressionArmor);
                     break;
 
                 case ProgressionItem.Accessory:
-                    items = ProgressionAccessories;
+                    allItems.Add(ProgressionAccessories);
                     break;
 
-                case ProgressionItem.Wings:
-                    items = ProgressionWings;
+                case ProgressionItem.Hook:
+                    allItems.Add(ProgressionHooks);
                     break;
 
                 case ProgressionItem.Mount:
-                    items = ProgressionMounts;
+                    allItems.Add(ProgressionMounts);
                     break;
 
                 default:
                     return false;
             }
 
-            for (ProgressionState state = GetProgressionState() + 1; state <= ProgressionState.PostMoonLord; state++)
+            foreach (var items in allItems)
             {
-                if (items[state].Contains(item))
-                    return false;
+                for (ProgressionState state = GetProgressionState() + 1; state <= ProgressionState.PostMoonLord; state++)
+                {
+                    if (items[state].Contains(item))
+                        return false;
+                }
             }
 
             return true;
