@@ -31,6 +31,7 @@ namespace TerrariaAchievementLib.Achievements
     /// </summary>
     public enum SpecialSeed
     {
+        // Main
         None = -1,
         Bees,
         Drunk,
@@ -39,7 +40,10 @@ namespace TerrariaAchievementLib.Achievements
         Traps,
         Up,
         Worthy,
-        Zenith
+        Zenith,
+
+        // Extras
+        Unworthy
     }
 
 
@@ -178,6 +182,11 @@ namespace TerrariaAchievementLib.Achievements
 
                 case SpecialSeed.Zenith:
                     if (!Main.zenithWorld)
+                        return false;
+                    break;
+
+                case SpecialSeed.Unworthy:
+                    if (Main.getGoodWorld)
                         return false;
                     break;
             }
