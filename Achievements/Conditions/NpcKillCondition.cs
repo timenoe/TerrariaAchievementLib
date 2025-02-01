@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.Achievements;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
@@ -38,7 +37,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="first">True if killing the NPC for the first time</param>
         /// <param name="id">NPC ID to listen for</param>
-        private NpcKillCondition(ConditionReqs reqs, bool first, int id) : base($"{CustomName}_{first}", reqs, [id]) => Listen(first);
+        private NpcKillCondition(ConditionReqs reqs, bool first, int id) : base($"{CustomName}_{first}", reqs, [id]) => Listen(this, first);
 
         /// <summary>
         /// Creates a condition that listens for any of the NPCs to be killed
@@ -46,7 +45,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="first">True if killing the NPC for the first time</param>
         /// <param name="ids">NPC IDs to listen for</param>
-        private NpcKillCondition(ConditionReqs reqs, bool first, int[] ids) : base($"{CustomName}_{first}", reqs, ids) => Listen(first);
+        private NpcKillCondition(ConditionReqs reqs, bool first, int[] ids) : base($"{CustomName}_{first}", reqs, ids) => Listen(this, first);
 
 
         /// <summary>
@@ -87,14 +86,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that killed the NPC</param>
         /// <param name="id">NPC ID that was killed</param>
-        private void AchievementsHelper_OnNPCKilled(Player player, short id)
+        private static void AchievementsHelper_OnNPCKilled(Player player, short id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
             {
-                if (_first && Main.BestiaryTracker.Kills.GetKillCount(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[id]) != 0)
+                if (condition._first && Main.BestiaryTracker.Kills.GetKillCount(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[id]) != 0)
                     continue;
                 
                 if (condition.Reqs.Pass(player))
@@ -106,7 +105,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Listen for events so the condition can be completed
         /// <param name="first">True if killing the NPC for the first time</param>
         /// </summary>
-        private void Listen(bool first)
+        private static void Listen(NpcKillCondition condition, bool first)
         {
             if (!_isHooked)
             {
@@ -114,8 +113,8 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            ListenForId(this, _listeners);
-            _first = first;
+            ListenForIds(condition, condition.Ids, _listeners);
+            condition._first = first;
         }
     }
 }

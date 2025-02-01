@@ -7,6 +7,9 @@ using TerrariaAchievementLib.Achievements;
 
 namespace TerrariaAchievementLib.Players
 {
+    /// <summary>
+    /// Blocks the player from using items based on current world progression
+    /// </summary>
     public class ProgressionPlayer : ModPlayer
     {
         public override void Load()
@@ -28,22 +31,23 @@ namespace TerrariaAchievementLib.Players
             if (Main.hardMode)
                 return;
             
-            // Life Fruit
+            // Return consumed Life Fruit
             if (Player.ConsumedLifeFruit > 0)
             {
                 for (int i = 0; i < Player.ConsumedLifeFruit; i++)
                     Item.NewItem(new EntitySource_DropAsItem(Player), Player.Center, ItemID.LifeFruit);
+                
                 Player.ConsumedLifeFruit = 0;
             }
 
-            // Aegis Fruit
+            // Return consumed Aegis Fruit
             if (Player.usedAegisFruit)
             {
                 Item.NewItem(new EntitySource_DropAsItem(Player), Player.Center, ItemID.AegisFruit);
                 Player.usedAegisFruit = false;
             }
 
-            // Demon Heart
+            // Return consumed Demon Heart
             if (Player.extraAccessory)
             {
                 Item.NewItem(new EntitySource_DropAsItem(Player), Player.Center, ItemID.DemonHeart);

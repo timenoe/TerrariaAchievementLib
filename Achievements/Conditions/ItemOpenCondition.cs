@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="bagId">Grab bag ID that gifts the item</param>
         /// <param name="itemId">Item ID to listen for</param>
-        private ItemOpenCondition(ConditionReqs reqs, short bagId, int itemId) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, [itemId]) => Listen(bagId);
+        private ItemOpenCondition(ConditionReqs reqs, short bagId, int itemId) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, [itemId]) => Listen(this, bagId);
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be opened from a grab bag
@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
-        private ItemOpenCondition(ConditionReqs reqs, short bagId, int[] itemIds) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, itemIds) => Listen(bagId);
+        private ItemOpenCondition(ConditionReqs reqs, short bagId, int[] itemIds) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, itemIds) => Listen(this, bagId);
 
 
         /// <summary>
@@ -87,15 +87,18 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that opened the grab bag</param>
         /// <param name="bagId">Grab bag ID that was opened</param>
         /// <param name="itemId">Item ID that was received</param>
-        private void AchHelper_OnItemOpen(Player player, int bagId, int itemId)
+        private static void AchHelper_OnItemOpen(Player player, int bagId, int itemId)
         {
             if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
             {
-                bool validBag = _bagId == 0 || bagId == _bagId;
-                if (condition.Reqs.Pass(player) && validBag)
+                // Check Bag ID when applicable
+                if (condition._bagId != 0 && bagId != condition._bagId)
+                    continue;
+
+                if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
         }
@@ -104,7 +107,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Listen for events so the condition can be completed
         /// </summary>
         /// <param name="bagId">Grab bag ID that should give the item</param>
-        private void Listen(int bagId)
+        private static void Listen(ItemOpenCondition condition, int bagId)
         {
             if (!_isHooked)
             {
@@ -112,8 +115,8 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            _bagId = bagId;
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
+            condition._bagId = bagId;
         }
     }
 }

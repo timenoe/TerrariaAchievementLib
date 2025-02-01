@@ -32,7 +32,7 @@ namespace TerrariaAchievementLib.Achievements
     }
 
     /// <summary>
-    /// Blocks the use of certain items based on the current world progression
+    /// Checks if certain items should be blocked based on current world progression
     /// </summary>
     public class AchProgression
     {
@@ -120,19 +120,6 @@ namespace TerrariaAchievementLib.Achievements
         };
 
         /// <summary>
-        /// Defines progression hooks
-        /// </summary>
-        private static readonly Dictionary<ProgressionState, int[]> ProgressionHooks = new()
-        {
-            { ProgressionState.Hardmode, [ItemID.DualHook, ItemID.TendonHook, ItemID.IlluminantHook, ItemID.WormHook, ItemID.StaticHook, ItemID.QueenSlimeHook] },
-            { ProgressionState.PostMechanicalTrio, [] },
-            { ProgressionState.PostPlantera, [ItemID.SpookyHook, ItemID.ChristmasHook, ItemID.ThornHook] },
-            { ProgressionState.PostGolem, [ItemID.AntiGravityHook] },
-            { ProgressionState.PostLunaticCultist, [ItemID.LunarHook] },
-            { ProgressionState.PostMoonLord, [] },
-        };
-
-        /// <summary>
         /// Defines progression mounts
         /// </summary>
         private static readonly Dictionary<ProgressionState, int[]> ProgressionMounts = new()
@@ -143,6 +130,19 @@ namespace TerrariaAchievementLib.Achievements
             { ProgressionState.PostGolem, [ItemID.BrainScrambler] },
             { ProgressionState.PostLunaticCultist, [ItemID.CosmicCarKey] },
             { ProgressionState.PostMoonLord, [ItemID.DrillContainmentUnit] },
+        };
+
+        /// <summary>
+        /// Defines progression hooks
+        /// </summary>
+        private static readonly Dictionary<ProgressionState, int[]> ProgressionHooks = new()
+        {
+            { ProgressionState.Hardmode, [ItemID.DualHook, ItemID.TendonHook, ItemID.IlluminantHook, ItemID.WormHook, ItemID.StaticHook, ItemID.QueenSlimeHook] },
+            { ProgressionState.PostMechanicalTrio, [] },
+            { ProgressionState.PostPlantera, [ItemID.SpookyHook, ItemID.ChristmasHook, ItemID.ThornHook] },
+            { ProgressionState.PostGolem, [ItemID.AntiGravityHook] },
+            { ProgressionState.PostLunaticCultist, [ItemID.LunarHook] },
+            { ProgressionState.PostMoonLord, [] },
         };
 
         /// <summary>
@@ -158,11 +158,6 @@ namespace TerrariaAchievementLib.Achievements
             { ProgressionState.PostMoonLord, [BuffID.DrillMount] },
         };
 
-        /// <summary>
-        /// Enable or disable the blocking of items
-        /// </summary>
-        /// <param name="enabled">Set to true to enable</param>
-        public static void SetEnabled(bool enabled) => _enabled = enabled;
 
         /// <summary>
         /// Gets the current progression state
@@ -244,5 +239,11 @@ namespace TerrariaAchievementLib.Achievements
 
             return true;
         }
+
+        /// <summary>
+        /// Enable or disable the blocking of items
+        /// </summary>
+        /// <param name="enabled">Set to true to enable</param>
+        public static void SetEnabled(bool enabled) => _enabled = enabled;
     }
 }

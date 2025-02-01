@@ -31,8 +31,9 @@ namespace TerrariaAchievementLib.Achievements
     /// </summary>
     public enum SpecialSeed
     {
-        // Main
         None = -1,
+
+        // Main
         Bees,
         Drunk,
         Starve,
@@ -141,7 +142,7 @@ namespace TerrariaAchievementLib.Achievements
             switch (SpecialSeed)
             {
                 case SpecialSeed.None:
-                    if (SpecialSeed == SpecialSeed.Tenth)
+                    if (Main.tenthAnniversaryWorld)
                         return false;
                     break;
 
@@ -233,10 +234,10 @@ namespace TerrariaAchievementLib.Achievements
         /// <summary>
         /// Registers a condition to listen to a list of IDs
         /// </summary>
-        protected void ListenForId<T>(T condition, Dictionary<int, List<T>> listeners)
+        protected static void ListenForIds<T>(T condition, int[] ids, Dictionary<int, List<T>> listeners)
         {
             // Loop through all IDs in the condition
-            foreach (int id in Ids)
+            foreach (int id in ids)
             {
                 // Create empty list of listeners for the ID if there are none
                 if (!IsListeningForId(id, listeners, out var conditions))

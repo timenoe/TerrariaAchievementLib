@@ -31,14 +31,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Progression flag ID to listen for</param>
-        private FlagProgressionCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private FlagProgressionCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen(this);
 
         /// <summary>
         /// Creates a condition that listens for any of the progression flags to be set
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Progression flag IDs to listen for</param>
-        private FlagProgressionCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private FlagProgressionCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen(this);
 
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Hook that is called when a progression flag is set
         /// </summary>
         /// <param name="id">Flag ID that was set</param>
-        private void AchievementsHelper_OnProgressionEvent(int id)
+        private static void AchievementsHelper_OnProgressionEvent(int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -90,7 +90,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
-        private void Listen()
+        private static void Listen(FlagProgressionCondition condition)
         {
             if (!_isHooked)
             {
@@ -98,7 +98,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
         }
     }
 }

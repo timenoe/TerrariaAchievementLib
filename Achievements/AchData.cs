@@ -12,7 +12,7 @@ namespace TerrariaAchievementLib.Achievements
         /// NPC IDs that must be killed for a boss to be considered defeated<br/>
         /// If an entry has more than 1 ID, any of them can be defeated
         /// </summary>
-        public static readonly Dictionary<string, int[]> DefeatBossIds = new()
+        public static readonly Dictionary<string, int[]> DefeatBoss = new()
         {
             { "KING_SLIME", [NPCID.KingSlime] },
             { "EYE_OF_CTHULHU", [NPCID.EyeofCthulhu] },

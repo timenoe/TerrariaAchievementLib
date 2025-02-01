@@ -30,14 +30,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">NPC ID to listen for</param>
-        private NpcCatchCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private NpcCatchCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen(this);
 
         /// <summary>
         /// Creates a condition that listens for any of the NPCs to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
-        private NpcCatchCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private NpcCatchCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen(this);
 
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that caught the NPC</param>
         /// <param name="id">NPC ID that was caught</param>
-        private void AchHelper_OnNpcCatch(Player player, int id)
+        private static void AchHelper_OnNpcCatch(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -90,7 +90,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
-        private void Listen()
+        private static void Listen(NpcCatchCondition condition)
         {
             if (!_isHooked)
             {
@@ -98,7 +98,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
         }
     }
 }

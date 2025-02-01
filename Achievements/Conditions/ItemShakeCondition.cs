@@ -30,14 +30,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private ItemShakeCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private ItemShakeCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen(this);
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be shaken from a tree
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private ItemShakeCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private ItemShakeCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen(this);
 
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that shook the tree</param>
         /// <param name="id">Item ID that appeared</param>
-        private void AchHelper_OnItemShake(Player player, int id)
+        private static void AchHelper_OnItemShake(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -90,7 +90,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
-        private void Listen()
+        private static void Listen(ItemShakeCondition condition)
         {
             if (!_isHooked)
             {
@@ -98,7 +98,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
         }
     }
 }

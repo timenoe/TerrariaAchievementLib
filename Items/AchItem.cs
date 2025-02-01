@@ -16,12 +16,17 @@ namespace TerrariaAchievementLib.Items
             if (source is EntitySource_TileBreak)
             {
                 // Check that the local player is the one closest to the destroyed tile
-                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
-                    return;
-
-                AchHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
+                if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
+                    AchHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
             }
-            
+
+            else if (source is EntitySource_ShakeTree)
+            {
+                // Check that the local player is the one closest to the item
+                if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
+                    AchHelper.NotifyItemShake(Main.LocalPlayer, item.type);
+            }
+
             else if (source is EntitySource_Loot loot)
             {
                 // Check that the local player has damaged the NPC
@@ -29,24 +34,13 @@ namespace TerrariaAchievementLib.Items
                     AchHelper.NotifyNpcDrop(Main.LocalPlayer, (short)npc.type, item.type);
             }
 
-            else if (source is EntitySource_ShakeTree)
-            {
-                // Check that the local player is the one closest to the item
-                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
-                    return;
-
-                AchHelper.NotifyItemShake(Main.LocalPlayer, item.type);
-            }
-
             else if (source is EntitySource_ItemOpen bag)
             {
                 // Check that the local player is the one closest to the item
-                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
-                    return;
-
-                AchHelper.NotifyItemOpen(Main.LocalPlayer, bag.ItemType, item.type);
+                if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
+                    AchHelper.NotifyItemOpen(Main.LocalPlayer, bag.ItemType, item.type);
             }
-
+            
             else if (source is EntitySource_Gift gift)
             {
                 // Check that the local player is the one closest to the gift
@@ -54,10 +48,10 @@ namespace TerrariaAchievementLib.Items
                     return;
 
                 if (gift.Entity is NPC npc)
-                    AchHelper.NotifyItemGift(Main.LocalPlayer, npc.type, item.type);
+                    AchHelper.NotifyNpcGift(Main.LocalPlayer, npc.type, item.type);
                 else
-                    AchHelper.NotifyItemGift(Main.LocalPlayer, NPCID.None, item.type);
-            }   
+                    AchHelper.NotifyNpcGift(Main.LocalPlayer, NPCID.None, item.type);
+            }
         }
     }
 }

@@ -4,14 +4,14 @@ using Terraria;
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
     /// <summary>
-    /// Helper to create a condition that listens for fish to be caught
+    /// Helper to create a condition that listens for item(s) to be caught
     /// </summary>
-    public class FishCatchCondition : AchIdCondition
+    public class ItemCatchCondition : AchIdCondition
     {
         /// <summary>
         /// Base condition identifier (used for saving to achievements.dat)
         /// </summary>
-        private const string CustomName = "CUSTOM_FISH_CATCH";
+        private const string CustomName = "CUSTOM_ITEM_CATCH";
 
 
         /// <summary>
@@ -22,61 +22,61 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// IDs and the conditions that are listening for them to be triggered
         /// </summary>
-        private static readonly Dictionary<int, List<FishCatchCondition>> _listeners = [];
+        private static readonly Dictionary<int, List<ItemCatchCondition>> _listeners = [];
 
 
         /// <summary>
-        /// Creates a condition that listens for the fish to be caught
+        /// Creates a condition that listens for the item to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private FishCatchCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private ItemCatchCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen(this);
 
         /// <summary>
-        /// Creates a condition that listens for any of the fish to be caught
+        /// Creates a condition that listens for any of the item to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private FishCatchCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private ItemCatchCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen(this);
 
 
         /// <summary>
-        /// Helper to create a condition that listens for the fish to be caught
+        /// Helper to create a condition that listens for the item to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        /// <returns>Fish catch achievement condition</returns>
-        public static AchCondition Catch(ConditionReqs reqs, int id) => new FishCatchCondition(reqs, id);
+        /// <returns>Item catch achievement condition</returns>
+        public static AchCondition Catch(ConditionReqs reqs, int id) => new ItemCatchCondition(reqs, id);
 
         /// <summary>
-        /// Helper to create a condition that listens for any of the fish to be caught
+        /// Helper to create a condition that listens for any of the items to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>Fish catch achievement condition</returns>
-        public static AchCondition CatchAny(ConditionReqs reqs, params int[] ids) => new FishCatchCondition(reqs, ids);
+        /// <returns>Item catch achievement condition</returns>
+        public static AchCondition CatchAny(ConditionReqs reqs, params int[] ids) => new ItemCatchCondition(reqs, ids);
 
         /// <summary>
-        /// Helper to create a condition that listens for all of the fish to be caught
+        /// Helper to create a condition that listens for all of the items to be caught
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        /// <returns>Fish catch achievement conditions</returns>
+        /// <returns>Item catch achievement conditions</returns>
         public static List<AchCondition> CatchAll(ConditionReqs reqs, params int[] ids)
         {
             List<AchCondition> conditions = [];
             foreach (var id in ids)
-                conditions.Add(new FishCatchCondition(reqs, id));
+                conditions.Add(new ItemCatchCondition(reqs, id));
             return conditions;
         }
 
         /// <summary>
-        /// Hook that is called when a fish is caught
+        /// Hook that is called when an item is caught
         /// </summary>
-        /// <param name="player">Player that caught the fish</param>
+        /// <param name="player">Player that caught the item</param>
         /// <param name="id">Item ID that was caught</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        private void AchHelper_OnFishCatch(Player player, int id)
+        private static void AchHelper_OnItemCatch(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -91,15 +91,15 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
-        private void Listen()
+        private static void Listen(ItemCatchCondition condition)
         {
             if (!_isHooked)
             {
-                AchHelper.OnFishCatch += AchHelper_OnFishCatch;
+                AchHelper.OnItemCatch += AchHelper_OnItemCatch;
                 _isHooked = true;
             }
 
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
         }
     }
 }

@@ -31,14 +31,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
-        private ItemGrabCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private ItemGrabCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen(this);
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be grabbed
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
-        private ItemGrabCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private ItemGrabCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen(this);
 
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that grabbed the item</param>
         /// <param name="id">Item ID that was grabbed</param>
         /// <param name="count">Count of the grabbed item(s)</param>
-        private void AchievementsHelper_OnItemPickup(Player player, short id, int count)
+        private static void AchievementsHelper_OnItemPickup(Player player, short id, int count)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -92,7 +92,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
-        private void Listen()
+        private static void Listen(ItemGrabCondition condition)
         {
             if (!_isHooked)
             {
@@ -100,7 +100,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
         }
     }
 }

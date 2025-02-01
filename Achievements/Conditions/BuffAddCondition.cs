@@ -30,14 +30,14 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Buff ID to listen for</param>
-        private BuffAddCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen();
+        private BuffAddCondition(ConditionReqs reqs, int id) : base(CustomName, reqs, [id]) => Listen(this);
 
         /// <summary>
         /// Creates a condition that listens for any of the buffs to be added
         /// </summary>
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
-        private BuffAddCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen();
+        private BuffAddCondition(ConditionReqs reqs, int[] ids) : base(CustomName, reqs, ids) => Listen(this);
 
         /// <summary>
         /// Helper to create a condition that listens for the buff to be added
@@ -74,7 +74,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that added the buff</param>
         /// <param name="id">Buff ID that was added</param>
-        private void AchHelper_OnBuffAdd(Player player, int id)
+        private static void AchHelper_OnBuffAdd(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -89,7 +89,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
-        private void Listen()
+        private static void Listen(BuffAddCondition condition)
         {
             if (!_isHooked)
             {
@@ -97,7 +97,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
         }
     }
 }

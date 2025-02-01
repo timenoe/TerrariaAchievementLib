@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that sells the item</param>
         /// <param name="itemId">Item ID to listen for</param>
-        private NpcBuyCondition(ConditionReqs reqs, short npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(npcId);
+        private NpcBuyCondition(ConditionReqs reqs, short npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(this, npcId);
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be bought from an NPC
@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that sells the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
-        private NpcBuyCondition(ConditionReqs reqs, short npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(npcId);
+        private NpcBuyCondition(ConditionReqs reqs, short npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(this, npcId);
 
 
         /// <summary>
@@ -86,15 +86,18 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that bought the item</param>
         /// <param name="npcId">NPC ID that sold the item</param>
         /// <param name="itemId">Item ID that was bought</param>
-        private void AchHelper_OnNpcBuy(Player player, short npcId, int itemId)
+        private static void AchHelper_OnNpcBuy(Player player, short npcId, int itemId)
         {
             if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
             {
-                bool validNpc = _npcId == 0 || npcId == _npcId;
-                if (condition.Reqs.Pass(player) && validNpc)
+                // Check NPC ID when applicable
+                if (condition._npcId != 0 && npcId != condition._npcId)
+                    continue;
+
+                if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
         }
@@ -103,7 +106,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Listen for events so the condition can be completed
         /// </summary>
         /// <param name="npcId">NPC ID that should sell the item</param>
-        private void Listen(short npcId)
+        private static void Listen(NpcBuyCondition condition, short npcId)
         {
             if (!_isHooked)
             {
@@ -111,8 +114,8 @@ namespace TerrariaAchievementLib.Achievements.Conditions
                 _isHooked = true;
             }
 
-            _npcId = npcId;
-            ListenForId(this, _listeners);
+            ListenForIds(condition, condition.Ids, _listeners);
+            condition._npcId = npcId;
         }
     }
 }

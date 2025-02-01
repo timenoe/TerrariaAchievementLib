@@ -15,13 +15,6 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void BuffAddEvent(Player player, int id);
 
         /// <summary>
-        /// Signature that defines a fish catch event
-        /// </summary>
-        /// <param name="player">Player that caught the fish</param>
-        /// <param name="id">Item ID that was caught</param>
-        public delegate void FishCatchEvent(Player player, int id);
-
-        /// <summary>
         /// Signature that defines a flag special event
         /// </summary>
         /// <param name="player">Player that raised the special flag</param>
@@ -29,19 +22,18 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void FlagSpecialEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines a fishing item catch event
+        /// </summary>
+        /// <param name="player">Player that caught the item</param>
+        /// <param name="id">Item ID that was caught</param>
+        public delegate void ItemCatchEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines an item extract event
         /// </summary>
         /// <param name="player">Player that extracts the item</param>
         /// <param name="id">Item ID that was extracted</param>
         public delegate void ItemExtractEvent(Player player, int id);
-
-        /// <summary>
-        /// Signature that defines an item gift event
-        /// </summary>
-        /// <param name="player">Player that received the gift</param>
-        /// <param name="npcId">NPC ID that gave the gift</param>
-        /// <param name="itemId">Item ID that was gifted</param>
-        public delegate void ItemGiftEvent(Player player, int npcId, int itemId);
 
         /// <summary>
         /// Signature that defines an item open event
@@ -89,6 +81,14 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void NpcDropEvent(Player player, short npcId, int itemId);
 
         /// <summary>
+        /// Signature that defines an NPC gift event
+        /// </summary>
+        /// <param name="player">Player that received the item</param>
+        /// <param name="npcId">NPC ID that gave the item</param>
+        /// <param name="itemId">Item ID that was gifted</param>
+        public delegate void NpcGiftEvent(Player player, int npcId, int itemId);
+
+        /// <summary>
         /// Signature that defines a tile drop event
         /// </summary>
         /// <param name="player">Player that likely broke the tile</param>
@@ -102,24 +102,19 @@ namespace TerrariaAchievementLib.Achievements
         public static event BuffAddEvent OnBuffAdd;
 
         /// <summary>
-        /// Event that is invoked when a fish is caught by the player
-        /// </summary>
-        public static event FishCatchEvent OnFishCatch;
-
-        /// <summary>
         /// Event that is invoked when a special flag is set by the player
         /// </summary>
         public static event FlagSpecialEvent OnFlagSpecial;
 
         /// <summary>
+        /// Event that is invoked when an item is caught by the player while fishing
+        /// </summary>
+        public static event ItemCatchEvent OnItemCatch;
+
+        /// <summary>
         /// Event that is invoked when an item is extracted by the player
         /// </summary>
         public static event ItemExtractEvent OnItemExtract;
-
-        /// <summary>
-        /// Event that is invoked when an item is gifted to the player
-        /// </summary>
-        public static event ItemGiftEvent OnItemGift;
 
         /// <summary>
         /// Event that is invoked when an item is opened from a grab bag
@@ -152,6 +147,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event NpcDropEvent OnNpcDrop;
 
         /// <summary>
+        /// Event that is invoked when an item is gifted from an NPC to the player
+        /// </summary>
+        public static event NpcGiftEvent OnNpcGift;
+
+        /// <summary>
         /// Event that is invoked when a tile drops an item
         /// </summary>
         public static event TileDropEvent OnTileDrop;
@@ -165,13 +165,6 @@ namespace TerrariaAchievementLib.Achievements
         public static void NotifyBuffUse(Player player, int id) => OnBuffAdd?.Invoke(player, id);
 
         /// <summary>
-        /// Helper to notify achievement conditions when a fish is caught by the player
-        /// </summary>
-        /// <param name="player">Player that caught the fish</param>
-        /// <param name="id">Item ID that was caught</param>
-        public static void NotifyFishCatch(Player player, int id) => OnFishCatch?.Invoke(player, id);
-
-        /// <summary>
         /// Helper to notify achievement conditions when a special flag is set by the player
         /// </summary>
         /// <param name="player">Player that set the special flag</param>
@@ -179,19 +172,18 @@ namespace TerrariaAchievementLib.Achievements
         public static void NotifyFlagSpecial(Player player, int id) => OnFlagSpecial?.Invoke(player, id);
 
         /// <summary>
+        /// Helper to notify achievement conditions when an item is caught by the player while fishing
+        /// </summary>
+        /// <param name="player">Player that caught the item</param>
+        /// <param name="id">Item ID that was caught</param>
+        public static void NotifyItemCatch(Player player, int id) => OnItemCatch?.Invoke(player, id);
+
+        /// <summary>
         /// Helper to notify achievement conditions when an item is extracted by the player
         /// </summary>
         /// <param name="player">Player that extracted the item</param>
         /// <param name="id">Item ID that was extracted</param>
         public static void NotifyItemExtract(Player player, int id) => OnItemExtract?.Invoke(player, id);
-
-        /// <summary>
-        /// Helper to notify achievement conditions when an item is gifted to the player
-        /// </summary>
-        /// <param name="player">Player that received the gift</param>
-        /// <param name="npcId">NPC ID that gave the gift</param>
-        /// <param name="itemId">Item ID that was gifted</param>
-        public static void NotifyItemGift(Player player, int npcId, int itemId) => OnItemGift?.Invoke(player, npcId, itemId);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is opened from a grab bag
@@ -237,6 +229,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="npcId">NPC ID that dropped the item</param>
         /// <param name="itemId">Item ID that was dropped</param>
         public static void NotifyNpcDrop(Player player, short npcId, int itemId) => OnNpcDrop?.Invoke(player, npcId, itemId);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an item is gifted from an NPC to the player
+        /// </summary>
+        /// <param name="player">Player that received the item</param>
+        /// <param name="npcId">NPC ID that gave the item</param>
+        /// <param name="itemId">Item ID that was gifted</param>
+        public static void NotifyNpcGift(Player player, int npcId, int itemId) => OnNpcGift?.Invoke(player, npcId, itemId);
 
         /// <summary>
         /// Helper to notify achievement conditions when a tile drops an item

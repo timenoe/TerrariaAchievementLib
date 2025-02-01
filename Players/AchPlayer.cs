@@ -27,7 +27,7 @@ namespace TerrariaAchievementLib.Players
             return true;
         }
 
-        public override void ModifyCaughtFish(Item fish) => AchHelper.NotifyFishCatch(Player, fish.type);
+        public override void ModifyCaughtFish(Item fish) => AchHelper.NotifyItemCatch(Player, fish.type);
 
         public override void OnCatchNPC(NPC npc, Item item, bool failed)
         {
@@ -49,9 +49,9 @@ namespace TerrariaAchievementLib.Players
         /// <param name="foodHack">foodHack AddBuff parameter</param>
         private void On_Player_AddBuff(On_Player.orig_AddBuff orig, Player self, int type, int timeToAdd, bool quiet, bool foodHack)
         {
-            AchHelper.NotifyBuffUse(self, type);
-
             orig.Invoke(self, type, timeToAdd, quiet, foodHack);
+
+            AchHelper.NotifyBuffUse(self, type);
         }
 
         /// <summary>
@@ -64,9 +64,9 @@ namespace TerrariaAchievementLib.Players
         /// <exception cref="System.NotImplementedException"></exception>
         private void On_Player_DropItemFromExtractinator(On_Player.orig_DropItemFromExtractinator orig, Player self, int itemType, int stack)
         {
-            AchHelper.NotifyItemExtract(self, itemType);
-
             orig.Invoke(self, itemType, stack);
+
+            AchHelper.NotifyItemExtract(self, itemType);
         }
     }
 }
