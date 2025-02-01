@@ -40,7 +40,7 @@ namespace TerrariaAchievementLib.Achievements
             { "PUMPKING", [NPCID.Pumpking] },
             { "EVERSCREAM", [NPCID.Everscream] },
             { "SANTA-NK1", [NPCID.SantaNK1] },
-            { "ICEA_QUEEN", [NPCID.IceQueen] },
+            { "ICE_QUEEN", [NPCID.IceQueen] },
             { "DARK_MAGE_T3", [NPCID.DD2DarkMageT3] },
             { "OGRE_T3", [NPCID.DD2OgreT3] },
             { "BETSY", [NPCID.DD2Betsy] },
