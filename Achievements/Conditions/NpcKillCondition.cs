@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.Achievements;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
@@ -93,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
             foreach (var condition in conditions)
             {
-                if (_first && NPC.killCount[Item.NPCtoBanner(id)] != 0)
+                if (_first && Main.BestiaryTracker.Kills.GetKillCount(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[id]) != 0)
                     continue;
                 
                 if (condition.Reqs.Pass(player))
