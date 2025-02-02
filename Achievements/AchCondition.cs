@@ -142,7 +142,7 @@ namespace TerrariaAchievementLib.Achievements
             switch (SpecialSeed)
             {
                 case SpecialSeed.None:
-                    if (Main.tenthAnniversaryWorld)
+                    if (Main.tenthAnniversaryWorld && !Main.zenithWorld)
                         return false;
                     break;
 
