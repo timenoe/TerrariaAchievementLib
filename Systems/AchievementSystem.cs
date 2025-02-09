@@ -235,7 +235,7 @@ namespace TerrariaAchievementLib.Systems
             orig.Invoke(player, item, context);
 
             // Apply custom context ID if applicable
-            if (AchData.ItemIDSets.Wings.Contains(item.type))
+            if (item.wingSlot > 0)
                 context = AchData.ItemSlotContextID.EquipWings;
 
             // Notify with just the item slot context ID for equipping anything in that slot
