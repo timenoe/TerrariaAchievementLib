@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.Achievements;
 using Terraria.GameContent.Achievements;
 using Terraria.GameContent.UI.Elements;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using TerrariaAchievementLib.Achievements;
@@ -71,6 +72,7 @@ namespace TerrariaAchievementLib.Systems
             LoadAchTextures();
             LoadSaveData();
 
+            On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
             On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor += AchievementUnlockedPopup_ctor;
@@ -82,7 +84,7 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             UnregisterAchievements();
-
+            On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
             On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor -= AchievementUnlockedPopup_ctor;
@@ -221,18 +223,36 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
+        /// Detour to notify achievement conditions when an item has been equipped
+        /// </summary>
+        /// <param name="orig">Original HandleOnEquip method</param>
+        /// <param name="player">Player that equipped the item</param>
+        /// <param name="item">Item ID that was equipped</param>
+        /// <param name="context">Item slot context ID</param>
+        private void On_AchievementsHelper_HandleOnEquip(On_AchievementsHelper.orig_HandleOnEquip orig, Player player, Item item, int context)
+        {
+            orig.Invoke(player, item, context);
+
+            // Notify with just the item slot context ID for equipping anything in that slot
+            AchHelper.NotifyItemEquip(player, context, ItemID.None);
+
+            // Notify with the citem slot context ID and the specific item ID
+            AchHelper.NotifyItemEquip(player, context, item.type);
+        }
+
+        /// <summary>
         /// Detour to notify achievement conditions when a special flag is raised<br/><br/>
-        /// The vanilla game didn't to this, and instead opted for manually named flags<br/>
+        /// The vanilla game didn't do this, and instead opted for manually named flags<br/>
         /// in the conditions, even though special flag IDs are used elsewhere in the code
         /// </summary>
-        /// <param name="orig">Original HandleSpecialEvent</param>
+        /// <param name="orig">Original HandleSpecialEvent method</param>
         /// <param name="player">Player that raised the special event</param>
         /// <param name="eventID">Special event ID</param>
         private void On_AchievementsHelper_HandleSpecialEvent(On_AchievementsHelper.orig_HandleSpecialEvent orig, Player player, int eventID)
         {
             orig.Invoke(player, eventID);
 
-            Achievements.AchHelper.NotifyFlagSpecial(player, eventID);
+            AchHelper.NotifyFlagSpecial(player, eventID);
         }
 
         /// <summary>
@@ -240,8 +260,8 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         /// <param name="orig">Original ctor</param>
         /// <param name="self">UIAchievementListItem being created</param>
-        /// <param name="achievement">achievement ctor parameter</param>
-        /// <param name="largeForOtherLanguages">largeForOtherLanguages ctor parameter</param>
+        /// <param name="achievement">Achievement to base the list item on</param>
+        /// <param name="largeForOtherLanguages">True if large for other languages</param>
         private void On_UIAchievementListItem_ctor(On_UIAchievementListItem.orig_ctor orig, UIAchievementListItem self, Achievement achievement, bool largeForOtherLanguages)
         {
             orig.Invoke(self, achievement, largeForOtherLanguages);
@@ -287,7 +307,7 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         /// <param name="orig">Original ctor</param>
         /// <param name="self">AchievementUnlockedPopup being created</param>
-        /// <param name="achievement">achievement ctor parameter</param>
+        /// <param name="achievement">Achievement to base the pop-up on</param>
         private void AchievementUnlockedPopup_ctor(On_InGamePopups.AchievementUnlockedPopup.orig_ctor orig, InGamePopups.AchievementUnlockedPopup self, Achievement achievement)
         {
             orig.Invoke(self, achievement);

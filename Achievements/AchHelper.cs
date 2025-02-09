@@ -29,6 +29,14 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void ItemCatchEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines an item equip event
+        /// </summary>
+        /// <param name="player">Player that equipped the item</param>
+        /// <param name="context">Item slot context ID</param>
+        /// <param name="id">Item ID that was equipped</param>
+        public delegate void ItemEquipEvent(Player player, int context, int id);
+
+        /// <summary>
         /// Signature that defines an item extract event
         /// </summary>
         /// <param name="player">Player that extracts the item</param>
@@ -112,6 +120,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event ItemCatchEvent OnItemCatch;
 
         /// <summary>
+        /// Event that is invoked when an item is equipped by the player
+        /// </summary>
+        public static event ItemEquipEvent OnItemEquip;
+
+        /// <summary>
         /// Event that is invoked when an item is extracted by the player
         /// </summary>
         public static event ItemExtractEvent OnItemExtract;
@@ -177,6 +190,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that caught the item</param>
         /// <param name="id">Item ID that was caught</param>
         public static void NotifyItemCatch(Player player, int id) => OnItemCatch?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an item is equipped by the player
+        /// </summary>
+        /// <param name="player">Player that equipped the item</param>
+        /// <param name="context">Item slot context ID</param>
+        /// <param name="id">Item ID that was equipped</param>
+        public static void NotifyItemEquip(Player player, int context, int id) => OnItemEquip?.Invoke(player, context, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is extracted by the player

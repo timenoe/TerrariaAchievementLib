@@ -47,12 +47,12 @@ namespace TerrariaAchievementLib.Players
         /// <summary>
         /// Detour to send a notification when the local player activates a buff
         /// </summary>
-        /// <param name="orig">Original AddBuff</param>
+        /// <param name="orig">Original AddBuff method</param>
         /// <param name="self">Player adding the buff</param>
-        /// <param name="type">type AddBuff parameter</param>
-        /// <param name="timeToAdd">timeToAdd AddBuff parameter</param>
-        /// <param name="quiet">quiet AddBuff parameter</param>
-        /// <param name="foodHack">foodHack AddBuff parameter</param>
+        /// <param name="type">Buff ID being added</param>
+        /// <param name="timeToAdd">Buff time in ticks</param>
+        /// <param name="quiet">True if skipping network sync message</param>
+        /// <param name="foodHack">Unused parameter</param>
         private void On_Player_AddBuff(On_Player.orig_AddBuff orig, Player self, int type, int timeToAdd, bool quiet, bool foodHack)
         {
             orig.Invoke(self, type, timeToAdd, quiet, foodHack);
@@ -63,11 +63,10 @@ namespace TerrariaAchievementLib.Players
         /// <summary>
         /// Detour to send a notification when the local player gets an item from an extractinator
         /// </summary>
-        /// <param name="orig">Original DropItemFromExtractinator</param>
+        /// <param name="orig">Original DropItemFromExtractinator method</param>
         /// <param name="self">Player getting the item from the extractinator</param>
-        /// <param name="itemType">itemType DropItemFromExtractinator parameter</param>
-        /// <param name="stack">stack DropItemFromExtractinator parameter</param>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <param name="itemType">item ID being dropped</param>
+        /// <param name="stack">Count of item being dropped</param>
         private void On_Player_DropItemFromExtractinator(On_Player.orig_DropItemFromExtractinator orig, Player self, int itemType, int stack)
         {
             orig.Invoke(self, itemType, stack);

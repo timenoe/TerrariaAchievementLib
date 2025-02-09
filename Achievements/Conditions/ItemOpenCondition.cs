@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
             foreach (var condition in conditions)
             {
-                // Check Bag ID when applicable
+                // Check bag ID when applicable
                 if (condition._bagId != 0 && bagId != condition._bagId)
                     continue;
 
