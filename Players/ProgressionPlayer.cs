@@ -14,12 +14,18 @@ namespace TerrariaAchievementLib.Players
     {
         public override void Load()
         {
+            if (Main.dedServ)
+                return;
+            
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
             On_Player.AddBuff += On_Player_AddBuff;
         }
 
         public override void Unload()
         {
+            if (Main.dedServ)
+                return;
+
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
             On_Player.AddBuff -= On_Player_AddBuff;
         }

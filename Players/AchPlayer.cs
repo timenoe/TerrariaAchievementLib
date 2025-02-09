@@ -11,12 +11,18 @@ namespace TerrariaAchievementLib.Players
     {
         public override void Load()
         {
+            if (Main.dedServ)
+                return;
+
             On_Player.AddBuff += On_Player_AddBuff;
             On_Player.DropItemFromExtractinator += On_Player_DropItemFromExtractinator;
         }
 
         public override void Unload()
         {
+            if (Main.dedServ)
+                return;
+
             On_Player.AddBuff -= On_Player_AddBuff;
             On_Player.DropItemFromExtractinator -= On_Player_DropItemFromExtractinator;
         }
