@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -233,10 +234,13 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(player, item, context);
 
+            // Apply custom context ID if applicable
+            if (AchData.ItemIDSets.Wings.Contains(item.type))
+                context = AchData.ItemSlotContextID.EquipWings;
+
             // Notify with just the item slot context ID for equipping anything in that slot
             AchHelper.NotifyItemEquip(player, context, ItemID.None);
-
-            // Notify with the citem slot context ID and the specific item ID
+            // Notify with the item slot context ID and the specific item ID
             AchHelper.NotifyItemEquip(player, context, item.type);
         }
 

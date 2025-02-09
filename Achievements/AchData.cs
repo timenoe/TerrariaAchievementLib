@@ -47,5 +47,22 @@ namespace TerrariaAchievementLib.Achievements
             { "FLYING_DUTCHMAN", [NPCID.PirateShip] },
             { "MARTIAN_SAUCER", [NPCID.MartianSaucer] }
         };
+
+
+        /// <summary>
+        /// Groups item IDs by specific categories
+        /// </summary>
+        public class ItemIDSets
+        {
+            public static int[] Wings = [ItemID.CreativeWings, ItemID.AngelWings, ItemID.DemonWings, ItemID.FairyWings, ItemID.FinWings, ItemID.FrozenWings, ItemID.HarpyWings, ItemID.Jetpack, ItemID.LeafWings, ItemID.BatWings, ItemID.BeeWings, ItemID.ButterflyWings, ItemID.FlameWings, ItemID.Hoverboard, ItemID.BoneWings, ItemID.MothronWings, ItemID.GhostWings, ItemID.BeetleWings, ItemID.FestiveWings, ItemID.SpookyWings, ItemID.TatteredFairyWings, ItemID.SteampunkWings, ItemID.BetsyWings, ItemID.RainbowWings, ItemID.FishronWings, ItemID.WingsNebula, ItemID.WingsVortex, ItemID.WingsSolar, ItemID.WingsStardust, ItemID.RedsWings, ItemID.DTownsWings, ItemID.WillsWings, ItemID.CrownosWings, ItemID.CenxsWings, ItemID.BejeweledValkyrieWing, ItemID.Yoraiz0rWings, ItemID.JimsWings, ItemID.SkiphsWings, ItemID.LokisWings, ItemID.ArkhalisWings, ItemID.LeinforsWings, ItemID.GhostarsWings, ItemID.SafemanWings, ItemID.FoodBarbarianWings, ItemID.GroxTheGreatWings, ItemID.LongRainbowTrailWings];
+        }
+        
+        /// <summary>
+        /// Extended item slot context IDs
+        /// </summary>
+        public class ItemSlotContextID
+        {
+            public const int EquipWings = 1337;
+        }
     }
 }
