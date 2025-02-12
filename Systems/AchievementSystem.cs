@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +11,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using TerrariaAchievementLib.Achievements;
+using TerrariaAchievementLib.Players;
 
 namespace TerrariaAchievementLib.Systems
 {
@@ -29,7 +29,6 @@ namespace TerrariaAchievementLib.Systems
         /// Flags to use during reflection
         /// </summary>
         private const BindingFlags ReflectionFlags = BindingFlags.NonPublic | BindingFlags.Instance;
-
 
         /// <summary>
         /// Achievement icon texture
@@ -49,6 +48,11 @@ namespace TerrariaAchievementLib.Systems
 
 
         /// <summary>
+        /// File to cache information
+        /// </summary>
+        public static string CacheFilePath => $"{ModLoader.ModPath}/TerrariaAchievementLib.nbt";
+
+        /// <summary>
         /// Unique achievement name header
         /// </summary>
         protected abstract string Identifier { get; }
@@ -57,6 +61,8 @@ namespace TerrariaAchievementLib.Systems
         /// Achievement icon texture path
         /// </summary>
         protected abstract List<string> TexturePaths { get; }
+
+        protected bool IsHardestcoreEnabled = false;
 
         /// <summary>
         /// Achievement icon texture
@@ -109,6 +115,10 @@ namespace TerrariaAchievementLib.Systems
             // Add unique achievement header to the name if needed
             if (!name.StartsWith(Identifier))
                 name = $"{Identifier}_{name}";
+
+            // Enable Hardestcore if applicable
+            if (cond.Reqs.PlayerDiff == PlayerDiff.Hardestcore)
+                HardestcorePlayer.Enable();
 
             Achievement ach = new(name);
             ach.AddCondition(cond);

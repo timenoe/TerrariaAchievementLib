@@ -7,7 +7,7 @@ namespace TerrariaAchievementLib.Players
     /// <summary>
     /// Sends notifications to achievement conditions for various player events
     /// </summary>
-    public class AchPlayer : ModPlayer
+    public class AchievementPlayer : ModPlayer
     {
         public override void Load()
         {

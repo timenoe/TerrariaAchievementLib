@@ -9,7 +9,7 @@ namespace TerrariaAchievementLib.Items
     /// <summary>
     /// Sends notifications to achievement conditions when an item is dropped
     /// </summary>
-    public class AchItem : GlobalItem
+    public class AchievementItem : GlobalItem
     {
         public override void OnSpawn(Item item, IEntitySource source)
         {

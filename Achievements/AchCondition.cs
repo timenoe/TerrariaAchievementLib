@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
+using TerrariaAchievementLib.Players;
 
 namespace TerrariaAchievementLib.Achievements
 {
@@ -12,7 +14,8 @@ namespace TerrariaAchievementLib.Achievements
         Classic,
         Mediumcore,
         Hardcore,
-        Journey
+        Journey,
+        Hardestcore
     }
 
     /// <summary>
@@ -114,6 +117,10 @@ namespace TerrariaAchievementLib.Achievements
                         return false;
                     break;
 
+                case PlayerDiff.Hardestcore:
+                    if (!ModContent.GetInstance<HardestcorePlayer>().CanEarnAchievement())
+                        return false;
+                    break;
             }
 
             switch (WorldDiff)
