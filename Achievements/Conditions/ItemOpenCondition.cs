@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemID">Item ID to listen for</param>
         /// <returns>Item open achievement condition</returns>
-        public static AchCondition Open(ConditionReqs reqs, short bagId, int itemID) => new ItemOpenCondition(reqs, bagId, itemID);
+        public static CustomAchievementCondition Open(ConditionReqs reqs, short bagId, int itemID) => new ItemOpenCondition(reqs, bagId, itemID);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be opened from a grab bag
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item open achievement condition</returns>
-        public static AchCondition OpenAny(ConditionReqs reqs, short bagId, params int[] itemIds) => new ItemOpenCondition(reqs, bagId, itemIds);
+        public static CustomAchievementCondition OpenAny(ConditionReqs reqs, short bagId, params int[] itemIds) => new ItemOpenCondition(reqs, bagId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be opened from a grab bag
@@ -72,9 +72,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item open achievement conditions</returns>
-        public static List<AchCondition> OpenAll(ConditionReqs reqs, short bagId, params int[] itemIds)
+        public static List<CustomAchievementCondition> OpenAll(ConditionReqs reqs, short bagId, params int[] itemIds)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
                 conditions.Add(new ItemOpenCondition(reqs, bagId, itemId));
             return conditions;
@@ -111,7 +111,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnItemOpen += AchHelper_OnItemOpen;
+                CustomAchievementHelper.OnItemOpen += AchHelper_OnItemOpen;
                 _isHooked = true;
             }
 

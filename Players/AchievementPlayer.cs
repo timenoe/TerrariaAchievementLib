@@ -29,19 +29,19 @@ namespace TerrariaAchievementLib.Players
 
         public override bool CanUseItem(Item item)
         {
-            AchHelper.NotifyItemUse(Player, item.type);
+            CustomAchievementHelper.NotifyItemUse(Player, item.type);
             return true;
         }
 
-        public override void ModifyCaughtFish(Item fish) => AchHelper.NotifyItemCatch(Player, fish.type);
+        public override void ModifyCaughtFish(Item fish) => CustomAchievementHelper.NotifyItemCatch(Player, fish.type);
 
         public override void OnCatchNPC(NPC npc, Item item, bool failed)
         {
             if (!failed)
-                AchHelper.NotifyNpcCatch(Player, npc.type);
+                CustomAchievementHelper.NotifyNpcCatch(Player, npc.type);
         }
 
-        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => AchHelper.NotifyNpcBuy(Player, (short)vendor.type, item.type);
+        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => CustomAchievementHelper.NotifyNpcBuy(Player, (short)vendor.type, item.type);
 
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace TerrariaAchievementLib.Players
         {
             orig.Invoke(self, type, timeToAdd, quiet, foodHack);
 
-            AchHelper.NotifyBuffUse(self, type);
+            CustomAchievementHelper.NotifyBuffUse(self, type);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace TerrariaAchievementLib.Players
         {
             orig.Invoke(self, itemType, stack);
 
-            AchHelper.NotifyItemExtract(self, itemType);
+            CustomAchievementHelper.NotifyItemExtract(self, itemType);
         }
     }
 }

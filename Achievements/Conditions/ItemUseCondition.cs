@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item use achievement condition</returns>
-        public static AchCondition Use(ConditionReqs reqs, int id) => new ItemUseCondition(reqs, id);
+        public static CustomAchievementCondition Use(ConditionReqs reqs, int id) => new ItemUseCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be used
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item use achievement condition</returns>
-        public static AchCondition UseAny(ConditionReqs reqs, params int[] ids) => new ItemUseCondition(reqs, ids);
+        public static CustomAchievementCondition UseAny(ConditionReqs reqs, params int[] ids) => new ItemUseCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be used
@@ -62,9 +62,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item use achievement conditions</returns>
-        public static List<AchCondition> UseAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> UseAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new ItemUseCondition(reqs, id));
             return conditions;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnItemUse += AchHelper_OnItemUse;
+                CustomAchievementHelper.OnItemUse += AchHelper_OnItemUse;
                 _isHooked = true;
             }
 

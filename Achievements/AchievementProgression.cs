@@ -34,10 +34,10 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// Checks if certain items should be blocked based on current world progression
     /// </summary>
-    public class AchProgression
+    public class AchievementProgression
     {
         /// <summary>
-        /// Will block items if true
+        /// True if items should be blocked based on the current world progression
         /// </summary>
         private static bool _enabled;
         
@@ -160,6 +160,12 @@ namespace TerrariaAchievementLib.Achievements
 
 
         /// <summary>
+        /// True if items should be blocked based on the current world progression
+        /// </summary>
+        public static bool Enabled => _enabled;
+
+
+        /// <summary>
         /// Gets the current progression state
         /// </summary>
         /// <returns>Current progression state</returns>
@@ -241,9 +247,8 @@ namespace TerrariaAchievementLib.Achievements
         }
 
         /// <summary>
-        /// Enable or disable the blocking of items
+        /// Enable the blocking of items based on the current world progression
         /// </summary>
-        /// <param name="enabled">Set to true to enable</param>
-        public static void SetEnabled(bool enabled) => _enabled = enabled;
+        public static void Enable() => _enabled = true;
     }
 }

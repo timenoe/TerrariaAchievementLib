@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that gifts the items</param>
         /// <param name="itemID">Item ID to listen for</param>
         /// <returns>Item gift achievement condition</returns>
-        public static AchCondition Gift(ConditionReqs reqs, short npcId, int itemID) => new NpcGiftCondition(reqs, npcId, itemID);
+        public static CustomAchievementCondition Gift(ConditionReqs reqs, short npcId, int itemID) => new NpcGiftCondition(reqs, npcId, itemID);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be gifted from an NPC
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item gift achievement condition</returns>
-        public static AchCondition GiftAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcGiftCondition(reqs, npcId, itemIds);
+        public static CustomAchievementCondition GiftAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcGiftCondition(reqs, npcId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be gifted from an NPC
@@ -72,9 +72,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item gift achievement conditions</returns>
-        public static List<AchCondition> GiftAll(ConditionReqs reqs, short npcId, params int[] itemIds)
+        public static List<CustomAchievementCondition> GiftAll(ConditionReqs reqs, short npcId, params int[] itemIds)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
                 conditions.Add(new NpcGiftCondition(reqs, npcId, itemId));
             return conditions;
@@ -109,7 +109,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnNpcGift += AchHelper_OnNpcGift;
+                CustomAchievementHelper.OnNpcGift += AchHelper_OnNpcGift;
                 _isHooked = true;
             }
 

@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item extract achievement condition</returns>
-        public static AchCondition Extract(ConditionReqs reqs, int id) => new ItemExtractCondition(reqs, id);
+        public static CustomAchievementCondition Extract(ConditionReqs reqs, int id) => new ItemExtractCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be extracted
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item extract achievement condition</returns>
-        public static AchCondition ExtractAny(ConditionReqs reqs, params int[] ids) => new ItemExtractCondition(reqs, ids);
+        public static CustomAchievementCondition ExtractAny(ConditionReqs reqs, params int[] ids) => new ItemExtractCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be extracted
@@ -62,9 +62,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item extract achievement conditions</returns>
-        public static List<AchCondition> ExtractAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> ExtractAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new ItemExtractCondition(reqs, id));
             return conditions;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnItemExtract += AchHelper_OnItemExtract;
+                CustomAchievementHelper.OnItemExtract += AchHelper_OnItemExtract;
                 _isHooked = true;
             }
 

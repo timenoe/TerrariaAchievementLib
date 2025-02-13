@@ -1,12 +1,11 @@
 ﻿using Terraria;
-using Terraria.ID;
 
 namespace TerrariaAchievementLib.Achievements
 {
     /// <summary>
     /// Helper to notify achievement conditions when specific events occur
     /// </summary>
-    public class AchHelper
+    public class CustomAchievementHelper
     {
         /// <summary>
         /// Signature that defines a buff add event

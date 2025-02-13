@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item grab achievement condition</returns>
-        public static AchCondition Grab(ConditionReqs reqs, int id) => new ItemGrabCondition(reqs, id);
+        public static CustomAchievementCondition Grab(ConditionReqs reqs, int id) => new ItemGrabCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be grabbed
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item grab achievement condition</returns>
-        public static AchCondition GrabAny(ConditionReqs reqs, params int[] ids) => new ItemGrabCondition(reqs, ids);
+        public static CustomAchievementCondition GrabAny(ConditionReqs reqs, params int[] ids) => new ItemGrabCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be grabbed
@@ -63,9 +63,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item grab achievement conditions</returns>
-        public static List<AchCondition> GrabAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> GrabAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new ItemGrabCondition(reqs, id));
             return conditions;

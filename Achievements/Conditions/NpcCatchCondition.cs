@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">NPC ID to listen for</param>
         /// <returns>NPC catch achievement condition</returns>
-        public static AchCondition Catch(ConditionReqs reqs, int id) => new NpcCatchCondition(reqs, id);
+        public static CustomAchievementCondition Catch(ConditionReqs reqs, int id) => new NpcCatchCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the NPCs to be caught
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC catch achievement condition</returns>
-        public static AchCondition CatchAny(ConditionReqs reqs, params int[] ids) => new NpcCatchCondition(reqs, ids);
+        public static CustomAchievementCondition CatchAny(ConditionReqs reqs, params int[] ids) => new NpcCatchCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the NPCs to be caught
@@ -62,9 +62,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC catch achievement conditions</returns>
-        public static List<AchCondition> CatchAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> CatchAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new NpcCatchCondition(reqs, id));
             return conditions;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnNpcCatch += AchHelper_OnNpcCatch;
+                CustomAchievementHelper.OnNpcCatch += AchHelper_OnNpcCatch;
                 _isHooked = true;
             }
 

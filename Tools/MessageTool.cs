@@ -12,7 +12,13 @@ namespace TerrariaAchievementLib.Tools
     /// Warn = Yellow<br/>
     /// Error = Red
     /// </summary>
-    public enum ChatLogType { Info, Success, Warn, Error };
+    public enum ChatLogType
+    {
+        Info,
+        Success,
+        Warn,
+        Error
+    };
 
 
     /// <summary>
@@ -24,6 +30,7 @@ namespace TerrariaAchievementLib.Tools
         /// Stylized message header
         /// </summary>
         private static string _msgHeader = "[c/FFF014:TerrariaAchievementLib][c/FFFFFF::] ";
+
 
         /// <summary>
         /// Set the message header to be unique to the mod

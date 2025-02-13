@@ -1,8 +1,9 @@
-﻿using Terraria.IO;
+﻿using System.Collections.Generic;
+using Terraria;
+using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Utilities;
-using System.Collections.Generic;
 
 namespace TerrariaAchievementLib.Systems
 {
@@ -16,12 +17,18 @@ namespace TerrariaAchievementLib.Systems
     {
         public override void Load()
         {
+            if (Main.dedServ)
+                return;
+            
             On_PlayerFileData.Rename += On_PlayerFileData_Rename;
             On_PlayerFileData.CreateAndSave += On_PlayerFileData_CreateAndSave;
         }
 
         public override void Unload()
         {
+            if (Main.dedServ)
+                return;
+
             On_PlayerFileData.Rename -= On_PlayerFileData_Rename;
             On_PlayerFileData.CreateAndSave -= On_PlayerFileData_CreateAndSave;
         }

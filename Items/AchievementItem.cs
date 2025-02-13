@@ -17,28 +17,28 @@ namespace TerrariaAchievementLib.Items
             {
                 // Check that the local player is the one closest to the destroyed tile
                 if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
-                    AchHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
+                    CustomAchievementHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
             }
 
             else if (source is EntitySource_ShakeTree)
             {
                 // Check that the local player is the one closest to the item
                 if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
-                    AchHelper.NotifyItemShake(Main.LocalPlayer, item.type);
+                    CustomAchievementHelper.NotifyItemShake(Main.LocalPlayer, item.type);
             }
 
             else if (source is EntitySource_Loot loot)
             {
                 // Check that the local player has damaged the NPC
                 if (loot.Entity is NPC npc && npc.playerInteraction[Main.myPlayer])
-                    AchHelper.NotifyNpcDrop(Main.LocalPlayer, (short)npc.type, item.type);
+                    CustomAchievementHelper.NotifyNpcDrop(Main.LocalPlayer, (short)npc.type, item.type);
             }
 
             else if (source is EntitySource_ItemOpen bag)
             {
                 // Check that the local player is the one closest to the item
                 if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
-                    AchHelper.NotifyItemOpen(Main.LocalPlayer, bag.ItemType, item.type);
+                    CustomAchievementHelper.NotifyItemOpen(Main.LocalPlayer, bag.ItemType, item.type);
             }
             
             else if (source is EntitySource_Gift gift)
@@ -48,9 +48,9 @@ namespace TerrariaAchievementLib.Items
                     return;
 
                 if (gift.Entity is NPC npc)
-                    AchHelper.NotifyNpcGift(Main.LocalPlayer, npc.type, item.type);
+                    CustomAchievementHelper.NotifyNpcGift(Main.LocalPlayer, npc.type, item.type);
                 else
-                    AchHelper.NotifyNpcGift(Main.LocalPlayer, NPCID.None, item.type);
+                    CustomAchievementHelper.NotifyNpcGift(Main.LocalPlayer, NPCID.None, item.type);
             }
         }
     }

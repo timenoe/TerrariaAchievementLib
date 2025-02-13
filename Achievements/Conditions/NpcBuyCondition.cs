@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that sells the item</param>
         /// <param name="itemId">Item ID to listen for</param>
         /// <returns>NPC item buy achievement condition</returns>
-        public static AchCondition Buy(ConditionReqs reqs, short npcId, int itemId) => new NpcBuyCondition(reqs, npcId, itemId);
+        public static CustomAchievementCondition Buy(ConditionReqs reqs, short npcId, int itemId) => new NpcBuyCondition(reqs, npcId, itemId);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be bought from an NPC
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that sell the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>NPC item buy achievement condition</returns>
-        public static AchCondition BuyAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcBuyCondition(reqs, npcId, itemIds);
+        public static CustomAchievementCondition BuyAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcBuyCondition(reqs, npcId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be bought from an NPC
@@ -72,9 +72,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that sells the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>NPC item buy achievement conditions</returns>
-        public static List<AchCondition> BuyAll(ConditionReqs reqs, short npcId, params int[] itemIds)
+        public static List<CustomAchievementCondition> BuyAll(ConditionReqs reqs, short npcId, params int[] itemIds)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
                 conditions.Add(new NpcBuyCondition(reqs, npcId, itemId));
             return conditions;
@@ -110,7 +110,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnNpcBuy += AchHelper_OnNpcBuy;
+                CustomAchievementHelper.OnNpcBuy += AchHelper_OnNpcBuy;
                 _isHooked = true;
             }
 

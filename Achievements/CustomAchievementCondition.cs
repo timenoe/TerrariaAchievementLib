@@ -118,7 +118,7 @@ namespace TerrariaAchievementLib.Achievements
                     break;
 
                 case PlayerDiff.Hardestcore:
-                    if (!ModContent.GetInstance<HardestcorePlayer>().CanEarnAchievement())
+                    if (player.difficulty != PlayerDifficultyID.Hardcore || !ModContent.GetInstance<HardestcorePlayer>().CanEarnAchievement())
                         return false;
                     break;
             }
@@ -208,7 +208,7 @@ namespace TerrariaAchievementLib.Achievements
     /// </summary>
     /// <param name="name">Name of the condition</param>
     /// <param name="reqs">Extra base requirements</param>
-    public class AchCondition(string name, ConditionReqs reqs) : Terraria.Achievements.AchievementCondition(name)
+    public class CustomAchievementCondition(string name, ConditionReqs reqs) : Terraria.Achievements.AchievementCondition(name)
     {
         /// <summary>
         /// Condition requirements that must be met
@@ -219,7 +219,7 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// Base class for achievement conditions that are triggered by ID events
     /// </summary>
-    public class AchIdCondition : AchCondition
+    public class AchIdCondition : CustomAchievementCondition
     {
         /// <summary>
         /// IDs that need to be triggered to satisfy the condition

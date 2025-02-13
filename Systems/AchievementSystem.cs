@@ -32,15 +32,20 @@ namespace TerrariaAchievementLib.Systems
         private const BindingFlags ReflectionFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
         /// <summary>
-        /// Achievement icon texture
+        /// File to cache information
         /// </summary>
-        private readonly List<Asset<Texture2D>> _textures = [];
+        private static string _cacheFilePath = $"{ModLoader.ModPath}/TerrariaAchievementLib.nbt";
 
         /// <summary>
         /// True achievement icon index<br/>
         /// Texture size cannot exceed vanilla, so this allows for reference of multiple textures
         /// </summary>
         private readonly Dictionary<string, int> _iconIndexes = [];
+
+        /// <summary>
+        /// Achievement icon texture
+        /// </summary>
+        private readonly List<Asset<Texture2D>> _textures = [];
 
         /// <summary>
         /// Current achievement icon index in the texture
@@ -51,7 +56,7 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// File to cache information
         /// </summary>
-        public static string CacheFilePath => $"{ModLoader.ModPath}/TerrariaAchievementLib.nbt";
+        public static string CacheFilePath => _cacheFilePath;
 
         /// <summary>
         /// Unique achievement name header
@@ -62,8 +67,6 @@ namespace TerrariaAchievementLib.Systems
         /// Achievement icon texture path
         /// </summary>
         protected abstract List<string> TexturePaths { get; }
-
-        protected bool IsHardestcoreEnabled = false;
 
         /// <summary>
         /// Achievement icon texture
@@ -80,6 +83,7 @@ namespace TerrariaAchievementLib.Systems
             LoadAchTextures();
             LoadSaveData();
 
+            SetModCacheFilePath(Mod);
             MessageTool.SetModMsgHeader(Mod);
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
@@ -94,6 +98,7 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             UnregisterAchievements();
+
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
             On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
@@ -106,6 +111,11 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         protected abstract void RegisterAchievements();
 
+        /// <summary>
+        /// Set the cache file path to be unique to the mod
+        /// </summary>
+        /// <param name="mod">Mod to cache data for</param>
+        private static void SetModCacheFilePath(Mod mod) => _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
 
         /// <summary>
         /// Register a new achievement with one condition to the in-game list
@@ -113,13 +123,13 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="name">Achievement name</param>
         /// <param name="cond">Achievement condition</param>
         /// <param name="cat">Achievement category</param>
-        protected void RegisterAchievement(string name, AchCondition cond, AchievementCategory cat)
+        protected void RegisterAchievement(string name, CustomAchievementCondition cond, AchievementCategory cat)
         {
             // Add unique achievement header to the name if needed
             if (!name.StartsWith(Identifier))
                 name = $"{Identifier}_{name}";
 
-            // Enable Hardestcore if applicable
+            // Enable Hardestcore if needed
             if (cond.Reqs.PlayerDiff == PlayerDiff.Hardestcore)
                 HardestcorePlayer.Enable();
 
@@ -144,16 +154,22 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="conds">Achievement conditions</param>
         /// <param name="track">True if tracking completed conditions total in the in-game menu</param>
         /// <param name="cat">Achievement category</param>
-        protected void RegisterAchievement(string name, List<AchCondition> conds, bool track, AchievementCategory cat)
+        protected void RegisterAchievement(string name, List<CustomAchievementCondition> conds, bool track, AchievementCategory cat)
         {
             // Add unique achievement header to the name if needed
             if (!name.StartsWith(Identifier))
                 name = $"{Identifier}_{name}";
 
             Achievement ach = new(name);
-            foreach (var condition in conds)
-                ach.AddCondition(condition);
+            foreach (var cond in conds)
+            {
+                // Enable Hardestcore if needed
+                if (cond.Reqs.PlayerDiff == PlayerDiff.Hardestcore)
+                    HardestcorePlayer.Enable();
 
+                ach.AddCondition(cond);
+            }
+               
             if (track)
                 ach.UseConditionsCompletedTracker();
 
@@ -249,12 +265,12 @@ namespace TerrariaAchievementLib.Systems
 
             // Apply custom context ID if applicable
             if (item.wingSlot > 0)
-                context = AchData.ItemSlotContextID.EquipWings;
+                context = AchievementData.ItemSlotContextID.EquipWings;
 
             // Notify with just the item slot context ID for equipping anything in that slot
-            AchHelper.NotifyItemEquip(player, context, ItemID.None);
+            CustomAchievementHelper.NotifyItemEquip(player, context, ItemID.None);
             // Notify with the item slot context ID and the specific item ID
-            AchHelper.NotifyItemEquip(player, context, item.type);
+            CustomAchievementHelper.NotifyItemEquip(player, context, item.type);
         }
 
         /// <summary>
@@ -269,7 +285,7 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(player, eventID);
 
-            AchHelper.NotifyFlagSpecial(player, eventID);
+            CustomAchievementHelper.NotifyFlagSpecial(player, eventID);
         }
 
         /// <summary>

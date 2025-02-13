@@ -84,15 +84,15 @@ namespace TerrariaAchievementLib.Players
         }
 
         /// <summary>
+        /// Enables this player to process Hardestcore events
+        /// </summary>
+        public static void Enable() => _enabled = true;
+
+        /// <summary>
         /// Check if the player can earn a Hardestcore achievement
         /// </summary>
         /// <returns>True if the player can earn a Hardestcore achievement</returns>
         public bool CanEarnAchievement() => Player.HasBuff(ModContent.BuffType<HardestcoreBuff>());
-
-        /// <summary>
-        /// Enables this player to process Hardestcore events
-        /// </summary>
-        public static void Enable() => _enabled = true;
 
         /// <summary>
         /// Checks if a Hardcore player has died before

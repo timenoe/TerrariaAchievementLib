@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Progression flag ID to listen for</param>
         /// <returns>Progression flag set achievement condition</returns>
-        public static AchCondition Set(ConditionReqs reqs, int id) => new FlagProgressionCondition(reqs, id);
+        public static CustomAchievementCondition Set(ConditionReqs reqs, int id) => new FlagProgressionCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the progression flags to be set
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Progression flag IDs to listen for</param>
         /// <returns>Progression flag set achievement condition</returns>
-        public static AchCondition SetAny(ConditionReqs reqs, params int[] ids) => new FlagProgressionCondition(reqs, ids);
+        public static CustomAchievementCondition SetAny(ConditionReqs reqs, params int[] ids) => new FlagProgressionCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the progression flags to be set
@@ -63,9 +63,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Progression flag IDs to listen for</param>
         /// <returns>Progression flag set achievement conditions</returns>
-        public static List<AchCondition> SetAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> SetAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new FlagProgressionCondition(reqs, id));
             return conditions;

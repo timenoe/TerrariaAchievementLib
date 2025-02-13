@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item drop achievement condition</returns>
-        public static AchCondition Drop(ConditionReqs reqs, int id) => new TileDropCondition(reqs, id);
+        public static CustomAchievementCondition Drop(ConditionReqs reqs, int id) => new TileDropCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be dropped
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item drop achievement condition</returns>
-        public static AchCondition DropAny(ConditionReqs reqs, params int[] ids) => new TileDropCondition(reqs, ids);
+        public static CustomAchievementCondition DropAny(ConditionReqs reqs, params int[] ids) => new TileDropCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be dropped
@@ -62,9 +62,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item drop achievement conditions</returns>
-        public static List<AchCondition> DropAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> DropAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new TileDropCondition(reqs, id));
             return conditions;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnTileDrop += AchHelper_OnTileDrop;
+                CustomAchievementHelper.OnTileDrop += AchHelper_OnTileDrop;
                 _isHooked = true;
             }
 

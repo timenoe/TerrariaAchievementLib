@@ -1,8 +1,11 @@
 # Put US English localized achievement name and description in this file.
 # You must create other files for other languages. For example, create pt-BR.hson to translate to Brazilian portuguese.
 
+# The prefix identifier is defined in AchievementSystem.cs
+
 Achievements: {
-	NEW_ACHIEVEMENT_1_Name: New Achievement 1
-	NEW_ACHIEVEMENT_2_Description: This is the second new achievement.
-	NEW_ACHIEVEMENT_2_Name: New Achievement 2
+	IDENTIFIER_NEW_ACHIEVEMENT_1_Name: New Achievement 1
+	IDENTIFIER_NEW_ACHIEVEMENT_2_Description: This is the first new achievement.
+	IDENTIFIER_NEW_ACHIEVEMENT_2_Name: New Achievement 2
+	IDENTIFIER_NEW_ACHIEVEMENT_2_Description: This is the second new achievement.
 }

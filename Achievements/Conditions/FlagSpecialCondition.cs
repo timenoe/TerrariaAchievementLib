@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Special flag ID to listen for</param>
         /// <returns>Special flag set achievement condition</returns>
-        public static AchCondition Set(ConditionReqs reqs, int id) => new FlagSpecialCondition(reqs, id);
+        public static CustomAchievementCondition Set(ConditionReqs reqs, int id) => new FlagSpecialCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the special flags to be set
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Special flag IDs to listen for</param>
         /// <returns>Special flag set achievement condition</returns>
-        public static AchCondition SetAny(ConditionReqs reqs, params int[] ids) => new FlagSpecialCondition(reqs, ids);
+        public static CustomAchievementCondition SetAny(ConditionReqs reqs, params int[] ids) => new FlagSpecialCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the special flags to be set
@@ -62,9 +62,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Special flag IDs to listen for</param>
         /// <returns>Special flag set achievement conditions</returns>
-        public static List<AchCondition> SetAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> SetAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new FlagSpecialCondition(reqs, id));
             return conditions;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnFlagSpecial += AchHelper_OnFlagSpecial;
+                CustomAchievementHelper.OnFlagSpecial += AchHelper_OnFlagSpecial;
                 _isHooked = true;
             }
 

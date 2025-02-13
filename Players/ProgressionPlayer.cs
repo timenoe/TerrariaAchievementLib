@@ -32,35 +32,17 @@ namespace TerrariaAchievementLib.Players
 
         public override void OnEnterWorld()
         {
+            ReturnDisallowedConsumables(Player);
             UnequipDisallowedItems(Player);
-
-            if (Main.hardMode)
-                return;
-            
-            // Return consumed Life Fruit
-            if (Player.ConsumedLifeFruit > 0)
-            {
-                for (int i = 0; i < Player.ConsumedLifeFruit; i++)
-                    Item.NewItem(new EntitySource_DropAsItem(Player), Player.Center, ItemID.LifeFruit);
-                
-                Player.ConsumedLifeFruit = 0;
-            }
-
-            // Return consumed Aegis Fruit
-            if (Player.usedAegisFruit)
-            {
-                Item.NewItem(new EntitySource_DropAsItem(Player), Player.Center, ItemID.AegisFruit);
-                Player.usedAegisFruit = false;
-            }
-
-            // Return consumed Demon Heart
-            if (Player.extraAccessory)
-            {
-                Item.NewItem(new EntitySource_DropAsItem(Player), Player.Center, ItemID.DemonHeart);
-                Player.extraAccessory = false;
-            }
         }
 
+        /// <summary>
+        /// Detour to unequip newly equipped items from the player based on the current world progression
+        /// </summary>
+        /// <param name="orig">Original HandleOnEquip method</param>
+        /// <param name="player">Player that equipped the item</param>
+        /// <param name="item">Item that was equipped</param>
+        /// <param name="context">Item slot context</param>
         private void On_AchievementsHelper_HandleOnEquip(On_AchievementsHelper.orig_HandleOnEquip orig, Player player, Item item, int context)
         {
             orig.Invoke(player, item, context);
@@ -68,20 +50,73 @@ namespace TerrariaAchievementLib.Players
             UnequipDisallowedItems(player);
         }
 
+        /// <summary>
+        /// Detour to block buffs from being activated based on the current world progression
+        /// </summary>
+        /// <param name="orig">Original AddBuff method</param>
+        /// <param name="self">Player adding the buff</param>
+        /// <param name="type">Buff ID being added</param>
+        /// <param name="timeToAdd">Buff time in ticks</param>
+        /// <param name="quiet">True if skipping network sync message</param>
+        /// <param name="foodHack">Unused parameter</param>
         private void On_Player_AddBuff(On_Player.orig_AddBuff orig, Player self, int type, int timeToAdd, bool quiet, bool foodHack)
         {
-            if (!AchProgression.IsElementAllowed(ProgressionElement.Buff, type))
+            if (!AchievementProgression.IsElementAllowed(ProgressionElement.Buff, type))
                 return;
 
             orig.Invoke(self, type, timeToAdd, quiet, foodHack);
         }
 
+        /// <summary>
+        /// Returns any consumables to the player based on the current world progression
+        /// </summary>
+        /// <param name="player">Player to return consumables to</param>
+        private static void ReturnDisallowedConsumables(Player player)
+        {
+            if (!AchievementProgression.Enabled)
+                return;
+
+            // The following items are Hardmode only
+            if (Main.hardMode)
+                return;
+            
+            // Return consumed Life Fruit
+            if (player.ConsumedLifeFruit > 0)
+            {
+                for (int i = 0; i < player.ConsumedLifeFruit; i++)
+                    Item.NewItem(new EntitySource_DropAsItem(player), player.Center, ItemID.LifeFruit);
+
+                player.ConsumedLifeFruit = 0;
+            }
+
+            // Return consumed Aegis Fruit
+            if (player.usedAegisFruit)
+            {
+                Item.NewItem(new EntitySource_DropAsItem(player), player.Center, ItemID.AegisFruit);
+                player.usedAegisFruit = false;
+            }
+
+            // Return consumed Demon Heart
+            if (player.extraAccessory)
+            {
+                Item.NewItem(new EntitySource_DropAsItem(player), player.Center, ItemID.DemonHeart);
+                player.extraAccessory = false;
+            }
+        }
+
+        /// <summary>
+        /// Unequips items from the player based on the current world progression
+        /// </summary>
+        /// <param name="player">Player to unequip items from</param>
         private static void UnequipDisallowedItems(Player player)
         {
+            if (!AchievementProgression.Enabled)
+                return;
+
             // Armor and Accessories
             for (int slot = 0; slot <= 9; slot++)
             {
-                if (!AchProgression.IsElementAllowed(ProgressionElement.Equippable, player.armor[slot].type))
+                if (!AchievementProgression.IsElementAllowed(ProgressionElement.Equippable, player.armor[slot].type))
                 {
                     player.DropItem(new EntitySource_DropAsItem(player), player.Center, ref player.armor[slot]);
                     player.armor[slot].ChangeItemType(0);
@@ -91,7 +126,7 @@ namespace TerrariaAchievementLib.Players
             // Mount and Hook
             for (int slot = 3; slot <= 4; slot++)
             {
-                if (!AchProgression.IsElementAllowed(ProgressionElement.Equippable, player.miscEquips[slot].type))
+                if (!AchievementProgression.IsElementAllowed(ProgressionElement.Equippable, player.miscEquips[slot].type))
                 {
                     player.DropItem(new EntitySource_DropAsItem(player), player.Center, ref player.miscEquips[slot]);
                     player.miscEquips[slot].ChangeItemType(0);

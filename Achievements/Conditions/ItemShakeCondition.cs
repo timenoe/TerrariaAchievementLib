@@ -46,7 +46,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item shake achievement condition</returns>
-        public static AchCondition Shake(ConditionReqs reqs, int id) => new ItemShakeCondition(reqs, id);
+        public static CustomAchievementCondition Shake(ConditionReqs reqs, int id) => new ItemShakeCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be shaken from a tree
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item shake achievement condition</returns>
-        public static AchCondition ShakeAny(ConditionReqs reqs, params int[] ids) => new ItemShakeCondition(reqs, ids);
+        public static CustomAchievementCondition ShakeAny(ConditionReqs reqs, params int[] ids) => new ItemShakeCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be shaken from a tree
@@ -62,9 +62,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item shake achievement conditions</returns>
-        public static List<AchCondition> ShakeAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> ShakeAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new ItemShakeCondition(reqs, id));
             return conditions;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnItemShake += AchHelper_OnItemShake;
+                CustomAchievementHelper.OnItemShake += AchHelper_OnItemShake;
                 _isHooked = true;
             }
 

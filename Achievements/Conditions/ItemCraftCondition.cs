@@ -47,7 +47,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Item ID to listen for</param>
         /// <returns>Item craft achievement condition</returns>
-        public static AchCondition Craft(ConditionReqs reqs, int id) => new ItemCraftCondition(reqs, id);
+        public static CustomAchievementCondition Craft(ConditionReqs reqs, int id) => new ItemCraftCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be crafted
@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item craft achievement condition</returns>
-        public static AchCondition CraftAny(ConditionReqs reqs, params int[] ids) => new ItemCraftCondition(reqs, ids);
+        public static CustomAchievementCondition CraftAny(ConditionReqs reqs, params int[] ids) => new ItemCraftCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be crafted
@@ -63,9 +63,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Item IDs to listen for</param>
         /// <returns>Item craft achievement conditions</returns>
-        public static List<AchCondition> CraftAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> CraftAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new ItemCraftCondition(reqs, id));
             return conditions;

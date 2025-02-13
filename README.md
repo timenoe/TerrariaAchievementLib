@@ -21,9 +21,9 @@ protected override void RegisterAchievements()
 
     // Add achievement for the Minecart upgrade
     string name = "MINECART_UPGRADE";
-    AchCondition cond = ItemCraftCondition.Craft(reqs, ItemID.MinecartPowerup);
+    CustomAchievementCondition cond = ItemCraftCondition.Craft(reqs, ItemID.MinecartPowerup);
     RegisterAchievement(name, cond, AchievementCategory.Collector);
 }
 ```
 
-Alternatively, you can define your own conditions that inherit `AchCondition`.
+Alternatively, you can define your own conditions that inherit `CustomAchievementCondition`.

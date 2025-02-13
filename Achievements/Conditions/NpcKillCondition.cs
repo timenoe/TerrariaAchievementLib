@@ -55,7 +55,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="first">True if killing the NPC for the first time</param>
         /// <param name="id">NPC ID to listen for</param>
         /// <returns>NPC kill achievement condition</returns>
-        public static AchCondition Kill(ConditionReqs reqs, bool first, int id) => new NpcKillCondition(reqs, first, id);
+        public static CustomAchievementCondition Kill(ConditionReqs reqs, bool first, int id) => new NpcKillCondition(reqs, first, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the NPCs to be killed
@@ -64,7 +64,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="first">True if killing the NPC for the first time</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC kill achievement condition</returns>
-        public static AchCondition KillAny(ConditionReqs reqs, bool first, params int[] ids) => new NpcKillCondition(reqs, first, ids);
+        public static CustomAchievementCondition KillAny(ConditionReqs reqs, bool first, params int[] ids) => new NpcKillCondition(reqs, first, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the NPCs to be killed
@@ -73,9 +73,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="first">True if killing the NPC for the first time</param>
         /// <param name="ids">NPC IDs to listen for</param>
         /// <returns>NPC kill achievement conditions</returns>
-        public static List<AchCondition> KillAll(ConditionReqs reqs, bool first, params int[] ids)
+        public static List<CustomAchievementCondition> KillAll(ConditionReqs reqs, bool first, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new NpcKillCondition(reqs, first, id));
             return conditions;

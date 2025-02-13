@@ -45,7 +45,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="id">Buff ID to listen for</param>
         /// <returns>Buff add achievement condition</returns>
-        public static AchCondition Add(ConditionReqs reqs, int id) => new BuffAddCondition(reqs, id);
+        public static CustomAchievementCondition Add(ConditionReqs reqs, int id) => new BuffAddCondition(reqs, id);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the buffs to be added
@@ -53,7 +53,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
         /// <returns>Buff add achievement condition</returns>
-        public static AchCondition AddAny(ConditionReqs reqs, params int[] ids) => new BuffAddCondition(reqs, ids);
+        public static CustomAchievementCondition AddAny(ConditionReqs reqs, params int[] ids) => new BuffAddCondition(reqs, ids);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the buffs to be added
@@ -61,9 +61,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="ids">Buff IDs to listen for</param>
         /// <returns>Buff add achievement conditions</returns>
-        public static List<AchCondition> AddAll(ConditionReqs reqs, params int[] ids)
+        public static List<CustomAchievementCondition> AddAll(ConditionReqs reqs, params int[] ids)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var id in ids)
                 conditions.Add(new BuffAddCondition(reqs, id));
             return conditions;
@@ -93,7 +93,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnBuffAdd += AchHelper_OnBuffAdd;
+                CustomAchievementHelper.OnBuffAdd += AchHelper_OnBuffAdd;
                 _isHooked = true;
             }
 

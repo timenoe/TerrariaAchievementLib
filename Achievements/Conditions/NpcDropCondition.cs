@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that drops the item</param>
         /// <param name="itemId">Item ID to listen for</param>
         /// <returns>NPC item drop achievement condition</returns>
-        public static AchCondition Drop(ConditionReqs reqs, short npcId, int itemId) => new NpcDropCondition(reqs, npcId, itemId);
+        public static CustomAchievementCondition Drop(ConditionReqs reqs, short npcId, int itemId) => new NpcDropCondition(reqs, npcId, itemId);
 
         /// <summary>
         /// Helper to create a condition that listens for the NPC to drop any of the items
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that drops the item</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>NPC item drop achievement condition</returns>
-        public static AchCondition DropAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcDropCondition(reqs, npcId, itemIds);
+        public static CustomAchievementCondition DropAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcDropCondition(reqs, npcId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for the NPC to drop all of the items
@@ -72,9 +72,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that drops the item</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>NPC item drop achievement conditions</returns>
-        public static List<AchCondition> DropAll(ConditionReqs reqs, short npcId, params int[] itemIds)
+        public static List<CustomAchievementCondition> DropAll(ConditionReqs reqs, short npcId, params int[] itemIds)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
                 conditions.Add(new NpcDropCondition(reqs, npcId, itemId));
             return conditions;
@@ -110,7 +110,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnNpcDrop += AchHelper_OnNpcDrop;
+                CustomAchievementHelper.OnNpcDrop += AchHelper_OnNpcDrop;
                 _isHooked = true;
             }
 

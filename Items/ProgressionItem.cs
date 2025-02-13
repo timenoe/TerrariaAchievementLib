@@ -9,8 +9,8 @@ namespace TerrariaAchievementLib.Items
     /// </summary>
     public class ProgressionItem : GlobalItem
     {
-        public override bool? CanBeChosenAsAmmo(Item ammo, Item weapon, Player player) => AchProgression.IsElementAllowed(ProgressionElement.Ammo, ammo.type);
+        public override bool? CanBeChosenAsAmmo(Item ammo, Item weapon, Player player) => AchievementProgression.IsElementAllowed(ProgressionElement.Ammo, ammo.type);
 
-        public override bool CanUseItem(Item item, Player player) => AchProgression.IsElementAllowed(ProgressionElement.Usable, item.type);
+        public override bool CanUseItem(Item item, Player player) => AchievementProgression.IsElementAllowed(ProgressionElement.Usable, item.type);
     }
 }

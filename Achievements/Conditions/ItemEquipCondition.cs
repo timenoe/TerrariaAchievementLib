@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="contextId">Item slot context ID</param>
         /// <param name="itemID">Item ID to listen for</param>
         /// <returns>Item equip achievement condition</returns>
-        public static AchCondition Equip(ConditionReqs reqs, int contextId, int itemID) => new ItemEquipCondition(reqs, contextId, itemID);
+        public static CustomAchievementCondition Equip(ConditionReqs reqs, int contextId, int itemID) => new ItemEquipCondition(reqs, contextId, itemID);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be equipped
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="contextId">Item slot context ID</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item equip achievement condition</returns>
-        public static AchCondition EquipAny(ConditionReqs reqs, int contextId, params int[] itemIds) => new ItemEquipCondition(reqs, contextId, itemIds);
+        public static CustomAchievementCondition EquipAny(ConditionReqs reqs, int contextId, params int[] itemIds) => new ItemEquipCondition(reqs, contextId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be equipped
@@ -72,9 +72,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="contextId">Item slot context ID</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item equip achievement conditions</returns>
-        public static List<AchCondition> EquipAll(ConditionReqs reqs, int contextId, params int[] itemIds)
+        public static List<CustomAchievementCondition> EquipAll(ConditionReqs reqs, int contextId, params int[] itemIds)
         {
-            List<AchCondition> conditions = [];
+            List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
                 conditions.Add(new ItemEquipCondition(reqs, contextId, itemId));
             return conditions;
@@ -111,7 +111,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchHelper.OnItemEquip += AchHelper_OnItemEquip;
+                CustomAchievementHelper.OnItemEquip += AchHelper_OnItemEquip;
                 _isHooked = true;
             }
 

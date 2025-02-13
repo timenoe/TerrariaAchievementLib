@@ -10,7 +10,7 @@ namespace TerrariaAchievementLib.Buffs
     public class HardestcoreBuff : ModBuff
     {
         // Add the mod's name to the path since this is used as a submodule
-        public override string Texture => (Mod.Name + "." + GetType().Namespace + "." + Name).Replace('.', '/');
+        public override string Texture => $"{Mod.Name}.{GetType().Namespace}.{Name}".Replace('.', '/');
 
         public override void SetStaticDefaults()
         {

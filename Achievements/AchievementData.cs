@@ -6,7 +6,7 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// Data that is commonly used in achievements
     /// </summary>
-    public class AchData
+    public class AchievementData
     {
         /// <summary>
         /// NPC IDs that must be killed for a boss to be considered defeated<br/>
