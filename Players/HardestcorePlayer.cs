@@ -8,6 +8,7 @@ using Terraria.ModLoader.IO;
 using Terraria.Utilities;
 using TerrariaAchievementLib.Buffs;
 using TerrariaAchievementLib.Systems;
+using TerrariaAchievementLib.Tools;
 
 namespace TerrariaAchievementLib.Players
 {
@@ -33,13 +34,13 @@ namespace TerrariaAchievementLib.Players
 
             if (!IsPlayerHardestcore(Player))
             {
-                Main.NewText("Hardestcore is disabled (this player has died before).");
+                MessageTool.ChatLog("Hardestcore is disabled; this player has died before.");
                 return;
             }
 
             if (!IsWorldHardestcore(Main.ActiveWorldFileData))
             {
-                Main.NewText("Hardestcore is disabled (a player has died in this world before).");
+                MessageTool.ChatLog("Hardestcore is disabled; a player has died in this world before.");
                 return;
             }
 
