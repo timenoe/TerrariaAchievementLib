@@ -280,9 +280,9 @@ namespace TerrariaAchievementLib.Systems
                 context = AchievementData.ItemSlotContextID.EquipWings;
 
             // Notify with just the item slot context ID for equipping anything in that slot
-            CustomAchievementHelper.NotifyItemEquip(player, context, ItemID.None);
+            CustomAchievementsHelper.NotifyItemEquip(player, context, ItemID.None);
             // Notify with the item slot context ID and the specific item ID
-            CustomAchievementHelper.NotifyItemEquip(player, context, item.type);
+            CustomAchievementsHelper.NotifyItemEquip(player, context, item.type);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(player, eventID);
 
-            CustomAchievementHelper.NotifyFlagSpecial(player, eventID);
+            CustomAchievementsHelper.NotifyFlagSpecial(player, eventID);
         }
 
         /// <summary>

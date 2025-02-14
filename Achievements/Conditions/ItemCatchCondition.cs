@@ -76,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that caught the item</param>
         /// <param name="id">Item ID that was caught</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        private static void AchHelper_OnItemCatch(Player player, int id)
+        private static void CustomAchievementsHelper_OnItemCatch(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -95,7 +95,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnItemCatch += AchHelper_OnItemCatch;
+                CustomAchievementsHelper.OnItemCatch += CustomAchievementsHelper_OnItemCatch;
                 _isHooked = true;
             }
 

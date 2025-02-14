@@ -87,7 +87,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that equipped the item</param>
         /// <param name="contextId">Item slot context ID</param>
         /// <param name="itemId">Item ID that was equipped</param>
-        private static void AchHelper_OnItemEquip(Player player, int contextId, int itemId)
+        private static void CustomAchievementsHelper_OnItemEquip(Player player, int contextId, int itemId)
         {
             if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
@@ -111,7 +111,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnItemEquip += AchHelper_OnItemEquip;
+                CustomAchievementsHelper.OnItemEquip += CustomAchievementsHelper_OnItemEquip;
                 _isHooked = true;
             }
 

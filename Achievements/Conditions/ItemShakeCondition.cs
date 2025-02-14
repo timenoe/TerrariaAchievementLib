@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that shook the tree</param>
         /// <param name="id">Item ID that appeared</param>
-        private static void AchHelper_OnItemShake(Player player, int id)
+        private static void CustomAchievementsHelper_OnItemShake(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnItemShake += AchHelper_OnItemShake;
+                CustomAchievementsHelper.OnItemShake += CustomAchievementsHelper_OnItemShake;
                 _isHooked = true;
             }
 

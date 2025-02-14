@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that used the item</param>
         /// <param name="id">Item ID that was used</param>
-        private static void AchHelper_OnItemUse(Player player, int id)
+        private static void CustomAchievementsHelper_OnItemUse(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnItemUse += AchHelper_OnItemUse;
+                CustomAchievementsHelper.OnItemUse += CustomAchievementsHelper_OnItemUse;
                 _isHooked = true;
             }
 

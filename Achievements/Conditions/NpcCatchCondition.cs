@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that caught the NPC</param>
         /// <param name="id">NPC ID that was caught</param>
-        private static void AchHelper_OnNpcCatch(Player player, int id)
+        private static void CustomAchievementsHelper_OnNpcCatch(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnNpcCatch += AchHelper_OnNpcCatch;
+                CustomAchievementsHelper.OnNpcCatch += CustomAchievementsHelper_OnNpcCatch;
                 _isHooked = true;
             }
 

@@ -5,7 +5,7 @@ namespace TerrariaAchievementLib.Achievements
     /// <summary>
     /// Helper to notify achievement conditions when specific events occur
     /// </summary>
-    public class CustomAchievementHelper
+    public class CustomAchievementsHelper
     {
         /// <summary>
         /// Signature that defines a buff add event

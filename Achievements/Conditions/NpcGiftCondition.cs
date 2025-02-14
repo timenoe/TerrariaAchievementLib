@@ -86,7 +86,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that received the item</param>
         /// <param name="npcId">NPC ID that gifted the item</param>
         /// <param name="itemId">Item ID of the gifted item</param>
-        private static void AchHelper_OnNpcGift(Player player, int npcId, int itemId)
+        private static void CustomAchievementsHelper_OnNpcGift(Player player, int npcId, int itemId)
         {
             if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
@@ -109,7 +109,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnNpcGift += AchHelper_OnNpcGift;
+                CustomAchievementsHelper.OnNpcGift += CustomAchievementsHelper_OnNpcGift;
                 _isHooked = true;
             }
 

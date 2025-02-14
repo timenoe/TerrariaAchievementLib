@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that likely broke the tile</param>
         /// <param name="id">Item ID that was dropped</param>
-        private static void AchHelper_OnTileDrop(Player player, int id)
+        private static void CustomAchievementsHelper_OnTileDrop(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnTileDrop += AchHelper_OnTileDrop;
+                CustomAchievementsHelper.OnTileDrop += CustomAchievementsHelper_OnTileDrop;
                 _isHooked = true;
             }
 

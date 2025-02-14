@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that set the special flag</param>
         /// <param name="id">Flag ID that was set</param>
-        private static void AchHelper_OnFlagSpecial(Player player, int id)
+        private static void CustomAchievementsHelper_OnFlagSpecial(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnFlagSpecial += AchHelper_OnFlagSpecial;
+                CustomAchievementsHelper.OnFlagSpecial += CustomAchievementsHelper_OnFlagSpecial;
                 _isHooked = true;
             }
 

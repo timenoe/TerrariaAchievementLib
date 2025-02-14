@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that extracted the item</param>
         /// <param name="id">Item ID that was extracted</param>
-        private static void AchHelper_OnItemExtract(Player player, int id)
+        private static void CustomAchievementsHelper_OnItemExtract(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnItemExtract += AchHelper_OnItemExtract;
+                CustomAchievementsHelper.OnItemExtract += CustomAchievementsHelper_OnItemExtract;
                 _isHooked = true;
             }
 

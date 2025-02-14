@@ -87,7 +87,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that opened the grab bag</param>
         /// <param name="bagId">Grab bag ID that was opened</param>
         /// <param name="itemId">Item ID that was received</param>
-        private static void AchHelper_OnItemOpen(Player player, int bagId, int itemId)
+        private static void CustomAchievementsHelper_OnItemOpen(Player player, int bagId, int itemId)
         {
             if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
@@ -111,7 +111,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnItemOpen += AchHelper_OnItemOpen;
+                CustomAchievementsHelper.OnItemOpen += CustomAchievementsHelper_OnItemOpen;
                 _isHooked = true;
             }
 

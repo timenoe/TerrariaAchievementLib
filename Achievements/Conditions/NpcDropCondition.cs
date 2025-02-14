@@ -86,7 +86,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that damaged the NPC</param>
         /// <param name="npcId">NPC ID that dropped the item</param>
         /// <param name="itemId">Item ID that was dropped</param>
-        private static void AchHelper_OnNpcDrop(Player player, short npcId, int itemId)
+        private static void CustomAchievementsHelper_OnNpcDrop(Player player, short npcId, int itemId)
         {
             if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
@@ -110,7 +110,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementHelper.OnNpcDrop += AchHelper_OnNpcDrop;
+                CustomAchievementsHelper.OnNpcDrop += CustomAchievementsHelper_OnNpcDrop;
                 _isHooked = true;
             }
 
