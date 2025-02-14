@@ -23,6 +23,11 @@ namespace TerrariaAchievementLib.Players
         private static bool _enabled;
 
         /// <summary>
+        /// String GUID of the visited world
+        /// </summary>
+        private static string _recentWorldId = "";
+
+        /// <summary>
         /// True if Hardestcore is enabled
         /// </summary>
         public static bool Enabled => _enabled;
@@ -34,20 +39,28 @@ namespace TerrariaAchievementLib.Players
 
             if (Player.difficulty == PlayerDifficultyID.Hardcore)
             {
+                string world_id = Main.ActiveWorldFileData.UniqueId.ToString();
+
+                // Ban player if they entered more than 1 world
+                if (!string.IsNullOrEmpty(_recentWorldId) && world_id != _recentWorldId)
+                    BanPlayer(Player);
+
                 if (!IsPlayerHardestcore(Player))
                 {
-                    MessageTool.ChatLog("Hardestcore is disabled; this Hardcore player has died before.");
+                    MessageTool.ChatLog("Hardestcore is disabled; either this Hardcore Player has visited more than one World, or they died before.");
                     return;
                 }
 
                 if (!IsWorldHardestcore(Main.ActiveWorldFileData))
                 {
-                    MessageTool.ChatLog("Hardestcore is disabled; either a non-Hardcore player has played in this world, or a Hardcore player died in this world before.");
+                    MessageTool.ChatLog("Hardestcore is disabled; either a non-Hardcore Player has played in this World, or a Hardcore Player died in this World before.");
                     return;
                 }
 
+                _recentWorldId = world_id;
                 Player.AddBuff(ModContent.BuffType<HardestcoreBuff>(), 1);
             }
+
             else
                 BanCurrentWorld();
         }
@@ -126,6 +139,28 @@ namespace TerrariaAchievementLib.Players
                 return false;
 
             return true;
+        }
+
+        private static void AddVisitedWorld(Player player)
+        {
+            TagCompound tag = [];
+            if (FileUtilities.Exists(AchievementSystem.CacheFilePath, false))
+            {
+                TagCompound fileTag = TagIO.FromFile(AchievementSystem.CacheFilePath);
+                if (fileTag != null)
+                    tag = fileTag;
+            }
+
+            // Add this player to the list of banned players
+            string player_name = player.name;
+            List<string> bannedPlayers = [];
+            if (tag.ContainsKey("BannedHardestcorePlayers"))
+                bannedPlayers.AddRange(tag.Get<List<string>>("BannedHardestcorePlayers"));
+            if (!bannedPlayers.Contains(player_name))
+                bannedPlayers.Add(player_name);
+            tag.Set("BannedHardestcorePlayers", bannedPlayers, true);
+
+            TagIO.ToFile(tag, AchievementSystem.CacheFilePath);
         }
 
         /// <summary>
