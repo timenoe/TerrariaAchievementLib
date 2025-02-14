@@ -29,22 +29,27 @@ namespace TerrariaAchievementLib.Players
         
         public override void OnEnterWorld()
         {
-            if (!Enabled || Player.difficulty != PlayerDifficultyID.Hardcore)
+            if (!Enabled)
                 return;
 
-            if (!IsPlayerHardestcore(Player))
+            if (Player.difficulty == PlayerDifficultyID.Hardcore)
             {
-                MessageTool.ChatLog("Hardestcore is disabled; this player has died before.");
-                return;
-            }
+                if (!IsPlayerHardestcore(Player))
+                {
+                    MessageTool.ChatLog("Hardestcore is disabled; this Hardcore player has died before.");
+                    return;
+                }
 
-            if (!IsWorldHardestcore(Main.ActiveWorldFileData))
-            {
-                MessageTool.ChatLog("Hardestcore is disabled; a player has died in this world before.");
-                return;
-            }
+                if (!IsWorldHardestcore(Main.ActiveWorldFileData))
+                {
+                    MessageTool.ChatLog("Hardestcore is disabled; either a non-Hardcore player has played in this world, or a Hardcore player died in this world before.");
+                    return;
+                }
 
-            Player.AddBuff(ModContent.BuffType<HardestcoreBuff>(), 1);
+                Player.AddBuff(ModContent.BuffType<HardestcoreBuff>(), 1);
+            }
+            else
+                BanCurrentWorld();
         }
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
@@ -53,34 +58,9 @@ namespace TerrariaAchievementLib.Players
                 return;
 
             Player.ClearBuff(ModContent.BuffType<HardestcoreBuff>());
-            
-            TagCompound tag = [];
-            if (FileUtilities.Exists(AchievementSystem.CacheFilePath, false))
-            {
-                TagCompound fileTag = TagIO.FromFile(AchievementSystem.CacheFilePath);
-                if (fileTag != null)
-                    tag = fileTag;
-            }
 
-            // Add this player to the list of banned players
-            string player_name = Player.name;
-            List<string> bannedPlayers = [];
-            if (tag.ContainsKey("BannedHardestcorePlayers"))
-                bannedPlayers.AddRange(tag.Get<List<string>>("BannedHardestcorePlayers"));
-            if (!bannedPlayers.Contains(player_name))
-                bannedPlayers.Add(player_name);
-            tag.Set("BannedHardestcorePlayers", bannedPlayers, true);
-
-            // Add this world to the list of banned worlds
-            string world_id = Main.ActiveWorldFileData.UniqueId.ToString();
-            List<string> bannedWorlds = [];
-            if (tag.ContainsKey("BannedHardestcoreWorlds"))
-                bannedWorlds.AddRange(tag.Get<List<string>>("BannedHardestcoreWorlds"));
-            if (!bannedWorlds.Contains(world_id))
-                bannedWorlds.Add(world_id);
-            tag.Set("BannedHardestcoreWorlds", bannedWorlds, true);
-
-            TagIO.ToFile(tag, AchievementSystem.CacheFilePath);
+            BanPlayer(Player);
+            BanCurrentWorld();
         }
 
         /// <summary>
@@ -92,7 +72,13 @@ namespace TerrariaAchievementLib.Players
         /// Check if the player can earn a Hardestcore achievement
         /// </summary>
         /// <returns>True if the player can earn a Hardestcore achievement</returns>
-        public bool CanEarnAchievement() => Player.HasBuff(ModContent.BuffType<HardestcoreBuff>());
+        public bool CanEarnAchievement()
+        {
+            if (Player == null)
+                return false;
+
+            return Player.HasBuff(ModContent.BuffType<HardestcoreBuff>());
+        } 
 
         /// <summary>
         /// Checks if a Hardcore player has died before
@@ -140,6 +126,57 @@ namespace TerrariaAchievementLib.Players
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Ban player from Hardestcore
+        /// </summary>
+        /// <param name="player">Player to ban</param>
+        private static void BanPlayer(Player player)
+        {
+            TagCompound tag = [];
+            if (FileUtilities.Exists(AchievementSystem.CacheFilePath, false))
+            {
+                TagCompound fileTag = TagIO.FromFile(AchievementSystem.CacheFilePath);
+                if (fileTag != null)
+                    tag = fileTag;
+            }
+
+            // Add this player to the list of banned players
+            string player_name = player.name;
+            List<string> bannedPlayers = [];
+            if (tag.ContainsKey("BannedHardestcorePlayers"))
+                bannedPlayers.AddRange(tag.Get<List<string>>("BannedHardestcorePlayers"));
+            if (!bannedPlayers.Contains(player_name))
+                bannedPlayers.Add(player_name);
+            tag.Set("BannedHardestcorePlayers", bannedPlayers, true);
+
+            TagIO.ToFile(tag, AchievementSystem.CacheFilePath);
+        }
+
+        /// <summary>
+        /// Ban the current world from Hardestcore
+        /// </summary>
+        private static void BanCurrentWorld()
+        {
+            TagCompound tag = [];
+            if (FileUtilities.Exists(AchievementSystem.CacheFilePath, false))
+            {
+                TagCompound fileTag = TagIO.FromFile(AchievementSystem.CacheFilePath);
+                if (fileTag != null)
+                    tag = fileTag;
+            }
+
+            // Add this world to the list of banned worlds
+            string world_id = Main.ActiveWorldFileData.UniqueId.ToString();
+            List<string> bannedWorlds = [];
+            if (tag.ContainsKey("BannedHardestcoreWorlds"))
+                bannedWorlds.AddRange(tag.Get<List<string>>("BannedHardestcoreWorlds"));
+            if (!bannedWorlds.Contains(world_id))
+                bannedWorlds.Add(world_id);
+            tag.Set("BannedHardestcoreWorlds", bannedWorlds, true);
+
+            TagIO.ToFile(tag, AchievementSystem.CacheFilePath);
         }
     }
 }
