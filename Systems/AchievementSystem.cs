@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -222,6 +223,17 @@ namespace TerrariaAchievementLib.Systems
 
                 achs.Remove(ach.Key);
                 icons.Remove(ach.Key);
+
+                MethodInfo method = typeof(AchievementManager).GetMethod("AchievementCompleted", ReflectionFlags);
+                if (method == null)
+                    continue;
+
+                Delegate handler = method.CreateDelegate(typeof(Achievement.AchievementCompleted), Main.Achievements);
+                if (handler == null)
+                    continue;
+
+                // Prevent double achievement unlocks during mod reload
+                ach.Value.OnCompleted -= (Achievement.AchievementCompleted)handler;
             }
         }
 
