@@ -14,7 +14,7 @@ namespace TerrariaAchievementLib.Players
         {
             if (Main.dedServ)
                 return;
-
+            
             On_Player.AddBuff += On_Player_AddBuff;
             On_Player.DropItemFromExtractinator += On_Player_DropItemFromExtractinator;
             On_Player.GetItem += On_Player_GetItem;
@@ -28,20 +28,6 @@ namespace TerrariaAchievementLib.Players
             On_Player.AddBuff -= On_Player_AddBuff;
             On_Player.DropItemFromExtractinator -= On_Player_DropItemFromExtractinator;
             On_Player.GetItem -= On_Player_GetItem;
-        }
-
-        private Item On_Player_GetItem(On_Player.orig_GetItem orig, Player self, int plr, Item newItem, GetItemSettings settings)
-        {
-            if (settings.Equals(GetItemSettings.NPCEntityToPlayerInventorySettings))
-            {
-                int npc = NPCID.None;
-                if (self.TalkNPC != null)
-                    npc = self.TalkNPC.type;
-
-                CustomAchievementsHelper.NotifyNpcGift(self, npc, newItem.type);
-            }
-
-            return orig.Invoke(self, plr, newItem, settings);
         }
 
         public override bool CanUseItem(Item item)
@@ -89,6 +75,29 @@ namespace TerrariaAchievementLib.Players
             orig.Invoke(self, itemType, stack);
 
             CustomAchievementsHelper.NotifyItemExtract(self, itemType);
+        }
+
+        /// <summary>
+        /// Detour to send a notification when the local player gets a gift from an NPC
+        /// </summary>
+        /// <param name="orig">Original GetItem method</param>
+        /// <param name="self">Player getting the gift</param>
+        /// <param name="plr">Player index</param>
+        /// <param name="newItem">Gift that the player is receiving</param>
+        /// <param name="settings">GetItemSettings instance</param>
+        /// <returns></returns>
+        private Item On_Player_GetItem(On_Player.orig_GetItem orig, Player self, int plr, Item newItem, GetItemSettings settings)
+        {
+            if (settings.Equals(GetItemSettings.NPCEntityToPlayerInventorySettings))
+            {
+                int npc = NPCID.None;
+                if (self.TalkNPC != null)
+                    npc = self.TalkNPC.type;
+
+                CustomAchievementsHelper.NotifyNpcGift(self, npc, newItem.type);
+            }
+
+            return orig.Invoke(self, plr, newItem, settings);
         }
     }
 }
