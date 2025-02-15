@@ -118,7 +118,7 @@ namespace TerrariaAchievementLib.Achievements
                     break;
 
                 case PlayerDiff.Hardestcore:
-                    if (player.difficulty != PlayerDifficultyID.Hardcore || !ModContent.GetInstance<HardestcorePlayer>().CanEarnAchievement())
+                    if (player.difficulty != PlayerDifficultyID.Hardcore || !player.GetModPlayer<HardestcorePlayer>().CanEarnAchievement())
                         return false;
                     break;
             }
