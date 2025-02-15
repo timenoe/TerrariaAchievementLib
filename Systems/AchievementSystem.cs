@@ -112,11 +112,31 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         protected abstract void RegisterAchievements();
 
+
         /// <summary>
-        /// Set the cache file path to be unique to the mod
+        /// Reset local progress for an individual achievement
         /// </summary>
-        /// <param name="mod">Mod to cache data for</param>
-        private static void SetModCacheFilePath(Mod mod) => _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
+        /// <param name="name">Internal achievement name</param>
+        /// <returns>True on success</returns>
+        public static bool ResetInvidualAchievement(string name)
+        {
+            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
+            if (info == null)
+                return false;
+
+            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
+            if (achs == null)
+                return false;
+
+            if (achs.TryGetValue(name, out Achievement value))
+            {
+                value.ClearProgress();
+                Main.Achievements.Save();
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Register a new achievement with one condition to the in-game list
@@ -145,7 +165,7 @@ namespace TerrariaAchievementLib.Systems
             Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
 
             if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
-                throw new System.Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
+                throw new Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
         }
 
         /// <summary>
@@ -182,8 +202,14 @@ namespace TerrariaAchievementLib.Systems
             Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
 
             if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
-                throw new System.Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
+                throw new Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
         }
+
+        /// <summary>
+        /// Set the cache file path to be unique to the mod
+        /// </summary>
+        /// <param name="mod">Mod to cache data for</param>
+        private static void SetModCacheFilePath(Mod mod) => _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
 
         /// <summary>
         /// Returns true if an achievement was added from this system<br/>
@@ -193,6 +219,33 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="ach">Achievement to check</param>
         /// <returns>True if the achievement is new to this system</returns>
         private bool IsMyAchievement(Achievement ach) => ach.Name.StartsWith(Identifier);
+
+        /// <summary>
+        /// Load the achievement texture from the provided abstract path
+        /// </summary>
+        private void LoadAchTextures()
+        {
+            foreach (var path in TexturePaths)
+                _textures.Add(ModContent.Request<Texture2D>(path));
+        }
+
+        /// <summary>
+        /// Load any save data from achievements.dat if applicable
+        /// </summary>
+        private static void LoadSaveData()
+        {
+            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
+            if (info == null)
+                return;
+            Dictionary<string, Achievement> achievements = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
+
+            // Clear existing achievement progress before loading again
+            // Bug in the vanilla code causes issues during two consecutive loads
+            foreach (KeyValuePair<string, Achievement> achievement in achievements)
+                achievement.Value.ClearProgress();
+
+            Main.Achievements.Load();
+        }
 
         /// <summary>
         /// Unregister all achievements that were added from this system
@@ -235,33 +288,6 @@ namespace TerrariaAchievementLib.Systems
                 // Prevent double achievement unlocks during mod reload
                 ach.Value.OnCompleted -= (Achievement.AchievementCompleted)handler;
             }
-        }
-
-        /// <summary>
-        /// Load the achievement texture from the provided abstract path
-        /// </summary>
-        private void LoadAchTextures()
-        {
-            foreach (var path in TexturePaths)
-                _textures.Add(ModContent.Request<Texture2D>(path));
-        }
-
-        /// <summary>
-        /// Load any save data from achievements.dat if applicable
-        /// </summary>
-        private static void LoadSaveData()
-        {
-            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
-            if (info == null)
-                return;
-            Dictionary<string, Achievement> achievements = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
-
-            // Clear existing achievement progress before loading again
-            // Bug in the vanilla code causes issues during two consecutive loads
-            foreach (KeyValuePair<string, Achievement> achievement in achievements)
-                achievement.Value.ClearProgress();
-
-            Main.Achievements.Load();
         }
 
         /// <summary>
