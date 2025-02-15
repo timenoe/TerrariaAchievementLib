@@ -13,10 +13,14 @@ namespace TerrariaAchievementLib.Items
     {
         public override void OnSpawn(Item item, IEntitySource source)
         {
-            if (source is EntitySource_TileBreak)
+            if (source is EntitySource_TileBreak tile)
             {
                 // Check that the local player is the one closest to the destroyed tile
-                if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
+                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
+                    return;
+
+                // Check that the local player is within range of the tile
+                if (Main.LocalPlayer.IsInTileInteractionRange(tile.TileCoords.X, tile.TileCoords.Y, TileReachCheckSettings.Simple))
                     CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
             }
 
