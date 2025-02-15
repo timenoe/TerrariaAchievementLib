@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using TerrariaAchievementLib.Achievements;
 
@@ -16,6 +17,7 @@ namespace TerrariaAchievementLib.Players
 
             On_Player.AddBuff += On_Player_AddBuff;
             On_Player.DropItemFromExtractinator += On_Player_DropItemFromExtractinator;
+            On_Player.GetItem += On_Player_GetItem;
         }
 
         public override void Unload()
@@ -25,6 +27,21 @@ namespace TerrariaAchievementLib.Players
 
             On_Player.AddBuff -= On_Player_AddBuff;
             On_Player.DropItemFromExtractinator -= On_Player_DropItemFromExtractinator;
+            On_Player.GetItem -= On_Player_GetItem;
+        }
+
+        private Item On_Player_GetItem(On_Player.orig_GetItem orig, Player self, int plr, Item newItem, GetItemSettings settings)
+        {
+            if (settings.Equals(GetItemSettings.NPCEntityToPlayerInventorySettings))
+            {
+                int npc = NPCID.None;
+                if (self.TalkNPC != null)
+                    npc = self.TalkNPC.type;
+
+                CustomAchievementsHelper.NotifyNpcGift(self, npc, newItem.type);
+            }
+
+            return orig.Invoke(self, plr, newItem, settings);
         }
 
         public override bool CanUseItem(Item item)
