@@ -95,6 +95,9 @@ namespace TerrariaAchievementLib.Achievements
             if (player != Main.LocalPlayer)
                 return false;
 
+            if (player.dead)
+                return false;
+
             switch (PlayerDiff)
             {
                 case PlayerDiff.Classic:
