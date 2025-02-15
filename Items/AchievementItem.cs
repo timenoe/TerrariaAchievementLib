@@ -3,6 +3,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using TerrariaAchievementLib.Achievements;
+using TerrariaAchievementLib.Tools;
 
 namespace TerrariaAchievementLib.Items
 {
@@ -20,7 +21,7 @@ namespace TerrariaAchievementLib.Items
                     return;
 
                 // Check that the local player is within range of the tile
-                if (Main.LocalPlayer.IsInTileInteractionRange(tile.TileCoords.X, tile.TileCoords.Y, TileReachCheckSettings.Simple))
+                if (TileTool.IsTileOnScreen(tile.TileCoords))
                     CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
             }
 
