@@ -139,6 +139,42 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
+        /// Unlock an individual achievement
+        /// </summary>
+        /// <param name="name">Internal achievement name</param>
+        /// <returns>True on success</returns>
+        public static bool UnlockIndividualAchievement(string name)
+        {
+            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
+            if (info == null)
+                return false;
+
+            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
+            if (achs == null)
+                return false;
+
+            if (achs.TryGetValue(name, out Achievement ach))
+            {
+                info = typeof(Achievement).GetField("_conditions", ReflectionFlags);
+                if (info == null)
+                    return false;
+
+                Dictionary<string, AchievementCondition> conds = (Dictionary<string, AchievementCondition>)info.GetValue(ach);
+                if (achs == null)
+                    return false;
+
+                ach.ClearProgress();
+                foreach (KeyValuePair<string, AchievementCondition> cond in conds)
+                    cond.Value.Complete();
+                
+                Main.Achievements.Save();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Register a new achievement with one condition to the in-game list
         /// </summary>
         /// <param name="name">Achievement name</param>
