@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Achievements;
 using Terraria.ID;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
@@ -86,11 +85,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that killed the NPC</param>
         /// <param name="id">NPC ID that was killed</param>
-        private static void AchievementsHelper_OnNPCKilled(Player player, short id)
+        private static void CustomAchievementsHelper_OnNpcKill(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
-
+            
             foreach (var condition in conditions)
             {
                 if (condition._first && Main.BestiaryTracker.Kills.GetKillCount(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[id]) != 0)
@@ -109,7 +108,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchievementsHelper.OnNPCKilled += AchievementsHelper_OnNPCKilled;
+                CustomAchievementsHelper.OnNpcKill += CustomAchievementsHelper_OnNpcKill;
                 _isHooked = true;
             }
 

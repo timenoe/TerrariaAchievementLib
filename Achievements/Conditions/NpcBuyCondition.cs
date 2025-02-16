@@ -27,7 +27,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// NPC ID of the NPC that should sell the item(s)
         /// </summary>
-        private short _npcId;
+        private int _npcId;
 
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that sells the item</param>
         /// <param name="itemId">Item ID to listen for</param>
-        private NpcBuyCondition(ConditionReqs reqs, short npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(this, npcId);
+        private NpcBuyCondition(ConditionReqs reqs, int npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(this, npcId);
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be bought from an NPC
@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that sells the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
-        private NpcBuyCondition(ConditionReqs reqs, short npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(this, npcId);
+        private NpcBuyCondition(ConditionReqs reqs, int npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(this, npcId);
 
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that sells the item</param>
         /// <param name="itemId">Item ID to listen for</param>
         /// <returns>NPC item buy achievement condition</returns>
-        public static CustomAchievementCondition Buy(ConditionReqs reqs, short npcId, int itemId) => new NpcBuyCondition(reqs, npcId, itemId);
+        public static CustomAchievementCondition Buy(ConditionReqs reqs, int npcId, int itemId) => new NpcBuyCondition(reqs, npcId, itemId);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be bought from an NPC
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that sell the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>NPC item buy achievement condition</returns>
-        public static CustomAchievementCondition BuyAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcBuyCondition(reqs, npcId, itemIds);
+        public static CustomAchievementCondition BuyAny(ConditionReqs reqs, int npcId, params int[] itemIds) => new NpcBuyCondition(reqs, npcId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be bought from an NPC
@@ -72,7 +72,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that sells the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>NPC item buy achievement conditions</returns>
-        public static List<CustomAchievementCondition> BuyAll(ConditionReqs reqs, short npcId, params int[] itemIds)
+        public static List<CustomAchievementCondition> BuyAll(ConditionReqs reqs, int npcId, params int[] itemIds)
         {
             List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
@@ -86,7 +86,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that bought the item</param>
         /// <param name="npcId">NPC ID that sold the item</param>
         /// <param name="itemId">Item ID that was bought</param>
-        private static void CustomAchievementsHelper_OnNpcBuy(Player player, short npcId, int itemId)
+        private static void CustomAchievementsHelper_OnNpcBuy(Player player, int npcId, int itemId)
         {
             if (!IsListeningForId(itemId, _listeners, out var conditions))
                 return;
@@ -106,7 +106,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// Listen for events so the condition can be completed
         /// </summary>
         /// <param name="npcId">NPC ID that should sell the item</param>
-        private static void Listen(NpcBuyCondition condition, short npcId)
+        private static void Listen(NpcBuyCondition condition, int npcId)
         {
             if (!_isHooked)
             {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Achievements;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
@@ -74,16 +73,17 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Hook that is called when an item is crafted
         /// </summary>
+        /// <param name="player">Player that crafted the item</param>
         /// <param name="id">Item ID that was crafted</param>
         /// <param name="count">Count of the crafted item</param>
-        private static void AchievementsHelper_OnItemCraft(short id, int count)
+        private static void CustomAchievementsHelper_OnItemCraft(Player player, int id, int count)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
             {
-                if (condition.Reqs.Pass(Main.LocalPlayer))
+                if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
         }
@@ -95,7 +95,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchievementsHelper.OnItemCraft += AchievementsHelper_OnItemCraft;
+                CustomAchievementsHelper.OnItemCraft += CustomAchievementsHelper_OnItemCraft;
                 _isHooked = true;
             }
 

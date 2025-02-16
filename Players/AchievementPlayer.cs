@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Players
                 CustomAchievementsHelper.NotifyNpcCatch(Player, npc.type);
         }
 
-        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => CustomAchievementsHelper.NotifyNpcBuy(Player, (short)vendor.type, item.type);
+        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => CustomAchievementsHelper.NotifyNpcBuy(Player, vendor.type, item.type);
 
 
         /// <summary>

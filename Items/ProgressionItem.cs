@@ -11,13 +11,12 @@ namespace TerrariaAchievementLib.Items
     {
         public override bool? CanBeChosenAsAmmo(Item ammo, Item weapon, Player player)
         {
-            if (AchievementProgression.IsElementAllowed(ProgressionElement.Ammo, ammo.type) == false)
+            if (AchievementProgression.IsElementAllowed(ProgressionElement.Ammo, ammo.type, player) == false)
                 return false;
 
-            else
-                return null;
+            return null;
         }
 
-        public override bool CanUseItem(Item item, Player player) => AchievementProgression.IsElementAllowed(ProgressionElement.Usable, item.type);
+        public override bool CanUseItem(Item item, Player player) => AchievementProgression.IsElementAllowed(ProgressionElement.Usable, item.type, player);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Achievements;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
@@ -77,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="player">Player that grabbed the item</param>
         /// <param name="id">Item ID that was grabbed</param>
         /// <param name="count">Count of the grabbed item(s)</param>
-        private static void AchievementsHelper_OnItemPickup(Player player, short id, int count)
+        private static void CustomAchievementsHelper_OnItemPickup(Player player, int id, int count)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -96,7 +95,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchievementsHelper.OnItemPickup += AchievementsHelper_OnItemPickup;
+                CustomAchievementsHelper.OnItemGrab += CustomAchievementsHelper_OnItemPickup;
                 _isHooked = true;
             }
 

@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Items
             {
                 // Check that the local player has damaged the NPC
                 if (loot.Entity is NPC npc && npc.playerInteraction[Main.myPlayer])
-                    CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, (short)npc.type, item.type);
+                    CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, npc.type, item.type);
             }
 
             else if (source is EntitySource_ItemOpen bag)

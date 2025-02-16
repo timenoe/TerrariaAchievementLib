@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 using TerrariaAchievementLib.Players;
 
 namespace TerrariaAchievementLib.Achievements

@@ -32,6 +32,16 @@ namespace TerrariaAchievementLib.Achievements
     }
 
     /// <summary>
+    /// Identifies a specific progression restriction
+    /// </summary>
+    public enum ProgressionRestriction
+    {
+        All,
+        Player,
+        World
+    }
+
+    /// <summary>
     /// Checks if certain items should be blocked based on current world progression
     /// </summary>
     public class AchievementProgression
@@ -40,6 +50,11 @@ namespace TerrariaAchievementLib.Achievements
         /// True if items should be blocked based on the current world progression
         /// </summary>
         private static bool _enabled;
+
+        /// <summary>
+        /// Determines when items should be blocked
+        /// </summary>
+        private static ProgressionRestriction _restriction;
         
         /// <summary>
         /// Defines progression consumables
@@ -158,38 +173,40 @@ namespace TerrariaAchievementLib.Achievements
             { ProgressionState.PostMoonLord, [BuffID.DrillMount] },
         };
 
-
         /// <summary>
-        /// True if items should be blocked based on the current world progression
+        /// Enable the blocking of items based on the current world progression
         /// </summary>
-        public static bool Enabled => _enabled;
-
-
-        /// <summary>
-        /// Gets the current progression state
-        /// </summary>
-        /// <returns>Current progression state</returns>
-        public static ProgressionState GetProgressionState()
+        /// <param name="restriction">Determines when items should be blocked</param>
+        public static void Enable(ProgressionRestriction restriction = ProgressionRestriction.All)
         {
-            if (NPC.downedMoonlord)
-                return ProgressionState.PostMoonLord;
+            _enabled = true;
+            _restriction = restriction;
+        }
 
-            if (NPC.downedAncientCultist)
-                return ProgressionState.PostLunaticCultist;
+        /// <summary>
+        /// Checks if progression item blocking is enabled
+        /// </summary>
+        /// <param name="player">Player to base the check on</param>
+        /// <returns>True if progression item blocking is enabled</returns>
+        public static bool IsEnabled(Player player)
+        {
+            if (!_enabled)
+                return false;
 
-            if (NPC.downedGolemBoss)
-                return ProgressionState.PostGolem;
+            switch (_restriction)
+            {
+                case ProgressionRestriction.Player:
+                    if (player.difficulty != PlayerDifficultyID.MediumCore && player.difficulty != PlayerDifficultyID.Hardcore)
+                        return false;
+                    break;
 
-            if (NPC.downedPlantBoss)
-                return ProgressionState.PostPlantera;
+                case ProgressionRestriction.World:
+                    if (!Main.expertMode && !Main.specialSeedWorld)
+                        return false;
+                    break;
+            }
 
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                return ProgressionState.PostMechanicalTrio;
-
-            if (Main.hardMode)
-                return ProgressionState.Hardmode;
-
-            return ProgressionState.PreHardmode;
+            return true;
         }
 
         /// <summary>
@@ -197,12 +214,13 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         /// <param name="type">Progression item type</param>
         /// <param name="item">Progression item ID</param>
+        /// <param name="playe">Player to base the check on</param>
         /// <returns>True if the item is allowed</returns>
-        public static bool IsElementAllowed(ProgressionElement type, int item)
+        public static bool IsElementAllowed(ProgressionElement type, int item, Player player)
         {
-            if (!_enabled)
+            if (!IsEnabled(player))
                 return true;
-            
+
             List<Dictionary<ProgressionState, int[]>> allItems = [];
             switch (type)
             {
@@ -247,8 +265,30 @@ namespace TerrariaAchievementLib.Achievements
         }
 
         /// <summary>
-        /// Enable the blocking of items based on the current world progression
+        /// Gets the current progression state
         /// </summary>
-        public static void Enable() => _enabled = true;
+        /// <returns>Current progression state</returns>
+        private static ProgressionState GetProgressionState()
+        {
+            if (NPC.downedMoonlord)
+                return ProgressionState.PostMoonLord;
+
+            if (NPC.downedAncientCultist)
+                return ProgressionState.PostLunaticCultist;
+
+            if (NPC.downedGolemBoss)
+                return ProgressionState.PostGolem;
+
+            if (NPC.downedPlantBoss)
+                return ProgressionState.PostPlantera;
+
+            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
+                return ProgressionState.PostMechanicalTrio;
+
+            if (Main.hardMode)
+                return ProgressionState.Hardmode;
+
+            return ProgressionState.PreHardmode;
+        }
     }
 }

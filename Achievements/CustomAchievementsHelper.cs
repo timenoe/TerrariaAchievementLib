@@ -15,6 +15,13 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void BuffAddEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines a flag progression event
+        /// </summary>
+        /// <param name="player">Player that raised the progression flag</param>
+        /// <param name="id">Flag ID that was set</param>
+        public delegate void FlagProgressionEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines a flag special event
         /// </summary>
         /// <param name="player">Player that raised the special flag</param>
@@ -27,6 +34,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that caught the item</param>
         /// <param name="id">Item ID that was caught</param>
         public delegate void ItemCatchEvent(Player player, int id);
+
+        /// <summary>
+        /// Signature that defines an item craft event
+        /// </summary>
+        /// <param name="player">Player that crafted the item</param>
+        /// <param name="id">Item ID that was crafted</param>
+        /// <param name="count">Count of the crafted item</param>
+        public delegate void ItemCraftEvent(Player player, int id, int count);
 
         /// <summary>
         /// Signature that defines an item equip event
@@ -42,6 +57,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that extracts the item</param>
         /// <param name="id">Item ID that was extracted</param>
         public delegate void ItemExtractEvent(Player player, int id);
+
+        /// <summary>
+        /// Signature that defines an item grab event
+        /// </summary>
+        /// <param name="player">Player that grabbed the item</param>
+        /// <param name="id">Item ID that was grabbed</param>
+        /// <param name="count">Count of the grabbed item</param>
+        public delegate void ItemGrabEvent(Player player, int id, int count);
 
         /// <summary>
         /// Signature that defines an item open event
@@ -71,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that bought the item</param>
         /// <param name="npcId">NPC that sold the item</param>
         /// <param name="itemId">Item ID that was bought</param>
-        public delegate void NpcBuyEvent(Player player, short npcId, int itemId);
+        public delegate void NpcBuyEvent(Player player, int npcId, int itemId);
 
         /// <summary>
         /// Signature that defines a NPC catch event
@@ -86,7 +109,7 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">NPC that damaged the NPC</param>
         /// <param name="npcId">NPC ID that dropped the item</param>
         /// <param name="itemId">Item ID that was dropped</param>
-        public delegate void NpcDropEvent(Player player, short npcId, int itemId);
+        public delegate void NpcDropEvent(Player player, int npcId, int itemId);
 
         /// <summary>
         /// Signature that defines an NPC gift event
@@ -95,6 +118,20 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="npcId">NPC ID that gave the item</param>
         /// <param name="itemId">Item ID that was gifted</param>
         public delegate void NpcGiftEvent(Player player, int npcId, int itemId);
+
+        /// <summary>
+        /// Signature that defines an NPC kill event
+        /// </summary>
+        /// <param name="player">Player that killed the NPC</param>
+        /// <param name="id">NPC ID that was killed</param>
+        public delegate void NpcKillEvent(Player player, int id);
+
+        /// <summary>
+        /// Signature that defines a tile destroy event
+        /// </summary>
+        /// <param name="player">Player that destroyed the tile</param>
+        /// <param name="id">Tile ID that was destroyed</param>
+        public delegate void TileDestroyEvent(Player player, int id);
 
         /// <summary>
         /// Signature that defines a tile drop event
@@ -110,6 +147,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event BuffAddEvent OnBuffAdd;
 
         /// <summary>
+        /// Event that is invoked when a progression flag is set by the player
+        /// </summary>
+        public static event FlagProgressionEvent OnFlagProgression;
+
+        /// <summary>
         /// Event that is invoked when a special flag is set by the player
         /// </summary>
         public static event FlagSpecialEvent OnFlagSpecial;
@@ -120,6 +162,11 @@ namespace TerrariaAchievementLib.Achievements
         public static event ItemCatchEvent OnItemCatch;
 
         /// <summary>
+        /// Event that is invoked when an item is crafted by the player
+        /// </summary>
+        public static event ItemCraftEvent OnItemCraft;
+
+        /// <summary>
         /// Event that is invoked when an item is equipped by the player
         /// </summary>
         public static event ItemEquipEvent OnItemEquip;
@@ -128,6 +175,11 @@ namespace TerrariaAchievementLib.Achievements
         /// Event that is invoked when an item is extracted by the player
         /// </summary>
         public static event ItemExtractEvent OnItemExtract;
+
+        /// <summary>
+        /// Event that is invoked when an item is grabbed by the player
+        /// </summary>
+        public static event ItemGrabEvent OnItemGrab;
 
         /// <summary>
         /// Event that is invoked when an item is opened from a grab bag
@@ -165,6 +217,16 @@ namespace TerrariaAchievementLib.Achievements
         public static event NpcGiftEvent OnNpcGift;
 
         /// <summary>
+        /// Event that is invoked when an NPC is killed by the player
+        /// </summary>
+        public static event NpcKillEvent OnNpcKill;
+
+        /// <summary>
+        /// Event that is invoked when a tile is destroyed by the player
+        /// </summary>
+        public static event TileDestroyEvent OnTileDestroy;
+
+        /// <summary>
         /// Event that is invoked when a tile drops an item
         /// </summary>
         public static event TileDropEvent OnTileDrop;
@@ -176,6 +238,12 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that the buff was added to</param>
         /// <param name="id">Buff ID that was added</param>
         public static void NotifyBuffUse(Player player, int id) => OnBuffAdd?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when a progression flag is set by the player
+        /// </summary>
+        /// <param name="id">Flag ID that was set</param>
+        public static void NotifyFlagProgression(int id) => OnFlagProgression?.Invoke(Main.LocalPlayer, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when a special flag is set by the player
@@ -192,6 +260,13 @@ namespace TerrariaAchievementLib.Achievements
         public static void NotifyItemCatch(Player player, int id) => OnItemCatch?.Invoke(player, id);
 
         /// <summary>
+        /// Helper to notify achievement conditions when an item is crafted by the player
+        /// </summary>
+        /// <param name="id">Item ID that was crafted</param>
+        /// <param name="count">Count of the crafted item</param>
+        public static void NotifyItemCraft(short id, int count) => OnItemCraft(Main.LocalPlayer, id, count);
+
+        /// <summary>
         /// Helper to notify achievement conditions when an item is equipped by the player
         /// </summary>
         /// <param name="player">Player that equipped the item</param>
@@ -205,6 +280,14 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that extracted the item</param>
         /// <param name="id">Item ID that was extracted</param>
         public static void NotifyItemExtract(Player player, int id) => OnItemExtract?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an item is grabbed by the player
+        /// </summary>
+        /// <param name="player">Player that grabbed the item</param>
+        /// <param name="id">Item ID that was grabbed</param>
+        /// <param name="count">Count of the grabbed item</param>
+        public static void NotifyItemGrab(Player player, short id, int count) => OnItemGrab?.Invoke(player, id, count);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is opened from a grab bag
@@ -234,7 +317,7 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that bought the item</param>
         /// <param name="npcId">NPC ID that sold the item</param>
         /// <param name="itemId">Item ID that was bought</param>
-        public static void NotifyNpcBuy(Player player, short npcId, int itemId) => OnNpcBuy?.Invoke(player, npcId, itemId);
+        public static void NotifyNpcBuy(Player player, int npcId, int itemId) => OnNpcBuy?.Invoke(player, npcId, itemId);
 
         /// <summary>
         /// Helper to notify achievement conditions when an NPC is caught by the player
@@ -249,7 +332,7 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that damaged the NPC</param>
         /// <param name="npcId">NPC ID that dropped the item</param>
         /// <param name="itemId">Item ID that was dropped</param>
-        public static void NotifyNpcDrop(Player player, short npcId, int itemId) => OnNpcDrop?.Invoke(player, npcId, itemId);
+        public static void NotifyNpcDrop(Player player, int npcId, int itemId) => OnNpcDrop?.Invoke(player, npcId, itemId);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is gifted from an NPC to the player
@@ -258,6 +341,20 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="npcId">NPC ID that gave the item</param>
         /// <param name="itemId">Item ID that was gifted</param>
         public static void NotifyNpcGift(Player player, int npcId, int itemId) => OnNpcGift?.Invoke(player, npcId, itemId);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an NPC is killed by the player
+        /// </summary>
+        /// <param name="player">Player that killed the NPC</param>
+        /// <param name="id">NPC ID that was killed</param>
+        public static void NotifyNpcKill(Player player, short id) => OnNpcKill?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when a tile is destroyed by the player
+        /// </summary>
+        /// <param name="player">Player that destroyed the tile</param>
+        /// <param name="id">Tile ID that was destroyed</param>
+        public static void NotifyTileDestroy(Player player, ushort id) => OnTileDestroy?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when a tile drops an item

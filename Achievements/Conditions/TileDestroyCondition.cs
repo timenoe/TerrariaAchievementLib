@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Achievements;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
@@ -72,11 +71,11 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         }
 
         /// <summary>
-        /// Hook that is called when a tile is destroyed
+        /// Hook that is called when a tile is destroyed by the player
         /// </summary>
         /// <param name="player">Player that destroyed the tile</param>
         /// <param name="id">Tile ID that was destroyed</param>
-        private static void AchievementsHelper_OnTileDestroyed(Player player, ushort id)
+        private static void CustomAchievementsHelper_OnTileDestroy(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -95,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchievementsHelper.OnTileDestroyed += AchievementsHelper_OnTileDestroyed;
+                CustomAchievementsHelper.OnTileDestroy += CustomAchievementsHelper_OnTileDestroy;
                 _isHooked = true;
             }
 

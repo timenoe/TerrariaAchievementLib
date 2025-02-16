@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Achievements;
 
 namespace TerrariaAchievementLib.Achievements.Conditions
 {
@@ -74,15 +73,16 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Hook that is called when a progression flag is set
         /// </summary>
+        /// <param name="player">Player that raised the progression flag</param>
         /// <param name="id">Flag ID that was set</param>
-        private static void AchievementsHelper_OnProgressionEvent(int id)
+        private static void CustomAchievementsHelper_OnFlagProgression(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
 
             foreach (var condition in conditions)
             {
-                if (condition.Reqs.Pass(Main.LocalPlayer))
+                if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
         }
@@ -94,7 +94,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                AchievementsHelper.OnProgressionEvent += AchievementsHelper_OnProgressionEvent;
+                CustomAchievementsHelper.OnFlagProgression += CustomAchievementsHelper_OnFlagProgression;
                 _isHooked = true;
             }
 
