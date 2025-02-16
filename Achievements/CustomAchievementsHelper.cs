@@ -264,7 +264,7 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         /// <param name="id">Item ID that was crafted</param>
         /// <param name="count">Count of the crafted item</param>
-        public static void NotifyItemCraft(short id, int count) => OnItemCraft(Main.LocalPlayer, id, count);
+        public static void NotifyItemCraft(short id, int count) => OnItemCraft?.Invoke(Main.LocalPlayer, id, count);
 
         /// <summary>
         /// Helper to notify achievement conditions when an item is equipped by the player
