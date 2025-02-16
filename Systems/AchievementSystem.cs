@@ -153,7 +153,7 @@ namespace TerrariaAchievementLib.Systems
             if (achs == null)
                 return false;
 
-            if (achs.TryGetValue(name, out Achievement ach))
+            if (achs.TryGetValue(name, out Achievement ach) && !ach.IsCompleted)
             {
                 info = typeof(Achievement).GetField("_conditions", ReflectionFlags);
                 if (info == null)
