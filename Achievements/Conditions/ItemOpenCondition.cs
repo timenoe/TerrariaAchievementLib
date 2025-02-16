@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="bagId">Grab bag ID that gifts the item</param>
         /// <param name="itemId">Item ID to listen for</param>
-        private ItemOpenCondition(ConditionReqs reqs, short bagId, int itemId) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, [itemId]) => Listen(this, bagId);
+        private ItemOpenCondition(ConditionReqs reqs, int bagId, int itemId) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, [itemId]) => Listen(this, bagId);
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be opened from a grab bag
@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
-        private ItemOpenCondition(ConditionReqs reqs, short bagId, int[] itemIds) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, itemIds) => Listen(this, bagId);
+        private ItemOpenCondition(ConditionReqs reqs, int bagId, int[] itemIds) : base($"{CustomName}_{string.Join(",", bagId)}", reqs, itemIds) => Listen(this, bagId);
 
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemID">Item ID to listen for</param>
         /// <returns>Item open achievement condition</returns>
-        public static CustomAchievementCondition Open(ConditionReqs reqs, short bagId, int itemID) => new ItemOpenCondition(reqs, bagId, itemID);
+        public static CustomAchievementCondition Open(ConditionReqs reqs, int bagId, int itemID) => new ItemOpenCondition(reqs, bagId, itemID);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be opened from a grab bag
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item open achievement condition</returns>
-        public static CustomAchievementCondition OpenAny(ConditionReqs reqs, short bagId, params int[] itemIds) => new ItemOpenCondition(reqs, bagId, itemIds);
+        public static CustomAchievementCondition OpenAny(ConditionReqs reqs, int bagId, params int[] itemIds) => new ItemOpenCondition(reqs, bagId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be opened from a grab bag
@@ -72,7 +72,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="bagId">Grab bag ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item open achievement conditions</returns>
-        public static List<CustomAchievementCondition> OpenAll(ConditionReqs reqs, short bagId, params int[] itemIds)
+        public static List<CustomAchievementCondition> OpenAll(ConditionReqs reqs, int bagId, params int[] itemIds)
         {
             List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
