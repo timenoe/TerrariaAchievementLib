@@ -350,6 +350,9 @@ namespace TerrariaAchievementLib.Systems
                     mainAch.Load(ach.Value.Conditions);
                 }
             }
+
+            // Must save here. Otherwise, other mods using this library will clear the progress that was just loaded
+            Main.Achievements.Save();
         }
 
         /// <summary>
