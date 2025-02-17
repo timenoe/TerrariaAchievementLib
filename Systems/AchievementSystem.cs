@@ -40,9 +40,14 @@ namespace TerrariaAchievementLib.Systems
         private const BindingFlags ReflectionFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
         /// <summary>
-        /// File to cache information
+        /// File to backup achievement information
         /// </summary>
-        private static string _cacheFilePath = $"{ModLoader.ModPath}/TerrariaAchievementLib.nbt";
+        private static string _backupFilePath;
+
+        /// <summary>
+        /// File to cache general information
+        /// </summary>
+        private static string _cacheFilePath;
 
         /// <summary>
         /// True achievement icon index<br/>
@@ -62,9 +67,19 @@ namespace TerrariaAchievementLib.Systems
 
 
         /// <summary>
-        /// File to cache information
+        /// File to backup achievement information
+        /// </summary>
+        public static string BackupFilePath => _backupFilePath;
+
+        /// <summary>
+        /// File to cache general information
         /// </summary>
         public static string CacheFilePath => _cacheFilePath;
+
+        /// <summary>
+        /// Achievement icon texture
+        /// </summary>
+        public List<Asset<Texture2D>> Textures => _textures;
 
         /// <summary>
         /// Unique achievement name header
@@ -76,11 +91,6 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         protected abstract List<string> TexturePaths { get; }
 
-        /// <summary>
-        /// Achievement icon texture
-        /// </summary>
-        public List<Asset<Texture2D>> Textures => _textures;
-
 
         public override void OnModLoad()
         {
@@ -89,10 +99,10 @@ namespace TerrariaAchievementLib.Systems
 
             RegisterAchievements();
             LoadAchTextures();
-            LoadSaveData();
+            LoadMainSaveData();
             LoadCustomData();
 
-            SetModCacheFilePath(Mod);
+            SetSaveFilePaths(Mod);
             MessageTool.SetModMsgHeader(Mod);
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
@@ -113,7 +123,7 @@ namespace TerrariaAchievementLib.Systems
             On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor -= On_AchievementUnlockedPopup_ctor;
 
-            SaveCustomData();
+            BackupCustomSaveData();
             UnregisterAchievements();
         }
 
@@ -255,7 +265,37 @@ namespace TerrariaAchievementLib.Systems
         /// Set the cache file path to be unique to the mod
         /// </summary>
         /// <param name="mod">Mod to cache data for</param>
-        private static void SetModCacheFilePath(Mod mod) => _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
+        private static void SetSaveFilePaths(Mod mod)
+        { 
+            _backupFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.dat";
+            _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt"; 
+        }
+
+        /// <summary>
+        /// Saves a backup of achievements.dat with custom achievements
+        /// </summary>
+        private static void BackupCustomSaveData() => File.Copy($"{Main.SavePath}/achievements.dat", BackupFilePath, overwrite: true);
+
+        /// <summary>
+        /// Load any save data from achievements.dat if applicable
+        /// </summary>
+        private static void LoadMainSaveData()
+        {
+            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
+            if (info == null)
+                return;
+
+            Dictionary<string, Achievement> mainAchs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
+            if (mainAchs == null)
+                return;
+
+            // Clear existing achievement progress before loading again
+            // Bug in the vanilla code causes issues during two consecutive loads
+            foreach (KeyValuePair<string, Achievement> ach in mainAchs)
+                ach.Value.ClearProgress();
+
+            Main.Achievements.Load();
+        }
 
         /// <summary>
         /// Checks if an achievement was added from this system<br/>
@@ -283,38 +323,16 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
-        /// Load any save data from achievements.dat if applicable
-        /// </summary>
-        private static void LoadSaveData()
-        {
-            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
-            if (info == null)
-                return;
-
-            Dictionary<string, Achievement> mainAchs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
-            if (mainAchs == null)
-                return;
-
-            // Clear existing achievement progress before loading again
-            // Bug in the vanilla code causes issues during two consecutive loads
-            foreach (KeyValuePair<string, Achievement> ach in mainAchs)
-                ach.Value.ClearProgress();
-
-            Main.Achievements.Load();
-        }
-
-        /// <summary>
         /// Load custom achievement save data from a backed up achievements.dat<br/>
         /// The main achievements.dat is not guaranteed to have save data for this system<br/>
         /// It could have been overwritten without this system's achievements
         /// </summary>
         private void LoadCustomData()
         {
-            string path = $"{ModLoader.ModPath}/{Mod.Name}.dat";
-            if (!FileUtilities.Exists(path, false))
+            if (!FileUtilities.Exists(BackupFilePath, false))
                 return;
 
-            byte[] buffer = FileUtilities.ReadAllBytes(path, false);
+            byte[] buffer = FileUtilities.ReadAllBytes(BackupFilePath, false);
             Dictionary<string, StoredAchievement> achs = null;
             try
             {
@@ -328,15 +346,11 @@ namespace TerrariaAchievementLib.Systems
             }
             catch (Exception)
             {
-                Mod.Logger.Error($"Unable to load {path}");
                 return;
             }
 
             if (achs == null)
-            {
-                Mod.Logger.Error($"Unable to parse achievements from {path}");
                 return;
-            }
 
             foreach (KeyValuePair<string, StoredAchievement> ach in achs)
             {
@@ -344,21 +358,16 @@ namespace TerrariaAchievementLib.Systems
                     continue;
 
                 Achievement mainAch = Main.Achievements.GetAchievement(ach.Key);
-                if (mainAch != null)
-                {
-                    mainAch.ClearProgress();
-                    mainAch.Load(ach.Value.Conditions);
-                }
+                if (mainAch == null)
+                    continue;
+
+                mainAch.ClearProgress();
+                mainAch.Load(ach.Value.Conditions);
             }
 
             // Must save here. Otherwise, other mods using this library will clear the progress that was just loaded
             Main.Achievements.Save();
         }
-
-        /// <summary>
-        /// Saves a backup of achievements.dat with custom achievements
-        /// </summary>
-        private void SaveCustomData() => File.Copy($"{Main.SavePath}/achievements.dat", $"{ModLoader.ModPath}/{Mod.Name}Lib.dat", overwrite: true);
 
         /// <summary>
         /// Unregister all achievements that were added from this system
@@ -448,7 +457,7 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(self);
 
-            SaveCustomData();
+            BackupCustomSaveData();
         }
 
         /// <summary>
