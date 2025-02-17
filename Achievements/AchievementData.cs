@@ -45,7 +45,7 @@ namespace TerrariaAchievementLib.Achievements
             { "OGRE_T3", [NPCID.DD2OgreT3] },
             { "BETSY", [NPCID.DD2Betsy] },
             { "FLYING_DUTCHMAN", [NPCID.PirateShip] },
-            { "MARTIAN_SAUCER", [NPCID.MartianSaucer] }
+            { "MARTIAN_SAUCER", [NPCID.MartianSaucer, NPCID.MartianSaucerCore] }
         };
 
 
