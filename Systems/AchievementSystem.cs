@@ -97,13 +97,13 @@ namespace TerrariaAchievementLib.Systems
             if (Main.dedServ)
                 return;
 
+            SetSaveFilePaths(Mod);
+            MessageTool.SetModMsgHeader(Mod);
+
             RegisterAchievements();
             LoadAchTextures();
             LoadMainSaveData();
             LoadCustomData();
-
-            SetSaveFilePaths(Mod);
-            MessageTool.SetModMsgHeader(Mod);
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
