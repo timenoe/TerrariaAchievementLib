@@ -358,7 +358,7 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// Saves a backup of achievements.dat with custom achievements
         /// </summary>
-        private void SaveCustomData() => File.Copy($"{Main.SavePath}/achievements.dat", $"{ModLoader.ModPath}/{Mod.Name}.dat", overwrite: true);
+        private void SaveCustomData() => File.Copy($"{Main.SavePath}/achievements.dat", $"{ModLoader.ModPath}/{Mod.Name}Lib.dat", overwrite: true);
 
         /// <summary>
         /// Unregister all achievements that were added from this system
