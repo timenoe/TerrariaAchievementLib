@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
+using Newtonsoft.Json.Linq;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Achievements;
@@ -11,6 +17,7 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using Terraria.Utilities;
 using TerrariaAchievementLib.Achievements;
 using TerrariaAchievementLib.Players;
 using TerrariaAchievementLib.Tools;
@@ -79,18 +86,20 @@ namespace TerrariaAchievementLib.Systems
         {
             if (Main.dedServ)
                 return;
-            
+
             RegisterAchievements();
             LoadAchTextures();
             LoadSaveData();
+            LoadCustomData();
 
             SetModCacheFilePath(Mod);
             MessageTool.SetModMsgHeader(Mod);
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
+            On_AchievementManager.Save += On_AchievementManager_Save;
             On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
-            On_InGamePopups.AchievementUnlockedPopup.ctor += AchievementUnlockedPopup_ctor;
+            On_InGamePopups.AchievementUnlockedPopup.ctor += On_AchievementUnlockedPopup_ctor;
         }
 
         public override void OnModUnload()
@@ -98,12 +107,14 @@ namespace TerrariaAchievementLib.Systems
             if (Main.dedServ)
                 return;
 
-            UnregisterAchievements();
-
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
+            On_AchievementManager.Save -= On_AchievementManager_Save;
             On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
-            On_InGamePopups.AchievementUnlockedPopup.ctor -= AchievementUnlockedPopup_ctor;
+            On_InGamePopups.AchievementUnlockedPopup.ctor -= On_AchievementUnlockedPopup_ctor;
+
+            SaveCustomData();
+            UnregisterAchievements();
         }
 
         /// <summary>
@@ -111,7 +122,6 @@ namespace TerrariaAchievementLib.Systems
         /// Involves consecutive calls to RegisterNewAchievement
         /// </summary>
         protected abstract void RegisterAchievements();
-
 
         /// <summary>
         /// Reset local progress for an individual achievement
@@ -166,7 +176,7 @@ namespace TerrariaAchievementLib.Systems
                 ach.ClearProgress();
                 foreach (KeyValuePair<string, AchievementCondition> cond in conds)
                     cond.Value.Complete();
-                
+
                 Main.Achievements.Save();
                 return true;
             }
@@ -226,7 +236,7 @@ namespace TerrariaAchievementLib.Systems
 
                 ach.AddCondition(cond);
             }
-               
+
             if (track)
                 ach.UseConditionsCompletedTracker();
 
@@ -248,13 +258,20 @@ namespace TerrariaAchievementLib.Systems
         private static void SetModCacheFilePath(Mod mod) => _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
 
         /// <summary>
-        /// Returns true if an achievement was added from this system<br/>
+        /// Checks if an achievement was added from this system<br/>
         /// Checks the achievement name for the unique header<br/>
         /// Used to not modify other achievement textures ctor hooks
         /// </summary>
         /// <param name="ach">Achievement to check</param>
-        /// <returns>True if the achievement is new to this system</returns>
+        /// <returns>True if the achievement was added from this system</returns>
         private bool IsMyAchievement(Achievement ach) => ach.Name.StartsWith(Identifier);
+
+        /// <summary>
+        /// Checks if an achievement was added from this system
+        /// </summary>
+        /// <param name="name">Internal achievement name</param>
+        /// <returns>True if the achievement was added from this system</returns>
+        private bool IsMyAchievement(string name) => name.StartsWith(Identifier);
 
         /// <summary>
         /// Load the achievement texture from the provided abstract path
@@ -273,15 +290,72 @@ namespace TerrariaAchievementLib.Systems
             FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
             if (info == null)
                 return;
-            Dictionary<string, Achievement> achievements = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
+
+            Dictionary<string, Achievement> mainAchs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
+            if (mainAchs == null)
+                return;
 
             // Clear existing achievement progress before loading again
             // Bug in the vanilla code causes issues during two consecutive loads
-            foreach (KeyValuePair<string, Achievement> achievement in achievements)
-                achievement.Value.ClearProgress();
+            foreach (KeyValuePair<string, Achievement> ach in mainAchs)
+                ach.Value.ClearProgress();
 
             Main.Achievements.Load();
         }
+
+        /// <summary>
+        /// Load custom achievement save data from a backed up achievements.dat<br/>
+        /// The main achievements.dat is not guaranteed to have save data for this system<br/>
+        /// It could have been overwritten without this system's achievements
+        /// </summary>
+        private void LoadCustomData()
+        {
+            string path = $"{ModLoader.ModPath}/{Mod.Name}.dat";
+            if (!FileUtilities.Exists(path, false))
+                return;
+
+            byte[] buffer = FileUtilities.ReadAllBytes(path, false);
+            Dictionary<string, StoredAchievement> achs = null;
+            try
+            {
+                using MemoryStream memStream = new(buffer);
+
+                byte[] cryptoKey = Encoding.ASCII.GetBytes("RELOGIC-TERRARIA");
+                using CryptoStream cryptoStream = new(memStream, Aes.Create().CreateDecryptor(cryptoKey, cryptoKey), CryptoStreamMode.Read);
+
+                using BsonReader bsonReader = new(cryptoStream);
+                achs = JsonSerializer.Create(new JsonSerializerSettings()).Deserialize<Dictionary<string, StoredAchievement>>(bsonReader);
+            }
+            catch (Exception)
+            {
+                Mod.Logger.Error($"Unable to load {path}");
+                return;
+            }
+
+            if (achs == null)
+            {
+                Mod.Logger.Error($"Unable to parse achievements from {path}");
+                return;
+            }
+
+            foreach (KeyValuePair<string, StoredAchievement> ach in achs)
+            {
+                if (!IsMyAchievement(ach.Key))
+                    continue;
+
+                Achievement mainAch = Main.Achievements.GetAchievement(ach.Key);
+                if (mainAch != null)
+                {
+                    mainAch.ClearProgress();
+                    mainAch.Load(ach.Value.Conditions);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Saves a backup of achievements.dat with custom achievements
+        /// </summary>
+        private void SaveCustomData() => File.Copy($"{Main.SavePath}/achievements.dat", $"{ModLoader.ModPath}/{Mod.Name}.dat", overwrite: true);
 
         /// <summary>
         /// Unregister all achievements that were added from this system
@@ -363,6 +437,18 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
+        /// Detour to make a copy of achievements.dat every time it's saved
+        /// </summary>
+        /// <param name="orig">Original Save method</param>
+        /// <param name="self">Achievement manager that is saving</param>
+        private void On_AchievementManager_Save(On_AchievementManager.orig_Save orig, AchievementManager self)
+        {
+            orig.Invoke(self);
+
+            SaveCustomData();
+        }
+
+        /// <summary>
         /// Detour to replace the vanilla achievement texture when a UIAchievementListItem is created
         /// </summary>
         /// <param name="orig">Original ctor</param>
@@ -415,7 +501,7 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="orig">Original ctor</param>
         /// <param name="self">AchievementUnlockedPopup being created</param>
         /// <param name="achievement">Achievement to base the pop-up on</param>
-        private void AchievementUnlockedPopup_ctor(On_InGamePopups.AchievementUnlockedPopup.orig_ctor orig, InGamePopups.AchievementUnlockedPopup self, Achievement achievement)
+        private void On_AchievementUnlockedPopup_ctor(On_InGamePopups.AchievementUnlockedPopup.orig_ctor orig, InGamePopups.AchievementUnlockedPopup self, Achievement achievement)
         {
             orig.Invoke(self, achievement);
 
@@ -427,6 +513,15 @@ namespace TerrariaAchievementLib.Systems
             if (info == null)
                 return;
             info.SetValue(self, Textures[_iconIndexes[achievement.Name] / MaxAchievementIcons]);
+        }
+
+        /// <summary>
+        /// Format of a stored achievement in achievements.dat
+        /// </summary>
+        private class StoredAchievement
+        {
+            [JsonProperty]
+            public Dictionary<string, JObject> Conditions;
         }
     }
 }
