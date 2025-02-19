@@ -142,8 +142,8 @@ namespace TerrariaAchievementLib.Achievements
             { ProgressionState.Hardmode, [ItemID.AncientHorn, ItemID.WolfMountItem, ItemID.BlessedApple, ItemID.ScalyTruffle, ItemID.QueenSlimeMountSaddle, ItemID.WallOfFleshGoatMountItem, ItemID.PirateShipMountItem, ItemID.SpookyWoodMountItem, ItemID.SantankMountItem] },
             { ProgressionState.PostMechanicalTrio, [] },
             { ProgressionState.PostPlantera, [ItemID.ReindeerBells] },
-            { ProgressionState.PostGolem, [ItemID.BrainScrambler] },
-            { ProgressionState.PostLunaticCultist, [ItemID.CosmicCarKey] },
+            { ProgressionState.PostGolem, [ItemID.BrainScrambler, ItemID.CosmicCarKey] },
+            { ProgressionState.PostLunaticCultist, [] },
             { ProgressionState.PostMoonLord, [ItemID.DrillContainmentUnit] },
         };
 
