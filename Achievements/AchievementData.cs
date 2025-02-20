@@ -52,7 +52,7 @@ namespace TerrariaAchievementLib.Achievements
         /// <summary>
         /// Extended item slot context IDs
         /// </summary>
-        public class ItemSlotContextID
+        public class CustomItemSlotContextID
         {
             public const int EquipWings = 1337;
         }

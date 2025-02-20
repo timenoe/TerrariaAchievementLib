@@ -14,7 +14,6 @@ using Terraria;
 using Terraria.Achievements;
 using Terraria.GameContent.Achievements;
 using Terraria.GameContent.UI.Elements;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.Utilities;
@@ -105,7 +104,6 @@ namespace TerrariaAchievementLib.Systems
             LoadMainSaveData();
             LoadCustomData();
 
-            On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
             On_AchievementManager.Save += On_AchievementManager_Save;
             On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
@@ -117,7 +115,6 @@ namespace TerrariaAchievementLib.Systems
             if (Main.dedServ)
                 return;
 
-            On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
             On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
             On_AchievementManager.Save -= On_AchievementManager_Save;
             On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
@@ -410,27 +407,6 @@ namespace TerrariaAchievementLib.Systems
                 // Prevent double achievement unlocks during mod reload
                 ach.Value.OnCompleted -= (Achievement.AchievementCompleted)handler;
             }
-        }
-
-        /// <summary>
-        /// Detour to notify achievement conditions when an item has been equipped
-        /// </summary>
-        /// <param name="orig">Original HandleOnEquip method</param>
-        /// <param name="player">Player that equipped the item</param>
-        /// <param name="item">Item ID that was equipped</param>
-        /// <param name="context">Item slot context ID</param>
-        private void On_AchievementsHelper_HandleOnEquip(On_AchievementsHelper.orig_HandleOnEquip orig, Player player, Item item, int context)
-        {
-            orig.Invoke(player, item, context);
-
-            // Apply custom context ID if applicable
-            if (item.wingSlot > 0)
-                context = AchievementData.ItemSlotContextID.EquipWings;
-
-            // Notify with just the item slot context ID for equipping anything in that slot
-            CustomAchievementsHelper.NotifyItemEquip(player, context, ItemID.None);
-            // Notify with the item slot context ID and the specific item ID
-            CustomAchievementsHelper.NotifyItemEquip(player, context, item.type);
         }
 
         /// <summary>

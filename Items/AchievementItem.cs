@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using TerrariaAchievementLib.Achievements;
@@ -12,6 +13,13 @@ namespace TerrariaAchievementLib.Items
     /// </summary>
     public class AchievementItem : GlobalItem
     {
+        // This allows for Magic Storage crafts to be recognized
+        public override void OnCreated(Item item, ItemCreationContext context)
+        {
+            if (context is RecipeItemCreationContext recipeContext)
+                AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
+        }
+
         public override void OnSpawn(Item item, IEntitySource source)
         {
             if (source is EntitySource_TileBreak tile)
