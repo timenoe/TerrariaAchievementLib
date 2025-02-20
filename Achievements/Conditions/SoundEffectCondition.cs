@@ -67,7 +67,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="variant">Sound variant</param>
         /// <param name="sound">Sound to listen for</param>
         /// <returns>Sound effect achievement condition</returns>
-        public static CustomAchievementCondition Open(ConditionReqs reqs, int variant, SoundStyle sound) => new SoundEffectCondition(reqs, variant, sound);
+        public static CustomAchievementCondition Hear(ConditionReqs reqs, int variant, SoundStyle sound) => new SoundEffectCondition(reqs, variant, sound);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the sounds to be played
@@ -76,7 +76,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="variant">Sound variant</param>
         /// <param name="sounds">Sound to listen for</param>
         /// <returns>Sound effect achievement condition</returns>
-        public static CustomAchievementCondition OpenAny(ConditionReqs reqs, int variant, params SoundStyle[] sounds) => new SoundEffectCondition(reqs, variant, sounds);
+        public static CustomAchievementCondition HearAny(ConditionReqs reqs, int variant, params SoundStyle[] sounds) => new SoundEffectCondition(reqs, variant, sounds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the sounds to be played
@@ -85,7 +85,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="variant">Sound variant</param>
         /// <param name="sounds">Sound to listen for</param>
         /// <returns>Sound effect achievement conditions</returns>
-        public static List<CustomAchievementCondition> OpenAll(ConditionReqs reqs, int variant, params SoundStyle[] sounds)
+        public static List<CustomAchievementCondition> HearAll(ConditionReqs reqs, int variant, params SoundStyle[] sounds)
         {
             List<CustomAchievementCondition> conditions = [];
             foreach (var sound in sounds)
