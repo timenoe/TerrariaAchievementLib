@@ -267,16 +267,17 @@ namespace TerrariaAchievementLib.Achievements
             {
                 for (ProgressionState state = start_state + 1; state <= ProgressionState.PostMoonLord; state++)
                 {
-                    if (Main.remixWorld && !Main.hardMode && remixHardmode.Contains(item))
-                        return false;
-
-                    if (items[state].Contains(item))
+                    if (Main.remixWorld)
                     {
-                        if (Main.remixWorld && remixPreHardmode.Contains(item))
+                        if (!Main.hardMode && remixPreHardmode.Contains(item))
                             return true;
 
-                        return false;
+                        if (Main.hardMode && remixHardmode.Contains(item))
+                            return true;
                     }
+
+                    if (items[state].Contains(item))
+                        return false;
                 }
             }
 
