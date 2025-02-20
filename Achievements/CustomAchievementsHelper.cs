@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.Audio;
 
 namespace TerrariaAchievementLib.Achievements
 {
@@ -127,6 +128,14 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void NpcKillEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines a sound effect event
+        /// </summary>
+        /// <param name="player">Player that heard the sound effect</param>
+        /// <param name="variant">Sound effect variant</param>
+        /// <param name="sound">Sound effect</param>
+        public delegate void SoundEffectEvent(Player player, int variant, SoundStyle sound);
+
+        /// <summary>
         /// Signature that defines a tile destroy event
         /// </summary>
         /// <param name="player">Player that destroyed the tile</param>
@@ -220,6 +229,11 @@ namespace TerrariaAchievementLib.Achievements
         /// Event that is invoked when an NPC is killed by the player
         /// </summary>
         public static event NpcKillEvent OnNpcKill;
+
+        /// <summary>
+        /// Event that is invoked when a sound effect is played
+        /// </summary>
+        public static event SoundEffectEvent OnSoundEffect;
 
         /// <summary>
         /// Event that is invoked when a tile is destroyed by the player
@@ -348,6 +362,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that killed the NPC</param>
         /// <param name="id">NPC ID that was killed</param>
         public static void NotifyNpcKill(Player player, short id) => OnNpcKill?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when a sound effect is played
+        /// </summary>
+        /// <param name="variant">Sound effect variant</param>
+        /// <param name="sound">Sound effect</param>
+        public static void NotifySoundEffect(int variant, SoundStyle sound) => OnSoundEffect?.Invoke(Main.LocalPlayer, variant, sound);
 
         /// <summary>
         /// Helper to notify achievement conditions when a tile is destroyed by the player

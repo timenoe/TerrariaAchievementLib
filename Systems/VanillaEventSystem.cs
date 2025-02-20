@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,6 +20,7 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
+            On_SoundStyle.GetRandomVariantIndex += On_SoundStyle_GetRandomVariantIndex;
 
             AchievementsHelper.OnItemCraft += CustomAchievementsHelper.NotifyItemCraft;
             AchievementsHelper.OnItemPickup += CustomAchievementsHelper.NotifyItemGrab;
@@ -33,6 +35,7 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
+            On_SoundStyle.GetRandomVariantIndex -= On_SoundStyle_GetRandomVariantIndex;
 
             AchievementsHelper.OnItemCraft -= CustomAchievementsHelper.NotifyItemCraft;
             AchievementsHelper.OnItemPickup -= CustomAchievementsHelper.NotifyItemGrab;
@@ -80,6 +83,21 @@ namespace TerrariaAchievementLib.Systems
 
             // Notify with the item slot context ID and the specific item ID
             CustomAchievementsHelper.NotifyItemEquip(player, context, item.type);
+        }
+
+        /// <summary>
+        /// Detour to notify achievement conditions when a sound effect is played
+        /// </summary>
+        /// <param name="orig">Original GetRandomVariantIndex method</param>
+        /// <param name="self">SoundStyle getting the variant index</param>
+        /// <returns>Original random variant index</returns>
+        private int On_SoundStyle_GetRandomVariantIndex(On_SoundStyle.orig_GetRandomVariantIndex orig, ref SoundStyle self)
+        {
+            SoundStyle sound = self;
+            int variantIndex = orig.Invoke(ref self);
+            int variant = sound.Variants[variantIndex];
+            CustomAchievementsHelper.NotifySoundEffect(variant, sound);
+            return variant;
         }
     }
 }
