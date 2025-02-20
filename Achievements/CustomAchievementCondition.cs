@@ -260,4 +260,13 @@ namespace TerrariaAchievementLib.Achievements
             }
         }
     }
+
+    /// <summary>
+    /// Base class for achievement conditions that are manually unlocked
+    /// </summary>
+    /// <param name="name">Name of the condition</param>
+    public class ManualAchievementCondition(string name) : Terraria.Achievements.AchievementCondition(name)
+    {
+
+    }
 }

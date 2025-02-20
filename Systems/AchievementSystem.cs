@@ -259,6 +259,32 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
+        /// Register a new achievement to manually unlock to the in-game list
+        /// </summary>
+        /// <param name="name">Achievement name</param>
+        /// <param name="cat">Achievement category</param>
+        protected void RegisterManualAchievement(string name, AchievementCategory cat)
+        {
+            // Add unique achievement header to the name if needed
+            if (!name.StartsWith(Identifier))
+                name = $"{Identifier}_{name}";
+
+            Achievement ach = new(name);
+            ManualAchievementCondition cond = new("UNLOCKED");
+            ach.AddCondition(cond);
+
+            Main.Achievements.Register(ach);
+            Main.Achievements.RegisterAchievementCategory(name, cat);
+
+            // Achievement texture size cannot exceed vanilla, so cache true index
+            _iconIndexes[name] = _iconIndex;
+            Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
+
+            if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
+                throw new Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
+        }
+
+        /// <summary>
         /// Set the cache file path to be unique to the mod
         /// </summary>
         /// <param name="mod">Mod to cache data for</param>
