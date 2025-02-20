@@ -17,7 +17,10 @@ namespace TerrariaAchievementLib.Items
         public override void OnCreated(Item item, ItemCreationContext context)
         {
             if (context is RecipeItemCreationContext recipeContext)
+            {
                 AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
+                AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+            }
         }
 
         public override void OnSpawn(Item item, IEntitySource source)
