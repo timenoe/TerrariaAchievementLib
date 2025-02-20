@@ -45,7 +45,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         private SoundEffectCondition(ConditionReqs reqs, int variant, SoundStyle sound) : base($"{CustomName}_{reqs.Identifier}-{sound.SoundPath}{variant}", reqs)
         {
             Sounds = [sound];
-            Listen(this, _variant);
+            Listen(this, variant);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         private SoundEffectCondition(ConditionReqs reqs, int variant, SoundStyle[] sounds) : base($"{CustomName}_{string.Join(",", variant)}", reqs)
         {
             Sounds = sounds;
-            Listen(this, _variant);
+            Listen(this, variant);
         }
 
         /// <summary>

@@ -97,7 +97,7 @@ namespace TerrariaAchievementLib.Systems
             int variantIndex = orig.Invoke(ref self);
             int variant = sound.Variants[variantIndex];
             CustomAchievementsHelper.NotifySoundEffect(variant, sound);
-            return variant;
+            return variantIndex;
         }
     }
 }
