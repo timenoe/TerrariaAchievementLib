@@ -130,6 +130,7 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         protected abstract void RegisterAchievements();
 
+
         /// <summary>
         /// Reset local progress for an individual achievement
         /// </summary>
@@ -190,6 +191,12 @@ namespace TerrariaAchievementLib.Systems
 
             return false;
         }
+
+        /// <summary>
+        /// Unlock a manual achievement
+        /// </summary>
+        /// <param name="name">Achievement name</param>
+        public void UnlockManualAchievement(string name) => UnlockIndividualAchievement($"{Identifier}_{name}");
 
         /// <summary>
         /// Register a new achievement with one condition to the in-game list
