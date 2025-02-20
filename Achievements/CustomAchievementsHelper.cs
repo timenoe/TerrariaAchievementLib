@@ -128,6 +128,13 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void NpcKillEvent(Player player, int id);
 
         /// <summary>
+        /// Signature that defines an NPC shimmer event
+        /// </summary>
+        /// <param name="player">Player that shimmered the NPC</param>
+        /// <param name="id">NPC ID that was shimmered</param>
+        public delegate void NpcShimmerEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines a sound effect event
         /// </summary>
         /// <param name="player">Player that heard the sound effect</param>
@@ -229,6 +236,11 @@ namespace TerrariaAchievementLib.Achievements
         /// Event that is invoked when an NPC is killed by the player
         /// </summary>
         public static event NpcKillEvent OnNpcKill;
+
+        /// <summary>
+        /// Event that is invoked when an NPC is shimmered by the player
+        /// </summary>
+        public static event NpcShimmerEvent OnNpcShimmer;
 
         /// <summary>
         /// Event that is invoked when a sound effect is played
@@ -362,6 +374,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="player">Player that killed the NPC</param>
         /// <param name="id">NPC ID that was killed</param>
         public static void NotifyNpcKill(Player player, short id) => OnNpcKill?.Invoke(player, id);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an NPC is shimmered by the player
+        /// </summary>
+        /// <param name="player">Player that shimmered the NPC</param>
+        /// <param name="id">NPC ID that was shimmered</param>
+        public static void NotifyNpcShimmer(Player player, int id) => OnNpcShimmer?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when a sound effect is played

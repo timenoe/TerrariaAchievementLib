@@ -21,6 +21,7 @@ namespace TerrariaAchievementLib.Systems
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
             On_SoundStyle.GetRandomVariantIndex += On_SoundStyle_GetRandomVariantIndex;
+            On_NPC.GetShimmered += On_NPC_GetShimmered;
 
             AchievementsHelper.OnItemCraft += CustomAchievementsHelper.NotifyItemCraft;
             AchievementsHelper.OnItemPickup += CustomAchievementsHelper.NotifyItemGrab;
@@ -36,6 +37,7 @@ namespace TerrariaAchievementLib.Systems
 
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
             On_SoundStyle.GetRandomVariantIndex -= On_SoundStyle_GetRandomVariantIndex;
+            On_NPC.GetShimmered -= On_NPC_GetShimmered;
 
             AchievementsHelper.OnItemCraft -= CustomAchievementsHelper.NotifyItemCraft;
             AchievementsHelper.OnItemPickup -= CustomAchievementsHelper.NotifyItemGrab;
@@ -83,6 +85,14 @@ namespace TerrariaAchievementLib.Systems
 
             // Notify with the item slot context ID and the specific item ID
             CustomAchievementsHelper.NotifyItemEquip(player, context, item.type);
+        }
+
+        private void On_NPC_GetShimmered(On_NPC.orig_GetShimmered orig, NPC self)
+        {
+            orig.Invoke(self);
+
+            if (Player.FindClosest(self.Center, 1, 1) == Main.myPlayer)
+                CustomAchievementsHelper.NotifyNpcShimmer(Main.LocalPlayer, self.type);
         }
 
         /// <summary>
