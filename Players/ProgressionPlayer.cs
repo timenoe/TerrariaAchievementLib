@@ -81,7 +81,7 @@ namespace TerrariaAchievementLib.Players
                 return;
 
             // The following items are Hardmode only
-            if (Main.hardMode)
+            if (!Main.hardMode)
             {
                 // Return consumed Life Fruit
                 if (player.ConsumedLifeFruit > 0)
