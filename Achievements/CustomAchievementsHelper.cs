@@ -121,6 +121,13 @@ namespace TerrariaAchievementLib.Achievements
         public delegate void NpcGiftEvent(Player player, int npcId, int itemId);
 
         /// <summary>
+        /// Signature that defines an NPC happy event
+        /// </summary>
+        /// <param name="player">Player that talked to the NPC</param>
+        /// <param name="id">NPC ID that is happy</param>
+        public delegate void NpcHappyEvent(Player player, int id);
+
+        /// <summary>
         /// Signature that defines an NPC kill event
         /// </summary>
         /// <param name="player">Player that killed the NPC</param>
@@ -231,6 +238,11 @@ namespace TerrariaAchievementLib.Achievements
         /// Event that is invoked when an item is gifted from an NPC to the player
         /// </summary>
         public static event NpcGiftEvent OnNpcGift;
+
+        /// <summary>
+        /// Event that is invoked when an NPC is happy
+        /// </summary>
+        public static event NpcHappyEvent OnNpcHappy;
 
         /// <summary>
         /// Event that is invoked when an NPC is killed by the player
@@ -367,6 +379,13 @@ namespace TerrariaAchievementLib.Achievements
         /// <param name="npcId">NPC ID that gave the item</param>
         /// <param name="itemId">Item ID that was gifted</param>
         public static void NotifyNpcGift(Player player, int npcId, int itemId) => OnNpcGift?.Invoke(player, npcId, itemId);
+
+        /// <summary>
+        /// Helper to notify achievement conditions when an NPC is happy
+        /// </summary>
+        /// <param name="player">Player that talked to the NPC</param>
+        /// <param name="id">NPC ID that is happy</param>
+        public static void NotifyNpcHappy(Player player, int id) => OnNpcHappy?.Invoke(player, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when an NPC is killed by the player

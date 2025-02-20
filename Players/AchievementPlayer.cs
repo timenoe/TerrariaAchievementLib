@@ -18,6 +18,7 @@ namespace TerrariaAchievementLib.Players
             On_Player.AddBuff += On_Player_AddBuff;
             On_Player.DropItemFromExtractinator += On_Player_DropItemFromExtractinator;
             On_Player.GetItem += On_Player_GetItem;
+            On_Player.SetTalkNPC += On_Player_SetTalkNPC;
         }
 
         public override void Unload()
@@ -28,6 +29,7 @@ namespace TerrariaAchievementLib.Players
             On_Player.AddBuff -= On_Player_AddBuff;
             On_Player.DropItemFromExtractinator -= On_Player_DropItemFromExtractinator;
             On_Player.GetItem -= On_Player_GetItem;
+            On_Player.SetTalkNPC -= On_Player_SetTalkNPC;
         }
 
         public override bool CanUseItem(Item item)
@@ -85,7 +87,7 @@ namespace TerrariaAchievementLib.Players
         /// <param name="plr">Player index</param>
         /// <param name="newItem">Gift that the player is receiving</param>
         /// <param name="settings">GetItemSettings instance</param>
-        /// <returns></returns>
+        /// <returns>Gift that the player got</returns>
         private Item On_Player_GetItem(On_Player.orig_GetItem orig, Player self, int plr, Item newItem, GetItemSettings settings)
         {
             if (settings.Equals(GetItemSettings.NPCEntityToPlayerInventorySettings))
@@ -98,6 +100,21 @@ namespace TerrariaAchievementLib.Players
             }
 
             return orig.Invoke(self, plr, newItem, settings);
+        }
+
+        /// <summary>
+        /// Detour to send a notification when the local player talks to a happy NPC
+        /// </summary>
+        /// <param name="orig">Original SetTalkNPC method</param>
+        /// <param name="self">Player that talked to the NPC</param>
+        /// <param name="npcIndex">NPC ID of the NPC</param>
+        /// <param name="fromNet">True if a network message</param>
+        private void On_Player_SetTalkNPC(On_Player.orig_SetTalkNPC orig, Player self, int npcIndex, bool fromNet)
+        {
+            orig.Invoke(self, npcIndex, fromNet);
+
+            if (!fromNet && self.currentShoppingSettings.PriceAdjustment <= 0.81999999284744263)
+                CustomAchievementsHelper.NotifyNpcHappy(self, npcIndex);
         }
     }
 }
