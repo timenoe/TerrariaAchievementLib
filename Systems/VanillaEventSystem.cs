@@ -20,8 +20,8 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
-            On_SoundStyle.GetRandomVariantIndex += On_SoundStyle_GetRandomVariantIndex;
             On_NPC.GetShimmered += On_NPC_GetShimmered;
+            On_SoundStyle.GetRandomVariantIndex += On_SoundStyle_GetRandomVariantIndex;
 
             AchievementsHelper.OnItemCraft += CustomAchievementsHelper.NotifyItemCraft;
             AchievementsHelper.OnItemPickup += CustomAchievementsHelper.NotifyItemGrab;
@@ -36,8 +36,8 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
-            On_SoundStyle.GetRandomVariantIndex -= On_SoundStyle_GetRandomVariantIndex;
             On_NPC.GetShimmered -= On_NPC_GetShimmered;
+            On_SoundStyle.GetRandomVariantIndex -= On_SoundStyle_GetRandomVariantIndex;
 
             AchievementsHelper.OnItemCraft -= CustomAchievementsHelper.NotifyItemCraft;
             AchievementsHelper.OnItemPickup -= CustomAchievementsHelper.NotifyItemGrab;
