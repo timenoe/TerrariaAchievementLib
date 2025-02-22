@@ -18,6 +18,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.Utilities;
 using TerrariaAchievementLib.Achievements;
+using TerrariaAchievementLib.Achievements.Conditions;
 using TerrariaAchievementLib.Players;
 using TerrariaAchievementLib.Tools;
 
@@ -137,6 +138,38 @@ namespace TerrariaAchievementLib.Systems
         /// Involves consecutive calls to RegisterNewAchievement
         /// </summary>
         protected abstract void RegisterAchievements();
+
+        /// <summary>
+        /// Display a list of missing elements for an achievement
+        /// </summary>
+        /// <param name="ach">Achievement to check for missing elements</param>
+        public static void DisplayMissingElements(Achievement ach)
+        {
+            IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(ach);
+            if (tracker == null || tracker is not ConditionsCompletedTracker)
+                return;
+
+            Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(ach);
+            if (conditions == null)
+                return;
+
+            List<string> missingItems = [];
+            foreach (AchievementCondition condition in conditions.Values)
+            {
+                if (condition.IsCompleted || condition is not AchIdCondition)
+                    return;
+                
+                int[] ids = (int [])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(ach);
+                foreach (int id in ids)
+                {
+                    if (condition is NpcCatchCondition)
+                        missingItems.Add(Lang.GetNPCName(id).Value);
+                    
+                }
+            }
+
+            MessageTool.ChatLog($"You are missing these for [a{ach.Name}]: {string.Join(", ", missingItems)}");
+        }
 
         /// <summary>
         /// Enables the displaying of progress notifications of tracked achievements
