@@ -144,6 +144,26 @@ namespace TerrariaAchievementLib.Systems
         public static void EnableProgressNotifications() => _displayProgress = true;
 
         /// <summary>
+        /// Checks if an achievement was not added by this library
+        /// </summary>
+        /// <param name="ach">Achievement to check</param>
+        /// <returns>True if an achievement was not added by this library</returns>
+        public static bool IsNotCustomAchievement(Achievement ach)
+        {
+            Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(ach);
+            if (conditions == null)
+                return false;
+
+            foreach (AchievementCondition condition in conditions.Values) 
+            {
+                if (condition is CustomAchievementCondition)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Reset local progress for an individual achievement
         /// </summary>
         /// <param name="name">Internal achievement name</param>
