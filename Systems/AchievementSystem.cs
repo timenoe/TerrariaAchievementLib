@@ -153,25 +153,26 @@ namespace TerrariaAchievementLib.Systems
         /// Display a list of missing elements for an achievement
         /// </summary>
         /// <param name="name">Internal achievement name</param>
-        public static void DisplayMissingElements(string name)
+        /// <returns>True if the missing elements could be retrieved</returns>
+        public static bool DisplayMissingElements(string name)
         {
             Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)typeof(AchievementManager).GetField("_achievements", ReflectionFlags)?.GetValue(Main.Achievements);
             if (achs == null)
-                return;
+                return false;
 
             if (!achs.TryGetValue(name, out Achievement ach))
-                return;
+                return false;
 
             IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(ach);
             if (tracker == null || tracker is not ConditionsCompletedTracker)
             {
                 MessageTool.ChatLog($"[a:{ach.Name}] is not a tracked achievement", ChatLogType.Error);
-                return;
+                return false;
             }
 
             Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(ach);
             if (conditions == null)
-                return;
+                return false;
 
             List<string> missingItems = [];
             foreach (AchievementCondition condition in conditions.Values)
@@ -209,6 +210,8 @@ namespace TerrariaAchievementLib.Systems
 
             File.WriteAllText(MissingFilePath, string.Join(", ", missingItems));
             MessageTool.ChatLog($"Missing elements have been written to {MissingFilePath}");
+
+            return true;
         }
 
         /// <summary>
