@@ -38,6 +38,7 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         private const BindingFlags ReflectionFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
+
         /// <summary>
         /// File to backup achievement information
         /// </summary>
@@ -47,6 +48,11 @@ namespace TerrariaAchievementLib.Systems
         /// File to cache general information
         /// </summary>
         private static string _cacheFilePath;
+
+        /// <summary>
+        /// True if progress notifications will be displayed
+        /// </summary>
+        private static bool _displayProgress;
 
         /// <summary>
         /// True achievement icon index<br/>
@@ -132,6 +138,10 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         protected abstract void RegisterAchievements();
 
+        /// <summary>
+        /// Enables the displaying of progress notifications of tracked achievements
+        /// </summary>
+        public static void EnableProgressNotifications() => _displayProgress = true;
 
         /// <summary>
         /// Reset local progress for an individual achievement
@@ -453,7 +463,10 @@ namespace TerrariaAchievementLib.Systems
         private void On_Achievement_OnConditionComplete(On_Achievement.orig_OnConditionComplete orig, Achievement self, AchievementCondition condition)
         {
             orig.Invoke(self, condition);
-            
+
+            if (!_displayProgress || !IsMyAchievement(self))
+                return;
+
             IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(self);
             if (tracker == null)
                 return;
