@@ -174,7 +174,7 @@ namespace TerrariaAchievementLib.Systems
             if (conditions == null)
                 return false;
 
-            List<string> missingItems = [];
+            List<string> missingElements = [];
             foreach (AchievementCondition condition in conditions.Values)
             {
                 if (condition.IsCompleted)
@@ -185,7 +185,7 @@ namespace TerrariaAchievementLib.Systems
                 {
                     short[] ids = (short[])typeof(AchIdCondition).GetField("_npcIds", ReflectionFlags)?.GetValue(condition);
                     foreach (int id in ids)
-                        missingItems.Add(Lang.GetNPCName(id).Value);
+                        missingElements.Add(Lang.GetNPCName(id).Value);
                 }
 
                 // All custom conditions that are tracked per condition
@@ -195,21 +195,21 @@ namespace TerrariaAchievementLib.Systems
                     foreach (int id in ids)
                     {
                         if (AchIdCondition.BuffTypes.Any(t => t.IsInstanceOfType(condition)))
-                            missingItems.Add(Lang.GetBuffName(id));
+                            missingElements.Add(Lang.GetBuffName(id));
 
-                        if (AchIdCondition.ItemTypes.Any(t => t.IsInstanceOfType(condition)))
-                            missingItems.Add(Lang.GetItemName(id).Value);
+                        else if (AchIdCondition.ItemTypes.Any(t => t.IsInstanceOfType(condition)))
+                            missingElements.Add(Lang.GetItemName(id).Value);
 
-                        if (AchIdCondition.NpcTypes.Any(t => t.IsInstanceOfType(condition)))
-                            missingItems.Add(Lang.GetNPCName(id).Value);
+                        else if (AchIdCondition.NpcTypes.Any(t => t.IsInstanceOfType(condition)))
+                            missingElements.Add(Lang.GetNPCName(id).Value);
                     }
                 }
             }
 
-            MessageTool.ChatLog($"Missing elements for [a:{ach.Name}]: {string.Join(", ", missingItems)}");
+            MessageTool.ChatLog($"Missing elements for [a:{ach.Name}]: {string.Join(", ", missingElements)}");
 
-            File.WriteAllText(MissingFilePath, string.Join(", ", missingItems));
-            MessageTool.ChatLog($"Missing elements have been written to {MissingFilePath}");
+            //File.WriteAllText(MissingFilePath, string.Join(", ", missingElements));
+            //MessageTool.ChatLog($"Missing elements have been written to {MissingFilePath}");
 
             return true;
         }
