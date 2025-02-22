@@ -452,6 +452,8 @@ namespace TerrariaAchievementLib.Systems
         /// <param name="condition">Achievement condition that completed</param>
         private void On_Achievement_OnConditionComplete(On_Achievement.orig_OnConditionComplete orig, Achievement self, AchievementCondition condition)
         {
+            orig.Invoke(self, condition);
+            
             IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(self);
             if (tracker == null)
                 return;
