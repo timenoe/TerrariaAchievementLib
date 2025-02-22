@@ -166,7 +166,7 @@ namespace TerrariaAchievementLib.Systems
                 if (condition.IsCompleted || condition is not AchIdCondition)
                     return;
 
-                int[] ids = (int[])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(ach);
+                int[] ids = (int[])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(condition);
                 foreach (int id in ids)
                 {
                     if (condition is NpcCatchCondition)
