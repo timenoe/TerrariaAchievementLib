@@ -19,6 +19,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.Utilities;
 using TerrariaAchievementLib.Achievements;
+using TerrariaAchievementLib.Achievements.Conditions;
 using TerrariaAchievementLib.Players;
 using TerrariaAchievementLib.Tools;
 
@@ -51,11 +52,6 @@ namespace TerrariaAchievementLib.Systems
         private static string _cacheFilePath;
 
         /// <summary>
-        /// File to display missing achievement items
-        /// </summary>
-        private static string _missingFilePath;
-
-        /// <summary>
         /// True if progress notifications will be displayed
         /// </summary>
         private static bool _displayProgress;
@@ -86,11 +82,6 @@ namespace TerrariaAchievementLib.Systems
         /// File to cache general information
         /// </summary>
         public static string CacheFilePath => _cacheFilePath;
-
-        /// <summary>
-        /// File to display missing achievement items
-        /// </summary>
-        public static string MissingFilePath => _missingFilePath;
 
         /// <summary>
         /// Achievement icon texture
@@ -184,33 +175,57 @@ namespace TerrariaAchievementLib.Systems
                 if (condition is NPCKilledCondition)
                 {
                     short[] ids = (short[])typeof(AchIdCondition).GetField("_npcIds", ReflectionFlags)?.GetValue(condition);
+                    if (ids == null)
+                        continue;
+
                     foreach (int id in ids)
-                        missingElements.Add(Lang.GetNPCName(id).Value);
+                    {
+                        string npcName = Lang.GetNPCName(id).Value;
+                        if (!missingElements.Contains(npcName))
+                            missingElements.Add(npcName);
+                    }
                 }
 
                 // All custom conditions that are tracked per condition
                 else if (condition is AchIdCondition)
                 {
                     int[] ids = (int[])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(condition);
+                    if (ids == null)
+                        continue;
+                    
                     foreach (int id in ids)
                     {
-                        if (AchIdCondition.BuffTypes.Any(t => t.IsInstanceOfType(condition)))
-                            missingElements.Add(Lang.GetBuffName(id));
+                        string elementName = "";
 
-                        else if (AchIdCondition.ItemTypes.Any(t => t.IsInstanceOfType(condition)))
-                            missingElements.Add(Lang.GetItemName(id).Value);
+                        if (condition is BuffAddCondition)
+                            elementName = Lang.GetBuffName(id);
 
-                        else if (AchIdCondition.NpcTypes.Any(t => t.IsInstanceOfType(condition)))
-                            missingElements.Add(Lang.GetNPCName(id).Value);
+                        else if (condition is ItemCatchCondition ||
+                                 condition is Achievements.Conditions.ItemCraftCondition ||
+                                 condition is ItemEquipCondition ||
+                                 condition is ItemExtractCondition ||
+                                 condition is ItemGrabCondition ||
+                                 condition is ItemOpenCondition ||
+                                 condition is ItemShakeCondition ||
+                                 condition is ItemUseCondition ||
+                                 condition is NpcBuyCondition ||
+                                 condition is NpcDropCondition ||
+                                 condition is NpcGiftCondition)
+                            elementName = Lang.GetItemName(id).Value;
+
+                        else if (condition is NpcCatchCondition ||
+                                 condition is NpcHappyCondition ||
+                                 condition is NpcKillCondition ||
+                                 condition is NpcShimmerCondition)
+                            elementName = Lang.GetNPCName(id).Value;
+
+                        if (!string.IsNullOrEmpty(elementName) && !missingElements.Contains(elementName))
+                            missingElements.Add(elementName);
                     }
                 }
             }
 
             MessageTool.ChatLog($"Missing elements for [a:{ach.Name}]: {string.Join(", ", missingElements)}");
-
-            //File.WriteAllText(MissingFilePath, string.Join(", ", missingElements));
-            //MessageTool.ChatLog($"Missing elements have been written to {MissingFilePath}");
-
             return true;
         }
 
@@ -407,7 +422,6 @@ namespace TerrariaAchievementLib.Systems
         {
             _backupFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.dat";
             _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
-            _missingFilePath = $"{ModLoader.ModPath}/{mod.Name}Missing.txt";
         }
 
         /// <summary>
