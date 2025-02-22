@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
+using TerrariaAchievementLib.Achievements.Conditions;
 using TerrariaAchievementLib.Players;
 
 namespace TerrariaAchievementLib.Achievements
@@ -223,6 +225,21 @@ namespace TerrariaAchievementLib.Achievements
     /// </summary>
     public class AchIdCondition : CustomAchievementCondition
     {
+        /// <summary>
+        /// Achievement conditions that track buffs
+        /// </summary>
+        public static readonly Type[] BuffTypes = [typeof(BuffAddCondition)];
+
+        /// <summary>
+        /// Achievement conditions that track items
+        /// </summary>
+        public static readonly Type[] ItemTypes = [typeof(ItemCatchCondition), typeof(ItemCraftCondition), typeof(ItemEquipCondition), typeof(ItemExtractCondition), typeof(ItemGrabCondition), typeof(ItemOpenCondition), typeof(ItemShakeCondition), typeof(ItemUseCondition), typeof(NpcBuyCondition), typeof(NpcDropCondition), typeof(NpcGiftCondition)];
+
+        /// <summary>
+        /// Achievement conditions that track NPCs
+        /// </summary>
+        public static readonly Type[] NpcTypes = [typeof(NpcCatchCondition), typeof(NpcHappyCondition), typeof(NpcKillCondition), typeof(NpcShimmerCondition)];
+        
         /// <summary>
         /// IDs that need to be triggered to satisfy the condition
         /// </summary>

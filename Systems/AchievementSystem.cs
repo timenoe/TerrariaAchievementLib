@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,7 +19,6 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.Utilities;
 using TerrariaAchievementLib.Achievements;
-using TerrariaAchievementLib.Achievements.Conditions;
 using TerrariaAchievementLib.Players;
 using TerrariaAchievementLib.Tools;
 
@@ -51,6 +51,11 @@ namespace TerrariaAchievementLib.Systems
         private static string _cacheFilePath;
 
         /// <summary>
+        /// File to display missing achievement items
+        /// </summary>
+        private static string _missingFilePath;
+
+        /// <summary>
         /// True if progress notifications will be displayed
         /// </summary>
         private static bool _displayProgress;
@@ -81,6 +86,11 @@ namespace TerrariaAchievementLib.Systems
         /// File to cache general information
         /// </summary>
         public static string CacheFilePath => _cacheFilePath;
+
+        /// <summary>
+        /// File to display missing achievement items
+        /// </summary>
+        public static string MissingFilePath => _missingFilePath;
 
         /// <summary>
         /// Achievement icon texture
@@ -151,10 +161,13 @@ namespace TerrariaAchievementLib.Systems
 
             if (!achs.TryGetValue(name, out Achievement ach))
                 return;
-            
+
             IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(ach);
             if (tracker == null || tracker is not ConditionsCompletedTracker)
+            {
+                MessageTool.ChatLog($"[a:{ach.Name}] is not a tracked achievement", ChatLogType.Error);
                 return;
+            }
 
             Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(ach);
             if (conditions == null)
@@ -163,18 +176,39 @@ namespace TerrariaAchievementLib.Systems
             List<string> missingItems = [];
             foreach (AchievementCondition condition in conditions.Values)
             {
-                if (condition.IsCompleted || condition is not AchIdCondition)
-                    return;
+                if (condition.IsCompleted)
+                    continue;
 
-                int[] ids = (int[])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(condition);
-                foreach (int id in ids)
+                // Only vanilla condition type that is tracked per condition
+                if (condition is NPCKilledCondition)
                 {
-                    if (condition is NpcCatchCondition)
+                    short[] ids = (short[])typeof(AchIdCondition).GetField("_npcIds", ReflectionFlags)?.GetValue(condition);
+                    foreach (int id in ids)
                         missingItems.Add(Lang.GetNPCName(id).Value);
+                }
+
+                // All custom conditions that are tracked per condition
+                else if (condition is AchIdCondition)
+                {
+                    int[] ids = (int[])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(condition);
+                    foreach (int id in ids)
+                    {
+                        if (AchIdCondition.BuffTypes.Any(t => t.IsInstanceOfType(condition)))
+                            missingItems.Add(Lang.GetBuffName(id));
+
+                        if (AchIdCondition.ItemTypes.Any(t => t.IsInstanceOfType(condition)))
+                            missingItems.Add(Lang.GetItemName(id).Value);
+
+                        if (AchIdCondition.NpcTypes.Any(t => t.IsInstanceOfType(condition)))
+                            missingItems.Add(Lang.GetNPCName(id).Value);
+                    }
                 }
             }
 
-            MessageTool.ChatLog($"You are missing these for [a{ach.Name}]: {string.Join(", ", missingItems)}"); 
+            MessageTool.ChatLog($"Missing elements for [a:{ach.Name}]: {string.Join(", ", missingItems)}");
+
+            File.WriteAllText(MissingFilePath, string.Join(", ", missingItems));
+            MessageTool.ChatLog($"Missing elements have been written to {MissingFilePath}");
         }
 
         /// <summary>
@@ -193,7 +227,7 @@ namespace TerrariaAchievementLib.Systems
             if (conditions == null)
                 return false;
 
-            foreach (AchievementCondition condition in conditions.Values) 
+            foreach (AchievementCondition condition in conditions.Values)
             {
                 if (condition is CustomAchievementCondition)
                     return false;
@@ -367,9 +401,10 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         /// <param name="mod">Mod to cache data for</param>
         private static void SetSaveFilePaths(Mod mod)
-        { 
+        {
             _backupFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.dat";
-            _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt"; 
+            _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
+            _missingFilePath = $"{ModLoader.ModPath}/{mod.Name}Missing.txt";
         }
 
         /// <summary>
