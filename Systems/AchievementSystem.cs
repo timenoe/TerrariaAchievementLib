@@ -142,9 +142,16 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// Display a list of missing elements for an achievement
         /// </summary>
-        /// <param name="ach">Achievement to check for missing elements</param>
-        public static void DisplayMissingElements(Achievement ach)
+        /// <param name="name">Internal achievement name</param>
+        public static void DisplayMissingElements(string name)
         {
+            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)typeof(AchievementManager).GetField("_achievements", ReflectionFlags)?.GetValue(Main.Achievements);
+            if (achs == null)
+                return;
+
+            if (!achs.TryGetValue(name, out Achievement ach))
+                return;
+            
             IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(ach);
             if (tracker == null || tracker is not ConditionsCompletedTracker)
                 return;
@@ -158,17 +165,16 @@ namespace TerrariaAchievementLib.Systems
             {
                 if (condition.IsCompleted || condition is not AchIdCondition)
                     return;
-                
-                int[] ids = (int [])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(ach);
+
+                int[] ids = (int[])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(ach);
                 foreach (int id in ids)
                 {
                     if (condition is NpcCatchCondition)
                         missingItems.Add(Lang.GetNPCName(id).Value);
-                    
                 }
             }
 
-            MessageTool.ChatLog($"You are missing these for [a{ach.Name}]: {string.Join(", ", missingItems)}");
+            MessageTool.ChatLog($"You are missing these for [a{ach.Name}]: {string.Join(", ", missingItems)}"); 
         }
 
         /// <summary>
