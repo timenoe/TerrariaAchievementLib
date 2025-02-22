@@ -104,10 +104,11 @@ namespace TerrariaAchievementLib.Systems
             LoadMainSaveData();
             LoadCustomData();
 
+            On_Achievement.OnConditionComplete += On_Achievement_OnConditionComplete;
             On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
             On_AchievementManager.Save += On_AchievementManager_Save;
-            On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
             On_InGamePopups.AchievementUnlockedPopup.ctor += On_AchievementUnlockedPopup_ctor;
+            On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
         }
 
         public override void OnModUnload()
@@ -115,10 +116,11 @@ namespace TerrariaAchievementLib.Systems
             if (Main.dedServ)
                 return;
 
-            On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
+            On_Achievement.OnConditionComplete -= On_Achievement_OnConditionComplete;
             On_AchievementManager.Save -= On_AchievementManager_Save;
-            On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
+            On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
             On_InGamePopups.AchievementUnlockedPopup.ctor -= On_AchievementUnlockedPopup_ctor;
+            On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
 
             BackupCustomSaveData();
             UnregisterAchievements();
@@ -443,6 +445,40 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
+        /// Detour to display a progress notification for tracked achievements when a condition completes
+        /// </summary>
+        /// <param name="orig">Original OnConditionComplete method</param>
+        /// <param name="self">Achievement associated with the condition</param>
+        /// <param name="condition">Achievement condition that completed</param>
+        private void On_Achievement_OnConditionComplete(On_Achievement.orig_OnConditionComplete orig, Achievement self, AchievementCondition condition)
+        {
+            IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(self);
+            if (tracker == null)
+                return;
+
+            if (tracker is ConditionsCompletedTracker)
+            {
+                Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(self);
+                int completedConditionsCount = (int)typeof(Achievement).GetField("_completedCount", ReflectionFlags)?.GetValue(self);
+
+                if (completedConditionsCount < conditions.Count)
+                    MessageTool.ChatLog($"You made progress on [a:{self.Name}]: {completedConditionsCount}/{conditions.Count}");
+            }
+        }
+
+        /// <summary>
+        /// Detour to make a copy of achievements.dat every time it's saved
+        /// </summary>
+        /// <param name="orig">Original Save method</param>
+        /// <param name="self">Achievement manager that is saving</param>
+        private void On_AchievementManager_Save(On_AchievementManager.orig_Save orig, AchievementManager self)
+        {
+            orig.Invoke(self);
+
+            BackupCustomSaveData();
+        }
+
+        /// <summary>
         /// Detour to notify achievement conditions when a special flag is raised<br/><br/>
         /// The vanilla game didn't do this, and instead opted for manually named flags<br/>
         /// in the conditions, even though special flag IDs are used elsewhere in the code
@@ -458,15 +494,23 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
-        /// Detour to make a copy of achievements.dat every time it's saved
+        /// Detour to replace the vanilla achievement texture when a AchievementUnlockedPopup is created
         /// </summary>
-        /// <param name="orig">Original Save method</param>
-        /// <param name="self">Achievement manager that is saving</param>
-        private void On_AchievementManager_Save(On_AchievementManager.orig_Save orig, AchievementManager self)
+        /// <param name="orig">Original ctor</param>
+        /// <param name="self">AchievementUnlockedPopup being created</param>
+        /// <param name="achievement">Achievement to base the pop-up on</param>
+        private void On_AchievementUnlockedPopup_ctor(On_InGamePopups.AchievementUnlockedPopup.orig_ctor orig, InGamePopups.AchievementUnlockedPopup self, Achievement achievement)
         {
-            orig.Invoke(self);
+            orig.Invoke(self, achievement);
 
-            BackupCustomSaveData();
+            // Don't modify vanilla achievement textures
+            if (!IsMyAchievement(achievement))
+                return;
+
+            FieldInfo info = typeof(InGamePopups.AchievementUnlockedPopup).GetField("_achievementTexture", ReflectionFlags);
+            if (info == null)
+                return;
+            info.SetValue(self, Textures[_iconIndexes[achievement.Name] / MaxAchievementIcons]);
         }
 
         /// <summary>
@@ -514,26 +558,6 @@ namespace TerrariaAchievementLib.Systems
             UIImage border = (UIImage)info.GetValue(self);
             border.Remove();
             self.Append(border);
-        }
-
-        /// <summary>
-        /// Detour to replace the vanilla achievement texture when a AchievementUnlockedPopup is created
-        /// </summary>
-        /// <param name="orig">Original ctor</param>
-        /// <param name="self">AchievementUnlockedPopup being created</param>
-        /// <param name="achievement">Achievement to base the pop-up on</param>
-        private void On_AchievementUnlockedPopup_ctor(On_InGamePopups.AchievementUnlockedPopup.orig_ctor orig, InGamePopups.AchievementUnlockedPopup self, Achievement achievement)
-        {
-            orig.Invoke(self, achievement);
-
-            // Don't modify vanilla achievement textures
-            if (!IsMyAchievement(achievement))
-                return;
-
-            FieldInfo info = typeof(InGamePopups.AchievementUnlockedPopup).GetField("_achievementTexture", ReflectionFlags);
-            if (info == null)
-                return;
-            info.SetValue(self, Textures[_iconIndexes[achievement.Name] / MaxAchievementIcons]);
         }
 
         /// <summary>
