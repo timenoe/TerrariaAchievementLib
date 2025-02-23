@@ -60,14 +60,14 @@ namespace TerrariaAchievementLib.Tools
         /// <returns>True on success</returns>
         public static bool GetMissingElementsLocalized(string localizedName, out string result)
         {
-            string name = GetInternalAchievementName(localizedName);
-            if (string.IsNullOrEmpty(name))
+            string internalName = GetInternalAchievementName(localizedName);
+            if (string.IsNullOrEmpty(internalName))
             {
                 result = $"The localized achievement name \"{localizedName}\" is not recognized";
                 return false;
             }
 
-            return GetMissingElementsInternal(name, out result);
+            return GetMissingElementsInternal(internalName, out result);
         }
 
         /// <summary>
@@ -219,14 +219,14 @@ namespace TerrariaAchievementLib.Tools
         /// <returns>True on success</returns>
         public static bool UnlockAchievementLocalized(string localizedName, out string failure)
         {
-            string name = GetInternalAchievementName(localizedName);
-            if (string.IsNullOrEmpty(name))
+            string internalName = GetInternalAchievementName(localizedName);
+            if (string.IsNullOrEmpty(internalName))
             {
                 failure = $"The localized achievement name \"{localizedName}\" is not recognized";
                 return false;
             }
 
-            return UnlockAchievementInternal(localizedName, out failure);
+            return UnlockAchievementInternal(internalName, out failure);
         }
 
         /// <summary>
