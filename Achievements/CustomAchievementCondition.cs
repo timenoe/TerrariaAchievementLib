@@ -224,6 +224,21 @@ namespace TerrariaAchievementLib.Achievements
     public class AchIdCondition : CustomAchievementCondition
     {
         /// <summary>
+        /// Conditions that track buffs
+        /// </summary>
+        public static readonly string[] BuffConditions = ["BuffAddCondition"];
+
+        /// <summary>
+        /// Conditions that track items
+        /// </summary>
+        public static readonly string[] ItemConditions = ["ItemCatchCondition", "ItemCraftCondition", "ItemEquipCondition", "ItemExtractCondition", "ItemGrabCondition", "ItemOpenCondition", "ItemShakeCondition", "ItemUseCondition", "NpcBuyCondition", "NpcDropCondition", "NpcGiftCondition"];
+
+        /// <summary>
+        /// Conditions that track NPCs
+        /// </summary>
+        public static readonly string[] NpcConditions = ["NpcCatchCondition", "NpcHappyCondition", "NpcKillCondition", "NpcShimmerCondition"];
+
+        /// <summary>
         /// IDs that need to be triggered to satisfy the condition
         /// </summary>
         protected readonly int[] Ids;

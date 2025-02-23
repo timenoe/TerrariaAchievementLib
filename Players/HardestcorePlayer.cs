@@ -33,15 +33,10 @@ namespace TerrariaAchievementLib.Players
         /// </summary>
         private string _uniqueId = "";
 
-        /// <summary>
-        /// True if Hardestcore is enabled
-        /// </summary>
-        public static bool Enabled => _enabled;
 
-        
         public override void OnEnterWorld()
         {
-            if (!Enabled)
+            if (!_enabled)
                 return;
 
             if (Player.difficulty == PlayerDifficultyID.Hardcore)
@@ -50,13 +45,13 @@ namespace TerrariaAchievementLib.Players
 
                 if (!WasPlayerGeneratedWithMod())
                 {
-                    MessageTool.ChatLog("Hardestcore is disabled: This Hardcore player was not created with this mod.", ChatLogType.Warn);
+                    LogTool.ChatLog("Hardestcore is disabled: This Hardcore player was not created with this mod.", ChatLogType.Warn);
                     return;
                 }
 
                 if (!WasWorldGeneratedWithMod())
                 {
-                    MessageTool.ChatLog("Hardestcore is disabled: This world was not created with this mod.", ChatLogType.Warn);
+                    LogTool.ChatLog("Hardestcore is disabled: This world was not created with this mod.", ChatLogType.Warn);
                     return;
                 }
 
@@ -66,13 +61,13 @@ namespace TerrariaAchievementLib.Players
 
                 if (!IsPlayerHardestcore())
                 {
-                    MessageTool.ChatLog("Hardestcore is disabled: Either this Hardcore player has visited other worlds, or they have died before.", ChatLogType.Warn);
+                    LogTool.ChatLog("Hardestcore is disabled: Either this Hardcore player has visited other worlds, or they have died before.", ChatLogType.Warn);
                     return;
                 }
 
                 if (!IsWorldHardestcore())
                 {
-                    MessageTool.ChatLog("Hardestcore is disabled: Either a non-Hardcore player has visited this world, or a Hardcore player has died in this world.", ChatLogType.Warn);
+                    LogTool.ChatLog("Hardestcore is disabled: Either a non-Hardcore player has visited this world, or a Hardcore player has died in this world.", ChatLogType.Warn);
                     return;
                 }
 
@@ -87,7 +82,7 @@ namespace TerrariaAchievementLib.Players
 
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (!Enabled || Player.difficulty != PlayerDifficultyID.Hardcore)
+            if (!_enabled || Player.difficulty != PlayerDifficultyID.Hardcore)
                 return;
 
             Player.ClearBuff(ModContent.BuffType<HardestcoreBuff>());
@@ -135,7 +130,7 @@ namespace TerrariaAchievementLib.Players
         public static bool WasWorldGeneratedWithMod()
         {
             WorldFileData world = Main.ActiveWorldFileData;
-            
+
             if (!world.WorldGenModsRecorded)
                 return false;
 

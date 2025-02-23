@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Achievements;
-using Terraria.GameContent.Achievements;
-using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
-using Terraria.UI;
 using Terraria.Utilities;
 using TerrariaAchievementLib.Achievements;
-using TerrariaAchievementLib.Achievements.Conditions;
 using TerrariaAchievementLib.Players;
 using TerrariaAchievementLib.Tools;
 
@@ -31,14 +23,9 @@ namespace TerrariaAchievementLib.Systems
     public abstract class AchievementSystem : ModSystem
     {
         /// <summary>
-        /// Maximum number of achievement icons in a texture
-        /// </summary>
-        private const int MaxAchievementIcons = 120;
-
-        /// <summary>
         /// Flags to use during reflection
         /// </summary>
-        private const BindingFlags ReflectionFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+        public const BindingFlags ReflectionFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
 
         /// <summary>
@@ -52,31 +39,10 @@ namespace TerrariaAchievementLib.Systems
         private static string _cacheFilePath;
 
         /// <summary>
-        /// True if progress notifications will be displayed
+        /// Reference to the instance of this class
         /// </summary>
-        private static bool _displayProgress;
+        private static AchievementSystem _instance;
 
-        /// <summary>
-        /// True achievement icon index<br/>
-        /// Texture size cannot exceed vanilla, so this allows for reference of multiple textures
-        /// </summary>
-        private readonly Dictionary<string, int> _iconIndexes = [];
-
-        /// <summary>
-        /// Achievement icon texture
-        /// </summary>
-        private readonly List<Asset<Texture2D>> _textures = [];
-
-        /// <summary>
-        /// Current achievement icon index in the texture
-        /// </summary>
-        private int _iconIndex = 0;
-
-
-        /// <summary>
-        /// File to backup achievement information
-        /// </summary>
-        public static string BackupFilePath => _backupFilePath;
 
         /// <summary>
         /// File to cache general information
@@ -84,9 +50,9 @@ namespace TerrariaAchievementLib.Systems
         public static string CacheFilePath => _cacheFilePath;
 
         /// <summary>
-        /// Achievement icon texture
+        /// Reference to the instance of this class
         /// </summary>
-        public List<Asset<Texture2D>> Textures => _textures;
+        public static AchievementSystem Instance => _instance;
 
         /// <summary>
         /// Unique achievement name header
@@ -104,19 +70,18 @@ namespace TerrariaAchievementLib.Systems
             if (Main.dedServ)
                 return;
 
-            SetSaveFilePaths(Mod);
-            MessageTool.SetModMsgHeader(Mod);
+            _backupFilePath = $"{ModLoader.ModPath}/{Mod.Name}Lib.dat";
+            _cacheFilePath = $"{ModLoader.ModPath}/{Mod.Name}Lib.nbt";
+            _instance = this;
+
+            LogTool.SetDefaults(Mod);
+            ModContent.GetInstance<IconSystem>().LoadAchTextures(TexturePaths);
 
             RegisterAchievements();
-            LoadAchTextures();
             LoadMainSaveData();
-            LoadCustomData();
+            LoadCustomSaveData();
 
-            On_Achievement.OnConditionComplete += On_Achievement_OnConditionComplete;
-            On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
             On_AchievementManager.Save += On_AchievementManager_Save;
-            On_InGamePopups.AchievementUnlockedPopup.ctor += On_AchievementUnlockedPopup_ctor;
-            On_UIAchievementListItem.ctor += On_UIAchievementListItem_ctor;
         }
 
         public override void OnModUnload()
@@ -124,14 +89,29 @@ namespace TerrariaAchievementLib.Systems
             if (Main.dedServ)
                 return;
 
-            On_Achievement.OnConditionComplete -= On_Achievement_OnConditionComplete;
             On_AchievementManager.Save -= On_AchievementManager_Save;
-            On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
-            On_InGamePopups.AchievementUnlockedPopup.ctor -= On_AchievementUnlockedPopup_ctor;
-            On_UIAchievementListItem.ctor -= On_UIAchievementListItem_ctor;
 
             BackupCustomSaveData();
             UnregisterAchievements();
+        }
+
+        /// <summary>
+        /// Checks if an achievement was added from this system
+        /// </summary>
+        /// <param name="internalName">Internal achievement name</param>
+        /// <returns>True if the achievement was added from this system</returns>
+        public bool IsCustomAchievement(string internalName) => internalName.StartsWith(Identifier);
+
+        /// <summary>
+        /// Unlock a manual achievement using its internal name
+        /// </summary>
+        /// <param name="internalName">Achievement name</param>
+        public void UnlockManualAchievement(string internalName)
+        {
+            if (!IsCustomAchievement(internalName))
+                return;
+            
+            AchievementTool.UnlockAchievementInternal($"{Identifier}_{internalName}", out _);
         }
 
         /// <summary>
@@ -139,187 +119,6 @@ namespace TerrariaAchievementLib.Systems
         /// Involves consecutive calls to RegisterNewAchievement
         /// </summary>
         protected abstract void RegisterAchievements();
-
-        /// <summary>
-        /// Display a list of missing elements for an achievement
-        /// </summary>
-        /// <param name="name">Internal achievement name</param>
-        /// <returns>True if the missing elements could be retrieved</returns>
-        public static bool DisplayMissingElements(string name)
-        {
-            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)typeof(AchievementManager).GetField("_achievements", ReflectionFlags)?.GetValue(Main.Achievements);
-            if (achs == null)
-                return false;
-
-            if (!achs.TryGetValue(name, out Achievement ach))
-                return false;
-
-            IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(ach);
-            if (tracker == null || tracker is not ConditionsCompletedTracker)
-            {
-                MessageTool.ChatLog($"[a:{ach.Name}] is not a tracked achievement", ChatLogType.Error);
-                return false;
-            }
-
-            Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(ach);
-            if (conditions == null)
-                return false;
-
-            List<string> missingElements = [];
-            foreach (AchievementCondition condition in conditions.Values)
-            {
-                if (condition.IsCompleted)
-                    continue;
-
-                // Only vanilla condition type that is tracked per condition
-                if (condition is NPCKilledCondition)
-                {
-                    short[] ids = (short[])typeof(AchIdCondition).GetField("_npcIds", ReflectionFlags)?.GetValue(condition);
-                    if (ids == null)
-                        continue;
-
-                    foreach (int id in ids)
-                    {
-                        string npcName = Lang.GetNPCName(id).Value;
-                        if (!missingElements.Contains(npcName))
-                            missingElements.Add(npcName);
-                    }
-                }
-
-                // All custom conditions that are tracked per condition
-                else if (condition is AchIdCondition)
-                {
-                    int[] ids = (int[])typeof(AchIdCondition).GetField("Ids", ReflectionFlags)?.GetValue(condition);
-                    if (ids == null)
-                        continue;
-                    
-                    foreach (int id in ids)
-                    {
-                        string elementName = "";
-
-                        if (condition is BuffAddCondition)
-                            elementName = Lang.GetBuffName(id);
-
-                        else if (condition is ItemCatchCondition ||
-                                 condition is Achievements.Conditions.ItemCraftCondition ||
-                                 condition is ItemEquipCondition ||
-                                 condition is ItemExtractCondition ||
-                                 condition is ItemGrabCondition ||
-                                 condition is ItemOpenCondition ||
-                                 condition is ItemShakeCondition ||
-                                 condition is ItemUseCondition ||
-                                 condition is NpcBuyCondition ||
-                                 condition is NpcDropCondition ||
-                                 condition is NpcGiftCondition)
-                            elementName = Lang.GetItemName(id).Value;
-
-                        else if (condition is NpcCatchCondition ||
-                                 condition is NpcHappyCondition ||
-                                 condition is NpcKillCondition ||
-                                 condition is NpcShimmerCondition)
-                            elementName = Lang.GetNPCName(id).Value;
-
-                        if (!string.IsNullOrEmpty(elementName) && !missingElements.Contains(elementName))
-                            missingElements.Add(elementName);
-                    }
-                }
-            }
-
-            MessageTool.ChatLog($"Missing elements for [a:{ach.Name}]: {string.Join(", ", missingElements)}");
-            return true;
-        }
-
-        /// <summary>
-        /// Enables the displaying of progress notifications of tracked achievements
-        /// </summary>
-        public static void EnableProgressNotifications() => _displayProgress = true;
-
-        /// <summary>
-        /// Checks if an achievement was not added by this library
-        /// </summary>
-        /// <param name="ach">Achievement to check</param>
-        /// <returns>True if an achievement was not added by this library</returns>
-        public static bool IsNotCustomAchievement(Achievement ach)
-        {
-            Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(ach);
-            if (conditions == null)
-                return false;
-
-            foreach (AchievementCondition condition in conditions.Values)
-            {
-                if (condition is CustomAchievementCondition)
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Reset local progress for an individual achievement
-        /// </summary>
-        /// <param name="name">Internal achievement name</param>
-        /// <returns>True on success</returns>
-        public static bool ResetInvidualAchievement(string name)
-        {
-            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
-            if (info == null)
-                return false;
-
-            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
-            if (achs == null)
-                return false;
-
-            if (achs.TryGetValue(name, out Achievement value))
-            {
-                value.ClearProgress();
-                Main.Achievements.Save();
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Unlock an individual achievement
-        /// </summary>
-        /// <param name="name">Internal achievement name</param>
-        /// <returns>True on success</returns>
-        public static bool UnlockIndividualAchievement(string name)
-        {
-            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
-            if (info == null)
-                return false;
-
-            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
-            if (achs == null)
-                return false;
-
-            if (achs.TryGetValue(name, out Achievement ach) && !ach.IsCompleted)
-            {
-                info = typeof(Achievement).GetField("_conditions", ReflectionFlags);
-                if (info == null)
-                    return false;
-
-                Dictionary<string, AchievementCondition> conds = (Dictionary<string, AchievementCondition>)info.GetValue(ach);
-                if (achs == null)
-                    return false;
-
-                ach.ClearProgress();
-                foreach (KeyValuePair<string, AchievementCondition> cond in conds)
-                    cond.Value.Complete();
-
-                Main.Achievements.Save();
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Unlock a manual achievement
-        /// </summary>
-        /// <param name="name">Achievement name</param>
-        public void UnlockManualAchievement(string name) => UnlockIndividualAchievement($"{Identifier}_{name}");
 
         /// <summary>
         /// Register a new achievement with one condition to the in-game list
@@ -342,13 +141,7 @@ namespace TerrariaAchievementLib.Systems
 
             Main.Achievements.Register(ach);
             Main.Achievements.RegisterAchievementCategory(name, cat);
-
-            // Achievement texture size cannot exceed vanilla, so cache true index
-            _iconIndexes[name] = _iconIndex;
-            Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
-
-            if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
-                throw new Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
+            ModContent.GetInstance<IconSystem>().RegisterAchievementIcon(name);
         }
 
         /// <summary>
@@ -379,13 +172,7 @@ namespace TerrariaAchievementLib.Systems
 
             Main.Achievements.Register(ach);
             Main.Achievements.RegisterAchievementCategory(name, cat);
-
-            // Achievement texture size cannot exceed vanilla, so cache true index
-            _iconIndexes[name] = _iconIndex;
-            Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
-
-            if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
-                throw new Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
+            ModContent.GetInstance<IconSystem>().RegisterAchievementIcon(name);
         }
 
         /// <summary>
@@ -405,74 +192,29 @@ namespace TerrariaAchievementLib.Systems
 
             Main.Achievements.Register(ach);
             Main.Achievements.RegisterAchievementCategory(name, cat);
-
-            // Achievement texture size cannot exceed vanilla, so cache true index
-            _iconIndexes[name] = _iconIndex;
-            Main.Achievements.RegisterIconIndex(name, _iconIndex++ % MaxAchievementIcons);
-
-            if (_iconIndex / MaxAchievementIcons > TexturePaths.Count - 1)
-                throw new Exception($"Only {TexturePaths.Count} achievement textures were defined. Achievement {_iconIndex + 1} is out of range (One texture can only hold 120 icons).");
-        }
-
-        /// <summary>
-        /// Set the cache file path to be unique to the mod
-        /// </summary>
-        /// <param name="mod">Mod to cache data for</param>
-        private static void SetSaveFilePaths(Mod mod)
-        {
-            _backupFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.dat";
-            _cacheFilePath = $"{ModLoader.ModPath}/{mod.Name}Lib.nbt";
+            ModContent.GetInstance<IconSystem>().RegisterAchievementIcon(name);
         }
 
         /// <summary>
         /// Saves a backup of achievements.dat with custom achievements
         /// </summary>
-        private static void BackupCustomSaveData() => File.Copy($"{Main.SavePath}/achievements.dat", BackupFilePath, overwrite: true);
+        private static void BackupCustomSaveData() => File.Copy($"{Main.SavePath}/achievements.dat", _backupFilePath, overwrite: true);
 
         /// <summary>
         /// Load any save data from achievements.dat if applicable
         /// </summary>
         private static void LoadMainSaveData()
         {
-            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
-            if (info == null)
-                return;
-
-            Dictionary<string, Achievement> mainAchs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
-            if (mainAchs == null)
+            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)typeof(AchievementManager).GetField("_achievements", ReflectionFlags)?.GetValue(Main.Achievements);
+            if (achs == null)
                 return;
 
             // Clear existing achievement progress before loading again
             // Bug in the vanilla code causes issues during two consecutive loads
-            foreach (KeyValuePair<string, Achievement> ach in mainAchs)
+            foreach (KeyValuePair<string, Achievement> ach in achs)
                 ach.Value.ClearProgress();
 
             Main.Achievements.Load();
-        }
-
-        /// <summary>
-        /// Checks if an achievement was added from this system<br/>
-        /// Checks the achievement name for the unique header<br/>
-        /// Used to not modify other achievement textures ctor hooks
-        /// </summary>
-        /// <param name="ach">Achievement to check</param>
-        /// <returns>True if the achievement was added from this system</returns>
-        private bool IsMyAchievement(Achievement ach) => ach.Name.StartsWith(Identifier);
-
-        /// <summary>
-        /// Checks if an achievement was added from this system
-        /// </summary>
-        /// <param name="name">Internal achievement name</param>
-        /// <returns>True if the achievement was added from this system</returns>
-        private bool IsMyAchievement(string name) => name.StartsWith(Identifier);
-
-        /// <summary>
-        /// Load the achievement texture from the provided abstract path
-        /// </summary>
-        private void LoadAchTextures()
-        {
-            foreach (var path in TexturePaths)
-                _textures.Add(ModContent.Request<Texture2D>(path));
         }
 
         /// <summary>
@@ -480,12 +222,12 @@ namespace TerrariaAchievementLib.Systems
         /// The main achievements.dat is not guaranteed to have save data for this system<br/>
         /// It could have been overwritten without this system's achievements
         /// </summary>
-        private void LoadCustomData()
+        private void LoadCustomSaveData()
         {
-            if (!FileUtilities.Exists(BackupFilePath, false))
+            if (!FileUtilities.Exists(_backupFilePath, false))
                 return;
 
-            byte[] buffer = FileUtilities.ReadAllBytes(BackupFilePath, false);
+            byte[] buffer = FileUtilities.ReadAllBytes(_backupFilePath, false);
             Dictionary<string, StoredAchievement> achs = null;
             try
             {
@@ -507,7 +249,8 @@ namespace TerrariaAchievementLib.Systems
 
             foreach (KeyValuePair<string, StoredAchievement> ach in achs)
             {
-                if (!IsMyAchievement(ach.Key))
+                // Only load custom achievements
+                if (!IsCustomAchievement(ach.Key))
                     continue;
 
                 Achievement mainAch = Main.Achievements.GetAchievement(ach.Key);
@@ -518,7 +261,7 @@ namespace TerrariaAchievementLib.Systems
                 mainAch.Load(ach.Value.Conditions);
             }
 
-            // Must save here. Otherwise, other mods using this library will clear the progress that was just loaded
+            // Must save here or else other mods may clear the progress that was just loaded
             Main.Achievements.Save();
         }
 
@@ -527,68 +270,28 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         private void UnregisterAchievements()
         {
-            FieldInfo info = typeof(AchievementManager).GetField("_achievements", ReflectionFlags);
-            if (info == null)
-                return;
+            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)typeof(AchievementManager).GetField("_achievements", ReflectionFlags)?.GetValue(Main.Achievements);
+            Dictionary<string, int> icons = (Dictionary<string, int>)typeof(AchievementManager).GetField("_achievementIconIndexes", ReflectionFlags)?.GetValue(Main.Achievements);
 
-            Dictionary<string, Achievement> achs = (Dictionary<string, Achievement>)info.GetValue(Main.Achievements);
-            if (achs == null)
-                return;
-
-            info = typeof(AchievementManager).GetField("_achievementIconIndexes", ReflectionFlags);
-            if (info == null)
-                return;
-
-            Dictionary<string, int> icons = (Dictionary<string, int>)info.GetValue(Main.Achievements);
-            if (icons == null)
+            if (achs == null || icons == null)
                 return;
 
             Dictionary<string, Achievement> achs_copy = new(achs);
             foreach (KeyValuePair<string, Achievement> ach in achs_copy)
             {
-                if (!IsMyAchievement(ach.Value))
+                // Only remove custom achievements
+                if (!IsCustomAchievement(ach.Value.Name))
                     continue;
 
                 achs.Remove(ach.Key);
                 icons.Remove(ach.Key);
 
-                MethodInfo method = typeof(AchievementManager).GetMethod("AchievementCompleted", ReflectionFlags);
-                if (method == null)
-                    continue;
-
-                Delegate handler = method.CreateDelegate(typeof(Achievement.AchievementCompleted), Main.Achievements);
+                Delegate handler = typeof(AchievementManager).GetMethod("AchievementCompleted", ReflectionFlags)?.CreateDelegate(typeof(Achievement.AchievementCompleted), Main.Achievements);
                 if (handler == null)
                     continue;
 
-                // Prevent double achievement unlocks during mod reload
+                // Prevents double achievement unlocks during mod reload
                 ach.Value.OnCompleted -= (Achievement.AchievementCompleted)handler;
-            }
-        }
-
-        /// <summary>
-        /// Detour to display a progress notification for tracked achievements when a condition completes
-        /// </summary>
-        /// <param name="orig">Original OnConditionComplete method</param>
-        /// <param name="self">Achievement associated with the condition</param>
-        /// <param name="condition">Achievement condition that completed</param>
-        private void On_Achievement_OnConditionComplete(On_Achievement.orig_OnConditionComplete orig, Achievement self, AchievementCondition condition)
-        {
-            orig.Invoke(self, condition);
-
-            if (!_displayProgress || !IsMyAchievement(self))
-                return;
-
-            IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", ReflectionFlags)?.GetValue(self);
-            if (tracker == null)
-                return;
-
-            if (tracker is ConditionsCompletedTracker)
-            {
-                Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", ReflectionFlags)?.GetValue(self);
-                int completedConditionsCount = (int)typeof(Achievement).GetField("_completedCount", ReflectionFlags)?.GetValue(self);
-
-                if (completedConditionsCount < conditions.Count)
-                    MessageTool.ChatLog($"You made progress on [a:{self.Name}]: {completedConditionsCount}/{conditions.Count}");
             }
         }
 
@@ -604,87 +307,6 @@ namespace TerrariaAchievementLib.Systems
             BackupCustomSaveData();
         }
 
-        /// <summary>
-        /// Detour to notify achievement conditions when a special flag is raised<br/><br/>
-        /// The vanilla game didn't do this, and instead opted for manually named flags<br/>
-        /// in the conditions, even though special flag IDs are used elsewhere in the code
-        /// </summary>
-        /// <param name="orig">Original HandleSpecialEvent method</param>
-        /// <param name="player">Player that raised the special event</param>
-        /// <param name="eventID">Special event ID</param>
-        private void On_AchievementsHelper_HandleSpecialEvent(On_AchievementsHelper.orig_HandleSpecialEvent orig, Player player, int eventID)
-        {
-            orig.Invoke(player, eventID);
-
-            CustomAchievementsHelper.NotifyFlagSpecial(player, eventID);
-        }
-
-        /// <summary>
-        /// Detour to replace the vanilla achievement texture when a AchievementUnlockedPopup is created
-        /// </summary>
-        /// <param name="orig">Original ctor</param>
-        /// <param name="self">AchievementUnlockedPopup being created</param>
-        /// <param name="achievement">Achievement to base the pop-up on</param>
-        private void On_AchievementUnlockedPopup_ctor(On_InGamePopups.AchievementUnlockedPopup.orig_ctor orig, InGamePopups.AchievementUnlockedPopup self, Achievement achievement)
-        {
-            orig.Invoke(self, achievement);
-
-            // Don't modify vanilla achievement textures
-            if (!IsMyAchievement(achievement))
-                return;
-
-            FieldInfo info = typeof(InGamePopups.AchievementUnlockedPopup).GetField("_achievementTexture", ReflectionFlags);
-            if (info == null)
-                return;
-            info.SetValue(self, Textures[_iconIndexes[achievement.Name] / MaxAchievementIcons]);
-        }
-
-        /// <summary>
-        /// Detour to replace the vanilla achievement texture when a UIAchievementListItem is created
-        /// </summary>
-        /// <param name="orig">Original ctor</param>
-        /// <param name="self">UIAchievementListItem being created</param>
-        /// <param name="achievement">Achievement to base the list item on</param>
-        /// <param name="largeForOtherLanguages">True if large for other languages</param>
-        private void On_UIAchievementListItem_ctor(On_UIAchievementListItem.orig_ctor orig, UIAchievementListItem self, Achievement achievement, bool largeForOtherLanguages)
-        {
-            orig.Invoke(self, achievement, largeForOtherLanguages);
-
-            if (!IsMyAchievement(achievement))
-                return;
-
-            // Get icon frame
-            FieldInfo info = typeof(UIAchievementListItem).GetField("_iconFrame", ReflectionFlags);
-            if (info == null)
-                return;
-            Rectangle frame = (Rectangle)info.GetValue(self);
-
-            // Get large modifier
-            info = typeof(UIAchievementListItem).GetField("_large", ReflectionFlags);
-            if (info == null)
-                return;
-            bool large = (bool)info.GetValue(self);
-
-            // Apply new achievement texture using frame and modifier
-            info = typeof(UIAchievementListItem).GetField("_achievementIcon", ReflectionFlags);
-            if (info == null)
-                return;
-            UIImageFramed icon = (UIImageFramed)info.GetValue(self);
-            icon.Remove();
-            icon = new(Textures[_iconIndexes[achievement.Name] / MaxAchievementIcons], frame);
-            icon.Left.Set(large.ToInt() * 6, 0f);
-            icon.Top.Set(large.ToInt() * 12, 0f);
-            info.SetValue(self, icon);
-            self.Append(icon);
-
-            // Bring border back on top
-            info = typeof(UIAchievementListItem).GetField("_achievementIconBorders", ReflectionFlags);
-            if (info == null)
-                return;
-            UIImage border = (UIImage)info.GetValue(self);
-            border.Remove();
-            self.Append(border);
-        }
 
         /// <summary>
         /// Format of a stored achievement in achievements.dat

@@ -32,6 +32,7 @@ namespace TerrariaAchievementLib.Items
                     return;
 
                 // Check that the local player is within range of the tile
+                // TODO: Doesn't work very well according to user feedback
                 if (TileTool.IsTileOnScreen(tile.TileCoords))
                     CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
             }

@@ -20,6 +20,7 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
+            On_AchievementsHelper.HandleSpecialEvent += On_AchievementsHelper_HandleSpecialEvent;
             On_NPC.GetShimmered += On_NPC_GetShimmered;
             On_SoundStyle.GetRandomVariantIndex += On_SoundStyle_GetRandomVariantIndex;
 
@@ -36,6 +37,7 @@ namespace TerrariaAchievementLib.Systems
                 return;
 
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
+            On_AchievementsHelper.HandleSpecialEvent -= On_AchievementsHelper_HandleSpecialEvent;
             On_NPC.GetShimmered -= On_NPC_GetShimmered;
             On_SoundStyle.GetRandomVariantIndex -= On_SoundStyle_GetRandomVariantIndex;
 
@@ -87,6 +89,26 @@ namespace TerrariaAchievementLib.Systems
             CustomAchievementsHelper.NotifyItemEquip(player, context, item.type);
         }
 
+        /// <summary>
+        /// Detour to notify achievement conditions when a special flag is raised<br/><br/>
+        /// The vanilla game didn't do this, and instead opted for manually named flags<br/>
+        /// in the conditions, even though special flag IDs are used elsewhere in the code
+        /// </summary>
+        /// <param name="orig">Original HandleSpecialEvent method</param>
+        /// <param name="player">Player that raised the special event</param>
+        /// <param name="eventID">Special event ID</param>
+        private void On_AchievementsHelper_HandleSpecialEvent(On_AchievementsHelper.orig_HandleSpecialEvent orig, Player player, int eventID)
+        {
+            orig.Invoke(player, eventID);
+
+            CustomAchievementsHelper.NotifyFlagSpecial(player, eventID);
+        }
+
+        /// <summary>
+        /// Detour to notify achievement conditions when an NPC is shimmered
+        /// </summary>
+        /// <param name="orig">Original GetShimmered method</param>
+        /// <param name="self">NPC that got shimmered</param>
         private void On_NPC_GetShimmered(On_NPC.orig_GetShimmered orig, NPC self)
         {
             orig.Invoke(self);
