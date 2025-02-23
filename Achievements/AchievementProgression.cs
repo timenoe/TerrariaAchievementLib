@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Config;
 
 namespace TerrariaAchievementLib.Achievements
 {
@@ -225,7 +227,7 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         /// <param name="type">Progression item type</param>
         /// <param name="item">Progression item ID</param>
-        /// <param name="playe">Player to base the check on</param>
+        /// <param name="player">Player to base the check on</param>
         /// <returns>True if the item is allowed</returns>
         public static bool IsElementAllowed(ProgressionElement type, int item, Player player)
         {
@@ -277,6 +279,11 @@ namespace TerrariaAchievementLib.Achievements
                     }
 
                     if (items[state].Contains(item))
+                        return false;
+
+                    // Account for tModLoader dev wings
+                    ModItem mItem = ModContent.GetModItem(item);
+                    if (mItem != null && mItem.Item.wingSlot > 0 && !Main.hardMode)
                         return false;
                 }
             }
