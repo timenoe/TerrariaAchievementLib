@@ -105,6 +105,13 @@ namespace TerrariaAchievementLib.Players
                     Item.NewItem(new EntitySource_DropAsItem(player), player.Center, ItemID.DemonHeart);
                     player.extraAccessory = false;
                 }
+
+                // Return consumed Minecart Upgrade Kit
+                if (player.unlockedSuperCart)
+                {
+                    Item.NewItem(new EntitySource_DropAsItem(player), player.Center, ItemID.MinecartPowerup);
+                    player.unlockedSuperCart = false;
+                }
             }
         }
 
