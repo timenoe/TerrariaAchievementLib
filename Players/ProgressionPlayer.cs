@@ -48,7 +48,7 @@ namespace TerrariaAchievementLib.Players
         {
             orig.Invoke(self, loadoutIndex);
 
-            UnequipDisallowedItems(Player);
+            UnequipDisallowedItems(self);
         }
 
         /// <summary>
