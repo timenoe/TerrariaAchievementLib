@@ -58,7 +58,7 @@ namespace TerrariaAchievementLib.Tools
             _mod ??= mod;
 
             if (string.IsNullOrEmpty(_chatHeader))
-                _chatHeader = $"[c/FFF014:{_mod}][c/FFFFFF::] ";
+                _chatHeader = $"[c/FFF014:{_mod.Name}][c/FFFFFF::] ";
         }
 
         /// <summary>

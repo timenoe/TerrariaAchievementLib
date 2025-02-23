@@ -118,7 +118,7 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
-        /// Detour to notify achievement conditions when a sound effect is played
+        /// Detour to notify achievement conditions when a sound effect with a variant is played
         /// </summary>
         /// <param name="orig">Original GetRandomVariantIndex method</param>
         /// <param name="self">SoundStyle getting the variant index</param>

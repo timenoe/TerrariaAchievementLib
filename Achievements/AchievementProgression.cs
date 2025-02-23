@@ -168,8 +168,8 @@ namespace TerrariaAchievementLib.Achievements
             { ProgressionState.Hardmode, [BuffID.BasiliskMount, BuffID.WolfMount, BuffID.UnicornMount, BuffID.PigronMount, BuffID.QueenSlimeMount, BuffID.WallOfFleshGoatMount, BuffID.PirateShipMount, BuffID.SpookyWoodMount, BuffID.SantankMount] },
             { ProgressionState.PostMechanicalTrio, [] },
             { ProgressionState.PostPlantera, [BuffID.Rudolph] },
-            { ProgressionState.PostGolem, [BuffID.ScutlixMount] },
-            { ProgressionState.PostLunaticCultist, [BuffID.UFOMount] },
+            { ProgressionState.PostGolem, [BuffID.ScutlixMount, BuffID.UFOMount] },
+            { ProgressionState.PostLunaticCultist, [] },
             { ProgressionState.PostMoonLord, [BuffID.DrillMount] },
         };
 
