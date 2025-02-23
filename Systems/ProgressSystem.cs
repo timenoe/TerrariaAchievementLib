@@ -59,24 +59,23 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(self, condition);
 
-            // Only show notifications for custom achievements if enabled
-            if (!_enabled && AchievementSystem.Instance.IsCustomAchievement(self.Name))
-                return;
-
-            // Only show notifications for vanilla achievements if enabled
-            if (!_enabledVanilla && AchievementTool.IsVanillaAchievement(self))
-                return;
-
             // Only show notifications for achievements tracking indivudual elements
             IAchievementTracker tracker = (IAchievementTracker)typeof(Achievement).GetField("_tracker", AchievementSystem.ReflectionFlags)?.GetValue(self);
             if (tracker == null || tracker is not ConditionsCompletedTracker)
                 return;
 
-            Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", AchievementSystem.ReflectionFlags)?.GetValue(self);
-            int completedConditionsCount = (int)typeof(Achievement).GetField("_completedCount", AchievementSystem.ReflectionFlags)?.GetValue(self);
+            bool progressCustom = _enabled && AchievementSystem.Instance.IsCustomAchievement(self.Name);
+            bool progressVanilla = _enabledVanilla && AchievementTool.IsVanillaAchievement(self);
 
-            if (completedConditionsCount < conditions.Count)
-                LogTool.ChatLog($"You made progress on [a:{self.Name}]: {completedConditionsCount}/{conditions.Count}");
+            // Only notifications for custom or vanilla achievements if applicable
+            if (progressCustom || progressVanilla)
+            {
+                Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", AchievementSystem.ReflectionFlags)?.GetValue(self);
+                int completedConditionsCount = (int)typeof(Achievement).GetField("_completedCount", AchievementSystem.ReflectionFlags)?.GetValue(self);
+
+                if (completedConditionsCount < conditions.Count)
+                    LogTool.ChatLog($"You made progress on [a:{self.Name}]: {completedConditionsCount}/{conditions.Count}");
+            }
         }
     }
 }

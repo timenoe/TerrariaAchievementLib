@@ -22,7 +22,7 @@ namespace TerrariaAchievementLib.Tools
             if (conditions == null)
                 return false;
 
-            foreach (var condition in conditions)
+            foreach (AchievementCondition condition in conditions.Values)
             {
                 // All custom achievement conditions will inherit CustomAchievementCondition or its children
                 if (condition.GetType().BaseType.Name != "AchievementCondition")
