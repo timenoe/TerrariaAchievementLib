@@ -5,6 +5,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using TerrariaAchievementLib.Achievements;
+using TerrariaAchievementLib.Tools;
 
 namespace TerrariaAchievementLib.Systems
 {
@@ -14,6 +15,12 @@ namespace TerrariaAchievementLib.Systems
     /// </summary>
     public class VanillaEventSystem : ModSystem
     {
+        /// <summary>
+        /// Used to display a warning about Magic Storage recursion only once
+        /// </summary>
+        private static bool _displayedMagicStorageWarning;
+
+
         public override void OnModLoad()
         {
             if (Main.dedServ)
@@ -46,6 +53,18 @@ namespace TerrariaAchievementLib.Systems
             AchievementsHelper.OnProgressionEvent -= CustomAchievementsHelper.NotifyFlagProgression;
             AchievementsHelper.OnNPCKilled -= CustomAchievementsHelper.NotifyNpcKill;
             AchievementsHelper.OnTileDestroyed -= CustomAchievementsHelper.NotifyTileDestroy;
+        }
+
+        /// <summary>
+        /// Used to display a warning about Magic Storage
+        /// </summary>
+        public static void DisplayMagicStorageWarning()
+        {
+            if (!_displayedMagicStorageWarning)
+            {
+                LogTool.ChatLog($"You will not earn achievements using Magic Storage when Recipe Recursion Depth is non-zero");
+                _displayedMagicStorageWarning = true;
+            }
         }
 
         /// <summary>

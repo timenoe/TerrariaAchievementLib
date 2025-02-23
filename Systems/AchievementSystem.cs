@@ -211,8 +211,8 @@ namespace TerrariaAchievementLib.Systems
 
             // Clear existing achievement progress before loading again
             // Bug in the vanilla code causes issues during two consecutive loads
-            foreach (KeyValuePair<string, Achievement> ach in achs)
-                ach.Value.ClearProgress();
+            foreach (Achievement ach in achs.Values)
+                ach.ClearProgress();
 
             Main.Achievements.Load();
         }

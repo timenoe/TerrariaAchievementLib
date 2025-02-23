@@ -1,9 +1,12 @@
-﻿using Terraria;
+﻿using System.IO;
+using System.Text.Json;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using TerrariaAchievementLib.Achievements;
+using TerrariaAchievementLib.Systems;
 using TerrariaAchievementLib.Tools;
 
 namespace TerrariaAchievementLib.Items
@@ -30,8 +33,21 @@ namespace TerrariaAchievementLib.Items
         {
             if (context is RecipeItemCreationContext recipeContext)
             {
-                AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
-                AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                MagicStorageConfig config = new();
+                try
+                {
+                    string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
+                    config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
+                }
+                catch { };
+
+                if (config.recursionCraftingDepth == 0)
+                {
+                    AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
+                    AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                }
+                else
+                    VanillaEventSystem.DisplayMagicStorageWarning();
             }
         }
 
@@ -108,6 +124,14 @@ namespace TerrariaAchievementLib.Items
 
             if (Type == ItemID.WilsonBeardLong || Type == ItemID.WilsonBeardMagnificent)
                 CustomAchievementsHelper.NotifyItemGrab(Main.LocalPlayer, (short)Type, 1);
+        }
+
+        /// <summary>
+        /// Used to deserialize the Magic Storage config file
+        /// </summary>
+        private class MagicStorageConfig
+        {
+            public int recursionCraftingDepth { get; set; }
         }
     }
 }
