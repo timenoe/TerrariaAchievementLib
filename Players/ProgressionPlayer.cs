@@ -19,6 +19,7 @@ namespace TerrariaAchievementLib.Players
             
             On_AchievementsHelper.HandleOnEquip += On_AchievementsHelper_HandleOnEquip;
             On_Player.AddBuff += On_Player_AddBuff;
+            On_Player.TrySwitchingLoadout += On_Player_TrySwitchingLoadout;
         }
 
         public override void Unload()
@@ -28,11 +29,25 @@ namespace TerrariaAchievementLib.Players
 
             On_AchievementsHelper.HandleOnEquip -= On_AchievementsHelper_HandleOnEquip;
             On_Player.AddBuff -= On_Player_AddBuff;
+            On_Player.TrySwitchingLoadout -= On_Player_TrySwitchingLoadout;
         }
 
         public override void OnEnterWorld()
         {
             ReturnDisallowedConsumables(Player);
+            UnequipDisallowedItems(Player);
+        }
+
+        /// <summary>
+        /// Detour to unequip disallowed items when a loadout is switched
+        /// </summary>
+        /// <param name="orig">Original TrySwitchingLoadout method</param>
+        /// <param name="self">Player switching the loadout</param>
+        /// <param name="loadoutIndex">Loadout index</param>
+        private void On_Player_TrySwitchingLoadout(On_Player.orig_TrySwitchingLoadout orig, Player self, int loadoutIndex)
+        {
+            orig.Invoke(self, loadoutIndex);
+
             UnequipDisallowedItems(Player);
         }
 
