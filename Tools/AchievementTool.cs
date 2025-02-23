@@ -159,7 +159,7 @@ namespace TerrariaAchievementLib.Tools
             }
 
             if (missingElements.Count > 0)
-                result = $"You are missing {missingElements.Count} elements for [a:{internalName}]: {string.Join(", ", missingElements)}";
+                result = $"You are missing {missingElements.Count} element(s) for [a:{internalName}]: {string.Join(", ", missingElements)}";
             else
                 result = $"You are not missing any elements for [a:{internalName}]";
 
