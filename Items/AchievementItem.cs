@@ -23,9 +23,14 @@ namespace TerrariaAchievementLib.Items
         private bool _sent;
 
         /// <summary>
+        /// True if the spawn information has been received for the item
+        /// </summary>
+        private bool _received;
+
+        /// <summary>
         /// Player interaction with the NPC that dropped an item as loot if applicable
         /// </summary>
-        private readonly bool[] _npcPlayerInteraction = new bool[256];
+        private bool[] _npcPlayerInteraction = new bool[256];
 
         /// <summary>
         /// Player nearest to the spawned item
@@ -53,6 +58,7 @@ namespace TerrariaAchievementLib.Items
         /// </summary>
         public enum SpawnReason
         {
+            None,
             TileBreak,
             ShakeTree,
             NpcDrop,
@@ -112,15 +118,16 @@ namespace TerrariaAchievementLib.Items
                 return;
 
             // Only send spawn info once
-            if (!_sent)
+            if (!_sent && _spawnReason != SpawnReason.None)
             {
+                _sent = true;
+
                 writer.Write(_nearestPlayer);
                 writer.Write((int)_spawnReason);
                 for (int i = 0; i < _npcPlayerInteraction.Length; i++)
                     writer.Write(_npcPlayerInteraction[i]);
                 writer.Write(_npc);
                 writer.Write(_bag);
-                _sent = true;
             }
         }
 
@@ -129,60 +136,65 @@ namespace TerrariaAchievementLib.Items
             if (!NetTool.MultiplayerClient())
                 return;
 
-            _nearestPlayer = reader.ReadByte();
-            _spawnReason = (SpawnReason)reader.ReadInt32();
-            for (int i = 0; i < _npcPlayerInteraction.Length; i++)
-                _npcPlayerInteraction[i] = reader.ReadBoolean();
-            _npc = reader.ReadInt32();
-            _bag = reader.ReadInt32();
-
-            switch (_spawnReason)
+            if (!_received)
             {
-                case SpawnReason.TileBreak:
-                    if (_nearestPlayer == Main.myPlayer)
-                        CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
-                    break;
+                _received = true;
 
-                case SpawnReason.ShakeTree:
-                    if (_nearestPlayer == Main.myPlayer)
-                        CustomAchievementsHelper.NotifyItemShake(Main.LocalPlayer, item.type);
-                    break;
+                _nearestPlayer = reader.ReadByte();
+                _spawnReason = (SpawnReason)reader.ReadInt32();
+                for (int i = 0; i < _npcPlayerInteraction.Length; i++)
+                    _npcPlayerInteraction[i] = reader.ReadBoolean();
+                _npc = reader.ReadInt32();
+                _bag = reader.ReadInt32();
 
-                case SpawnReason.NpcDrop:
-                    if (_npcPlayerInteraction[Main.myPlayer])
-                        CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, _npc, item.type);
-                    break;
+                switch (_spawnReason)
+                {
+                    case SpawnReason.TileBreak:
+                        if (_nearestPlayer == Main.myPlayer)
+                            CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
+                        break;
 
-                case SpawnReason.BagOpen:
-                    if (_nearestPlayer == Main.myPlayer)
-                        CustomAchievementsHelper.NotifyItemOpen(Main.LocalPlayer, _bag, item.type);
-                    break;
+                    case SpawnReason.ShakeTree:
+                        if (_nearestPlayer == Main.myPlayer)
+                            CustomAchievementsHelper.NotifyItemShake(Main.LocalPlayer, item.type);
+                        break;
 
-                case SpawnReason.NpcGift:
-                    if (_nearestPlayer == Main.myPlayer)
-                        CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, _npc, item.type);
-                    break;
+                    case SpawnReason.NpcDrop:
+                        if (_npcPlayerInteraction[Main.myPlayer])
+                            CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, _npc, item.type);
+                        break;
 
-                case SpawnReason.MagicStorage:
-                    if (_nearestPlayer == Main.myPlayer)
-                    {
-                        MagicStorageConfig config = new();
-                        try
+                    case SpawnReason.BagOpen:
+                        if (_nearestPlayer == Main.myPlayer)
+                            CustomAchievementsHelper.NotifyItemOpen(Main.LocalPlayer, _bag, item.type);
+                        break;
+
+                    case SpawnReason.NpcGift:
+                        if (_nearestPlayer == Main.myPlayer)
+                            CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, _npc, item.type);
+                        break;
+
+                    case SpawnReason.MagicStorage:
+                        if (_nearestPlayer == Main.myPlayer)
                         {
-                            string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
-                            config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
-                        }
-                        catch { };
+                            MagicStorageConfig config = new();
+                            try
+                            {
+                                string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
+                                config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
+                            }
+                            catch { };
 
-                        if (config.recursionCraftingDepth == 0)
-                        {
-                            AchievementsHelper.NotifyItemCraft(Recipe.Create(item.type));
-                            AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                            if (config.recursionCraftingDepth == 0)
+                            {
+                                AchievementsHelper.NotifyItemCraft(Recipe.Create(item.type));
+                                AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                            }
+                            else
+                                VanillaEventSystem.DisplayMagicStorageWarning();
                         }
-                        else
-                            VanillaEventSystem.DisplayMagicStorageWarning();
-                    }
-                    break;
+                        break;
+                }
             }
         }
 
