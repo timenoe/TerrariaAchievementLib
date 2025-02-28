@@ -104,16 +104,12 @@ namespace TerrariaAchievementLib.Items
 
         public override void NetSend(Item item, BinaryWriter writer)
         {
-            // Only send spawn info once
-            if (_spawnReason != SpawnReason.None)
-            {
-                 writer.Write(_nearestPlayer);
-                writer.Write((int)_spawnReason);
-                for (int i = 0; i < _npcPlayerInteraction.Length; i++)
-                    writer.Write(_npcPlayerInteraction[i]);
-                writer.Write(_npc);
-                writer.Write(_bag);
-            }
+            writer.Write(_nearestPlayer);
+            writer.Write((Int32)_spawnReason);
+            for (int i = 0; i < _npcPlayerInteraction.Length; i++)
+                writer.Write(_npcPlayerInteraction[i]);
+            writer.Write(_npc);
+            writer.Write(_bag);
         }
 
         public override void NetReceive(Item item, BinaryReader reader)
@@ -183,11 +179,8 @@ namespace TerrariaAchievementLib.Items
             {
                 _spawnReason = SpawnReason.TileBreak;
 
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                {
-                    if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
-                        CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
-                }
+                if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
+                    CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
             }
 
             else if (source is EntitySource_ShakeTree)
