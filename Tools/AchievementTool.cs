@@ -31,7 +31,7 @@ namespace TerrariaAchievementLib.Tools
 
             return true;
         }
-        
+
         /// <summary>
         /// Get the internal name of an achievement using its localized name
         /// </summary>
@@ -124,12 +124,26 @@ namespace TerrariaAchievementLib.Tools
                     if (ids == null)
                         continue;
 
+                    string npcName = "";
                     foreach (int id in ids)
                     {
-                        string npcName = Lang.GetNPCName(id).Value;
-                        if (!missingElements.Contains(npcName))
-                            missingElements.Add(npcName);
+                        // Get unique names for group of 'any of' IDs
+                        if (string.IsNullOrEmpty(npcName))
+                        {
+                            npcName = Lang.GetNPCName(id).Value;
+                        }
+                        else
+                        {
+                            string newNpcName = Lang.GetNPCName(id).Value;
+                            if (!string.IsNullOrEmpty(newNpcName) && !npcName.Contains(newNpcName))
+                                npcName += $" & {newNpcName}";
+                        }
+
                     }
+
+                    // Add NPC if it exists and append IDs to the end of the element for clarity
+                    if (!missingElements.Contains(npcName))
+                        missingElements.Add($"{npcName} ({string.Join(",", ids)})");
                 }
 
                 // All custom conditions that are tracked per condition
@@ -139,24 +153,42 @@ namespace TerrariaAchievementLib.Tools
                     if (ids == null)
                         continue;
 
+                    string elementName = "";
                     foreach (int id in ids)
                     {
-                        string elementName = "";
+                        // Only get name once for group of 'any of' IDs
+                        if (string.IsNullOrEmpty(elementName))
+                        {
+                            if (AchIdCondition.BuffConditions.Contains(condition.GetType().Name))
+                                elementName = Lang.GetBuffName(id);
 
-                        if (AchIdCondition.BuffConditions.Contains(condition.GetType().Name))
-                            elementName = Lang.GetBuffName(id);
+                            else if (AchIdCondition.ItemConditions.Contains(condition.GetType().Name))
+                                elementName = Lang.GetItemName(id).Value;
 
-                        else if (AchIdCondition.ItemConditions.Contains(condition.GetType().Name))
-                            elementName = Lang.GetItemName(id).Value;
+                            else if (AchIdCondition.NpcConditions.Contains(condition.GetType().Name))
+                                elementName = Lang.GetNPCName(id).Value;
+                        }
+                        else
+                        {
+                            string newElementName = "";
 
-                        else if (AchIdCondition.NpcConditions.Contains(condition.GetType().Name))
-                            elementName = Lang.GetNPCName(id).Value;
+                            if (AchIdCondition.BuffConditions.Contains(condition.GetType().Name))
+                                newElementName = Lang.GetBuffName(id);
 
-                        elementName += $" ({id})";
+                            else if (AchIdCondition.ItemConditions.Contains(condition.GetType().Name))
+                                newElementName = Lang.GetItemName(id).Value;
 
-                        if (!string.IsNullOrEmpty(elementName) && !missingElements.Contains(elementName))
-                            missingElements.Add(elementName);
+                            else if (AchIdCondition.NpcConditions.Contains(condition.GetType().Name))
+                                newElementName = Lang.GetNPCName(id).Value;
+
+                            if (!string.IsNullOrEmpty(newElementName) && !elementName.Contains(newElementName))
+                                elementName += $" & {newElementName}";
+                        }
                     }
+
+                    // Add element if it exists and append IDs to the end of the element for clarity
+                    if (!string.IsNullOrEmpty(elementName) && !missingElements.Contains(elementName))
+                        missingElements.Add($"{elementName} ({string.Join(",", ids)})");
                 }
             }
 
