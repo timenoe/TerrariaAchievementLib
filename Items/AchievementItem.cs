@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Achievements;
@@ -17,6 +18,11 @@ namespace TerrariaAchievementLib.Items
     /// </summary>
     public class AchievementItem : GlobalItem
     {
+        /// <summary>
+        /// True if the item has been synced over the network
+        /// </summary>
+        private bool _synced;
+
         /// <summary>
         /// Player interaction with the NPC that dropped an item as loot if applicable
         /// </summary>
@@ -54,7 +60,7 @@ namespace TerrariaAchievementLib.Items
             NpcDrop,
             BagOpen,
             NpcGift,
-            MagicStorage
+            MagicCraft
         }
 
 
@@ -62,12 +68,18 @@ namespace TerrariaAchievementLib.Items
 
         public override void Load()
         {
+            if (Main.dedServ)
+                return;
+            
             On_Item.ChangeItemType += On_Item_ChangeItemType;
             On_Item.SetDefaults_int += On_Item_SetDefaults_int;
         }
 
         public override void Unload()
         {
+            if (Main.dedServ)
+                return;
+
             On_Item.ChangeItemType -= On_Item_ChangeItemType;
             On_Item.SetDefaults_int -= On_Item_SetDefaults_int;
         }
@@ -79,7 +91,7 @@ namespace TerrariaAchievementLib.Items
 
             if (context is RecipeItemCreationContext recipeContext)
             {
-                _spawnReason = SpawnReason.MagicStorage;
+                _spawnReason = SpawnReason.MagicCraft;
 
                 if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
                 {
@@ -91,7 +103,7 @@ namespace TerrariaAchievementLib.Items
                     }
                     catch { };
 
-                    if (config.recursionCraftingDepth == 0)
+                    if (config.RecursionCraftingDepth == 0)
                     {
                         AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
                         AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
@@ -110,6 +122,8 @@ namespace TerrariaAchievementLib.Items
                 writer.Write(_npcPlayerInteraction[i]);
             writer.Write(_npc);
             writer.Write(_bag);
+            writer.Write(_synced);
+            _synced = true;
         }
 
         public override void NetReceive(Item item, BinaryReader reader)
@@ -120,6 +134,11 @@ namespace TerrariaAchievementLib.Items
                 _npcPlayerInteraction[i] = reader.ReadBoolean();
             _npc = reader.ReadInt32();
             _bag = reader.ReadInt32();
+            _synced = reader.ReadBoolean();
+
+            // Only send achievement notification once
+            if (_synced)
+                return;
 
             switch (_spawnReason)
             {
@@ -148,7 +167,7 @@ namespace TerrariaAchievementLib.Items
                         CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, _npc, item.type);
                     break;
 
-                case SpawnReason.MagicStorage:
+                case SpawnReason.MagicCraft:
                     if (_nearestPlayer == Main.myPlayer)
                     {
                         MagicStorageConfig config = new();
@@ -159,7 +178,7 @@ namespace TerrariaAchievementLib.Items
                         }
                         catch { };
 
-                        if (config.recursionCraftingDepth == 0)
+                        if (config.RecursionCraftingDepth == 0)
                         {
                             AchievementsHelper.NotifyItemCraft(Recipe.Create(item.type));
                             AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
@@ -257,7 +276,8 @@ namespace TerrariaAchievementLib.Items
         /// </summary>
         private class MagicStorageConfig
         {
-            public int recursionCraftingDepth { get; set; }
+            [JsonPropertyName("recursionCraftingDepth")]
+            public int RecursionCraftingDepth { get; set; }
         }
     }
 }
