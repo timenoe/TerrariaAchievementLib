@@ -106,7 +106,7 @@ namespace TerrariaAchievementLib.Items
         {
             writer.Write(_nearestPlayer);
             writer.Write((Int32)_spawnReason);
-            for (int i = 0; i < _npcPlayerInteraction.Length; i++)
+            for (int i = 0; i < 256; i++)
                 writer.Write(_npcPlayerInteraction[i]);
             writer.Write(_npc);
             writer.Write(_bag);
@@ -116,7 +116,7 @@ namespace TerrariaAchievementLib.Items
         {
             _nearestPlayer = reader.ReadByte();
             _spawnReason = (SpawnReason)reader.ReadInt32();
-            for (int i = 0; i < _npcPlayerInteraction.Length; i++)
+            for (int i = 0; i < 256; i++)
                 _npcPlayerInteraction[i] = reader.ReadBoolean();
             _npc = reader.ReadInt32();
             _bag = reader.ReadInt32();
@@ -196,7 +196,7 @@ namespace TerrariaAchievementLib.Items
                 _spawnReason = SpawnReason.NpcDrop;
 
                 _npc = deadNpc.type;
-                Array.Copy(deadNpc.playerInteraction, _npcPlayerInteraction, deadNpc.playerInteraction.Length);
+                Array.Copy(deadNpc.playerInteraction, _npcPlayerInteraction, 256);
 
                 if (NetTool.Singleplayer() && _npcPlayerInteraction[Main.myPlayer])
                     CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, _npc, item.type);
