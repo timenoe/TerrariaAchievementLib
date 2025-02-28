@@ -25,7 +25,7 @@ namespace TerrariaAchievementLib.Items
         /// <summary>
         /// Player interaction with the NPC that dropped an item as loot if applicable
         /// </summary>
-        private bool[] _npcPlayerInteraction = new bool[256];
+        private readonly bool[] _npcPlayerInteraction = new bool[256];
 
         /// <summary>
         /// Player nearest to the spawned item
@@ -79,11 +79,13 @@ namespace TerrariaAchievementLib.Items
         // This allows for Magic Storage crafts to be recognized
         public override void OnCreated(Item item, ItemCreationContext context)
         {
+            _nearestPlayer = Player.FindClosest(item.Center, 1, 1);
+
             if (context is RecipeItemCreationContext recipeContext)
             {
                 _spawnReason = SpawnReason.MagicStorage;
 
-                if (NetTool.Singleplayer())
+                if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
                 {
                     MagicStorageConfig config = new();
                     try
@@ -106,7 +108,10 @@ namespace TerrariaAchievementLib.Items
 
         public override void NetSend(Item item, BinaryWriter writer)
         {
-            // Only send info once
+            if (!NetTool.MultiplayerServer())
+                return;
+
+            // Only send spawn info once
             if (!_sent)
             {
                 writer.Write(_nearestPlayer);
@@ -121,6 +126,9 @@ namespace TerrariaAchievementLib.Items
 
         public override void NetReceive(Item item, BinaryReader reader)
         {
+            if (!NetTool.MultiplayerClient())
+                return;
+
             _nearestPlayer = reader.ReadByte();
             _spawnReason = (SpawnReason)reader.ReadInt32();
             for (int i = 0; i < _npcPlayerInteraction.Length; i++)
@@ -153,6 +161,27 @@ namespace TerrariaAchievementLib.Items
                 case SpawnReason.NpcGift:
                     if (_nearestPlayer == Main.myPlayer)
                         CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, _npc, item.type);
+                    break;
+
+                case SpawnReason.MagicStorage:
+                    if (_nearestPlayer == Main.myPlayer)
+                    {
+                        MagicStorageConfig config = new();
+                        try
+                        {
+                            string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
+                            config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
+                        }
+                        catch { };
+
+                        if (config.recursionCraftingDepth == 0)
+                        {
+                            AchievementsHelper.NotifyItemCraft(Recipe.Create(item.type));
+                            AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                        }
+                        else
+                            VanillaEventSystem.DisplayMagicStorageWarning();
+                    }
                     break;
             }
         }
