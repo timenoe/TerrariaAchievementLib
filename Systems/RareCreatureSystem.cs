@@ -24,6 +24,9 @@ namespace TerrariaAchievementLib.Systems
 
         public override void OnModLoad()
         {
+            if (Main.dedServ)
+                return;
+
             On_Main.DrawInfoAccs_AdjustInfoTextColorsForNPC += On_Main_DrawInfoAccs_AdjustInfoTextColorsForNPC;
             On_Language.GetTextValue_string += On_Language_GetTextValue_string;
             
@@ -31,6 +34,9 @@ namespace TerrariaAchievementLib.Systems
 
         public override void OnModUnload()
         {
+            if (Main.dedServ)
+                return;
+
             On_Main.DrawInfoAccs_AdjustInfoTextColorsForNPC -= On_Main_DrawInfoAccs_AdjustInfoTextColorsForNPC;
             On_Language.GetTextValue_string -= On_Language_GetTextValue_string;
         }

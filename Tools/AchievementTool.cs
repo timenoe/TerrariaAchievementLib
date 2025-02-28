@@ -152,6 +152,8 @@ namespace TerrariaAchievementLib.Tools
                         else if (AchIdCondition.NpcConditions.Contains(condition.GetType().Name))
                             elementName = Lang.GetNPCName(id).Value;
 
+                        elementName += $" ({id})";
+
                         if (!string.IsNullOrEmpty(elementName) && !missingElements.Contains(elementName))
                             missingElements.Add(elementName);
                     }
