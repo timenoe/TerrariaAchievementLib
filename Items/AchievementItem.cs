@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 using Terraria;
 using Terraria.DataStructures;
@@ -16,6 +17,53 @@ namespace TerrariaAchievementLib.Items
     /// </summary>
     public class AchievementItem : GlobalItem
     {
+        /// <summary>
+        /// True if the spawn information has been sent once for the item
+        /// </summary>
+        private bool _sent;
+
+        /// <summary>
+        /// Player interaction with the NPC that dropped an item as loot if applicable
+        /// </summary>
+        private bool[] _npcPlayerInteraction = new bool[256];
+
+        /// <summary>
+        /// Player nearest to the spawned item
+        /// </summary>
+        private byte _nearestPlayer;
+
+        /// <summary>
+        /// ID of the bag that the item came from if applicable
+        /// </summary>
+        private int _bag;
+
+        /// <summary>
+        /// ID of the NPC that the item came from if applicable
+        /// </summary>
+        private int _npc;
+
+        /// <summary>
+        /// Reason the item spawned
+        /// </summary>
+        private SpawnReason _spawnReason;
+
+
+        /// <summary>
+        /// Identifies the reason an item spawn
+        /// </summary>
+        public enum SpawnReason
+        {
+            TileBreak,
+            ShakeTree,
+            NpcDrop,
+            BagOpen,
+            NpcGift,
+            MagicStorage
+        }
+
+
+        public override bool InstancePerEntity => true;
+
         public override void Load()
         {
             On_Item.ChangeItemType += On_Item_ChangeItemType;
@@ -33,69 +81,136 @@ namespace TerrariaAchievementLib.Items
         {
             if (context is RecipeItemCreationContext recipeContext)
             {
-                MagicStorageConfig config = new();
-                try
-                {
-                    string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
-                    config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
-                }
-                catch { };
+                _spawnReason = SpawnReason.MagicStorage;
 
-                if (config.recursionCraftingDepth == 0)
+                if (NetTool.Singleplayer())
                 {
-                    AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
-                    AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                    MagicStorageConfig config = new();
+                    try
+                    {
+                        string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
+                        config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
+                    }
+                    catch { };
+
+                    if (config.recursionCraftingDepth == 0)
+                    {
+                        AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
+                        AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                    }
+                    else
+                        VanillaEventSystem.DisplayMagicStorageWarning();
                 }
-                else
-                    VanillaEventSystem.DisplayMagicStorageWarning();
+            }
+        }
+
+        public override void NetSend(Item item, BinaryWriter writer)
+        {
+            // Only send info once
+            if (!_sent)
+            {
+                writer.Write(_nearestPlayer);
+                writer.Write((int)_spawnReason);
+                for (int i = 0; i < _npcPlayerInteraction.Length; i++)
+                    writer.Write(_npcPlayerInteraction[i]);
+                writer.Write(_npc);
+                writer.Write(_bag);
+                _sent = true;
+            }
+        }
+
+        public override void NetReceive(Item item, BinaryReader reader)
+        {
+            _nearestPlayer = reader.ReadByte();
+            _spawnReason = (SpawnReason)reader.ReadInt32();
+            for (int i = 0; i < _npcPlayerInteraction.Length; i++)
+                _npcPlayerInteraction[i] = reader.ReadBoolean();
+            _npc = reader.ReadInt32();
+            _bag = reader.ReadInt32();
+
+            switch (_spawnReason)
+            {
+                case SpawnReason.TileBreak:
+                    if (_nearestPlayer == Main.myPlayer)
+                        CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
+                    break;
+
+                case SpawnReason.ShakeTree:
+                    if (_nearestPlayer == Main.myPlayer)
+                        CustomAchievementsHelper.NotifyItemShake(Main.LocalPlayer, item.type);
+                    break;
+
+                case SpawnReason.NpcDrop:
+                    if (_npcPlayerInteraction[Main.myPlayer])
+                        CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, _npc, item.type);
+                    break;
+
+                case SpawnReason.BagOpen:
+                    if (_nearestPlayer == Main.myPlayer)
+                        CustomAchievementsHelper.NotifyItemOpen(Main.LocalPlayer, _bag, item.type);
+                    break;
+
+                case SpawnReason.NpcGift:
+                    if (_nearestPlayer == Main.myPlayer)
+                        CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, _npc, item.type);
+                    break;
             }
         }
 
         public override void OnSpawn(Item item, IEntitySource source)
         {
-            if (source is EntitySource_TileBreak tile)
-            {
-                // Check that the local player is the one closest to the destroyed tile
-                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
-                    return;
+            _nearestPlayer = Player.FindClosest(item.Center, 1, 1);
 
-                // Check that the local player is within range of the tile
-                // TODO: Doesn't work very well according to user feedback
-                if (TileTool.IsTileOnScreen(tile.TileCoords))
-                    CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
+            if (source is EntitySource_TileBreak)
+            {
+                _spawnReason = SpawnReason.TileBreak;
+
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                {
+                    if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
+                        CustomAchievementsHelper.NotifyTileDrop(Main.LocalPlayer, item.type);
+                }
             }
 
             else if (source is EntitySource_ShakeTree)
             {
-                // Check that the local player is the one closest to the item
-                if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
+                _spawnReason = SpawnReason.ShakeTree;
+
+                if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
                     CustomAchievementsHelper.NotifyItemShake(Main.LocalPlayer, item.type);
             }
 
-            else if (source is EntitySource_Loot loot)
+            else if (source is EntitySource_Loot loot && loot.Entity is NPC deadNpc)
             {
-                // Check that the local player has damaged the NPC
-                if (loot.Entity is NPC npc && npc.playerInteraction[Main.myPlayer])
-                    CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, npc.type, item.type);
+                _spawnReason = SpawnReason.NpcDrop;
+
+                _npc = deadNpc.type;
+                Array.Copy(deadNpc.playerInteraction, _npcPlayerInteraction, deadNpc.playerInteraction.Length);
+
+                if (NetTool.Singleplayer() && _npcPlayerInteraction[Main.myPlayer])
+                    CustomAchievementsHelper.NotifyNpcDrop(Main.LocalPlayer, _npc, item.type);
             }
 
-            else if (source is EntitySource_ItemOpen bag)
+            else if (source is EntitySource_ItemOpen openedBag)
             {
-                // Check that the local player is the one closest to the item
-                if (Player.FindClosest(item.Center, 1, 1) == Main.myPlayer)
-                    CustomAchievementsHelper.NotifyItemOpen(Main.LocalPlayer, bag.ItemType, item.type);
+                _spawnReason = SpawnReason.BagOpen;
+
+                _bag = openedBag.ItemType;
+
+                if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
+                    CustomAchievementsHelper.NotifyItemOpen(Main.LocalPlayer, _bag, item.type);
             }
 
-            else if (source is EntitySource_Gift gift)
+            else if (source is EntitySource_Gift receivedGift)
             {
-                // Check that the local player is the one closest to the gift
-                if (Player.FindClosest(item.Center, 1, 1) != Main.myPlayer)
-                    return;
+                _spawnReason = SpawnReason.NpcGift;
 
-                if (gift.Entity is NPC npc)
-                    CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, npc.type, item.type);
-                else
-                    CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, NPCID.None, item.type);
+                _npc = NPCID.None;
+                if (receivedGift.Entity is NPC giftNpc)
+                    _npc = giftNpc.type;
+
+                if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
+                    CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, _npc, item.type);
             }
         }
 
