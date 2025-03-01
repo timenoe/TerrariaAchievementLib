@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 
@@ -89,12 +90,22 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
-            
+
             foreach (var condition in conditions)
             {
-                if (condition._first && Main.BestiaryTracker.Kills.GetKillCount(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[id]) != 0)
-                    continue;
-                
+                if (condition._first)
+                {
+                    // Add better check for the Twins specifically
+                    if (condition.Ids.SequenceEqual(AchievementData.DefeatBoss["TWINS"]))
+                    {
+                        if (NPC.downedMechBoss2)
+                            continue;
+                    }
+
+                    else if (Main.BestiaryTracker.Kills.GetKillCount(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[id]) > 0)
+                        continue;
+                }
+
                 if (condition.Reqs.Pass(player))
                     condition.Complete();
             }
