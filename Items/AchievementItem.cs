@@ -59,8 +59,7 @@ namespace TerrariaAchievementLib.Items
             ShakeTree,
             NpcDrop,
             BagOpen,
-            NpcGift,
-            MagicCraft
+            NpcGift
         }
 
 
@@ -89,28 +88,23 @@ namespace TerrariaAchievementLib.Items
         {
             _nearestPlayer = Player.FindClosest(item.Center, 1, 1);
 
-            if (context is RecipeItemCreationContext recipeContext)
+            if (context is RecipeItemCreationContext recipeContext && _nearestPlayer == Main.myPlayer)
             {
-                _spawnReason = SpawnReason.MagicCraft;
-
-                if (NetTool.Singleplayer() && _nearestPlayer == Main.myPlayer)
+                MagicStorageConfig config = new();
+                try
                 {
-                    MagicStorageConfig config = new();
-                    try
-                    {
-                        string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
-                        config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
-                    }
-                    catch { };
-
-                    if (config.RecursionCraftingDepth == 0)
-                    {
-                        AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
-                        AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
-                    }
-                    else
-                        VanillaEventSystem.DisplayMagicStorageWarning();
+                    string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
+                    config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
                 }
+                catch { };
+
+                if (config.RecursionCraftingDepth == 0)
+                {
+                    AchievementsHelper.NotifyItemCraft(recipeContext.Recipe);
+                    AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
+                }
+                else
+                    VanillaEventSystem.DisplayMagicStorageWarning();
             }
         }
 
@@ -171,27 +165,6 @@ namespace TerrariaAchievementLib.Items
                 case SpawnReason.NpcGift:
                     if (_nearestPlayer == Main.myPlayer)
                         CustomAchievementsHelper.NotifyNpcGift(Main.LocalPlayer, _npc, item.type);
-                    break;
-
-                case SpawnReason.MagicCraft:
-                    if (_nearestPlayer == Main.myPlayer)
-                    {
-                        MagicStorageConfig config = new();
-                        try
-                        {
-                            string json = File.ReadAllText($"{Main.SavePath}/ModConfigs/MagicStorage_MagicStorageConfig.json");
-                            config = JsonSerializer.Deserialize<MagicStorageConfig>(json);
-                        }
-                        catch { };
-
-                        if (config.RecursionCraftingDepth == 0)
-                        {
-                            AchievementsHelper.NotifyItemCraft(Recipe.Create(item.type));
-                            AchievementsHelper.NotifyItemPickup(Main.LocalPlayer, item);
-                        }
-                        else
-                            VanillaEventSystem.DisplayMagicStorageWarning();
-                    }
                     break;
             }
         }
