@@ -1,5 +1,8 @@
 # TerrariaAchievementLib
 
+[![Issues](https://img.shields.io/github/issues/timenoe/TerrariaAchievementLib?style=flat-square)](https://github.com/timenoe/TerrariaAchievementLib/issues)
+[![License](https://img.shields.io/github/license/timenoe/TerrariaAchievementLib?style=flat-square)](https://github.com/timenoe/TerrariaAchievementLib/blob/master/LICENSE.md)
+
 Terraria tModLoader mod library to add new achievements to the in-game list.
 
 ## How to Use
@@ -14,7 +17,7 @@ Terraria tModLoader mod library to add new achievements to the in-game list.
 
 5. Override the virtual `RegisterAchievements` function. All achievements are registered here, using conditions that are defined and handled in this library:
 
-```
+```csharp
 protected override void RegisterAchievements()
 {
     ConditionReqs reqs = new(PlayerDiff.Classic, WorldDiff.Expert, SpecialSeed.None);
@@ -26,4 +29,4 @@ protected override void RegisterAchievements()
 }
 ```
 
-Alternatively, you can define your own conditions that inherit `CustomAchievementCondition`.
+Alternatively, you can define your own conditions that inherit csharp`CustomAchievementCondition`.
