@@ -116,6 +116,9 @@ namespace TerrariaAchievementLib.Items
 
         public override void NetSend(Item item, BinaryWriter writer)
         {
+            if (!NetTool.MultiplayerServer())
+                return;
+            
             writer.Write(_nearestPlayer);
             writer.Write((Int32)_spawnReason);
             for (int i = 0; i < 256; i++)
@@ -128,6 +131,9 @@ namespace TerrariaAchievementLib.Items
 
         public override void NetReceive(Item item, BinaryReader reader)
         {
+            if (!NetTool.MultiplayerClient())
+                return;
+
             _nearestPlayer = reader.ReadByte();
             _spawnReason = (SpawnReason)reader.ReadInt32();
             for (int i = 0; i < 256; i++)
