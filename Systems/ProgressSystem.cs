@@ -39,15 +39,14 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
-        /// Enables progress notifications for custom achievements
+        /// Enables progress notifications for achievements<br/>
+        /// Only one mod in a group should enable vanilla notifications to prevent duplicates
         /// </summary>
-        public static void Enable() => _enabled = true;
-
-        /// <summary>
-        /// Enables progress notifications for vanilla achievements<br/>
-        /// Only the main mod in an achievement group should enable this to prevent duplicate notifications
-        /// </summary>
-        public static void EnableVanilla() => _enabledVanilla = true;
+        public static void SetEnabled(bool enabled, bool includeVanilla = false)
+        {
+            _enabled = enabled;
+            _enabledVanilla = enabled && includeVanilla;
+        }
 
         /// <summary>
         /// Detour to display a progress notification for tracked achievements when a condition completes

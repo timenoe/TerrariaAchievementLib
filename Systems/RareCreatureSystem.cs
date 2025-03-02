@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using System.Text.RegularExpressions;
+using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -7,20 +8,45 @@ using TerrariaAchievementLib.Tools;
 namespace TerrariaAchievementLib.Systems
 {
     /// <summary>
+    /// Filters which rare creatures are detected
+    /// </summary>
+    public enum RareCreatureFilter
+    { 
+        /// <summary>
+        /// Detect no creatures
+        /// </summary>
+        None,
+        
+        /// <summary>
+        /// Detect only enemies
+        /// </summary>
+        Enemies,
+
+        /// <summary>
+        /// Detect enemies and critters
+        /// </summary>
+        Critters,
+
+        /// <summary>
+        /// Detect all creatures
+        /// </summary>
+        NPCs
+    }
+    
+    /// <summary>
     /// Used to display rare creature notifications when the Lifeform Analyzer is equipped
     /// </summary>
     public class RareCreatureSystem : ModSystem
     {
         /// <summary>
-        /// True if progress notifications are enabled
-        /// </summary>
-        private static bool _enabled;
-
-        /// <summary>
         /// Recently detected rare creature
         /// </summary>
         private static string _recentRareCreature = "";
 
+        /// <summary>
+        /// Type of creatures to detect
+        /// </summary>
+        private static RareCreatureFilter _filter;
 
         public override void OnModLoad()
         {
@@ -44,7 +70,7 @@ namespace TerrariaAchievementLib.Systems
         /// <summary>
         /// Enables rare creature notifications
         /// </summary>
-        public static void Enable() => _enabled = true;
+        public static void SetFilter(RareCreatureFilter filter) => _filter = filter;
 
         /// <summary>
         /// Detour to reset the recent rare creature
@@ -72,8 +98,21 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(self, npc, ref infoTextColor, ref infoTextShadowColor);
 
-            if (!_enabled)
-                return;
+            switch (_filter)
+            {
+                case RareCreatureFilter.None:
+                    return;
+
+                case RareCreatureFilter.Enemies:
+                    if (npc.CountsAsACritter || npc.isLikeATownNPC)
+                        return;
+                    break;
+
+                case RareCreatureFilter.Critters:
+                    if (npc.isLikeATownNPC)
+                        return;
+                    break;
+            }
 
             if (npc.FullName != _recentRareCreature)
             {

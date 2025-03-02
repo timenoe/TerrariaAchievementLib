@@ -106,6 +106,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
+        /// <param name="condition">Achievement condition</param>
         /// <param name="contextId">Item slot context ID</param>
         private static void Listen(ItemEquipCondition condition, int contextId)
         {

@@ -113,6 +113,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
 
         /// <summary>
         /// Listen for events so the condition can be completed
+        /// <param name="condition">Achievement condition</param>
         /// <param name="first">True if killing the NPC for the first time</param>
         /// </summary>
         private static void Listen(NpcKillCondition condition, bool first)

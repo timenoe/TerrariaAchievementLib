@@ -105,6 +105,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
+        /// <param name="condition">Achievement condition</param>
         /// <param name="npcId">NPC ID that should drop the loot</param>
         private static void Listen(NpcDropCondition condition, int npcId)
         {

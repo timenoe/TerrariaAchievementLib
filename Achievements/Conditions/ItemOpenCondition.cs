@@ -106,6 +106,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
+        /// <param name="condition">Achievement condition</param>
         /// <param name="bagId">Grab bag ID that should give the item</param>
         private static void Listen(ItemOpenCondition condition, int bagId)
         {

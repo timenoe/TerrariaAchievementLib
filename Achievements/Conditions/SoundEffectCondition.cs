@@ -143,6 +143,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
+        /// <param name="condition">Achievement condition</param>
         /// <param name="variant">Sound variant</param>
         private static void Listen(SoundEffectCondition condition, int variant)
         {

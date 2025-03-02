@@ -105,6 +105,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
+        /// <param name="condition">Achievement condition</param>
         /// <param name="npcId">NPC ID that should sell the item</param>
         private static void Listen(NpcBuyCondition condition, int npcId)
         {

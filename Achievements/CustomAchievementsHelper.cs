@@ -101,8 +101,9 @@ namespace TerrariaAchievementLib.Achievements
         /// Signature that defines a NPC catch event
         /// </summary>
         /// <param name="player">Player that caught the NPC</param>
+        /// <param name="released">True if the caught NPC is released</param>
         /// <param name="id">NPC ID that was caught</param>
-        public delegate void NpcCatchEvent(Player player, int id);
+        public delegate void NpcCatchEvent(Player player, bool released, int id);
 
         /// <summary>
         /// Signature that defines a NPC drop event
@@ -361,8 +362,9 @@ namespace TerrariaAchievementLib.Achievements
         /// Helper to notify achievement conditions when an NPC is caught by the player
         /// </summary>
         /// <param name="player">Player that caught the NPC</param>
+        /// <param name="released">True if the caught NPC is released</param>
         /// <param name="id">NPC ID that was caught</param>
-        public static void NotifyNpcCatch(Player player, int id) => OnNpcCatch?.Invoke(player, id);
+        public static void NotifyNpcCatch(Player player, bool released, int id) => OnNpcCatch?.Invoke(player, released, id);
 
         /// <summary>
         /// Helper to notify achievement conditions when an NPC drops an item

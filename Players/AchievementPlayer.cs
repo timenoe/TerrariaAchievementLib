@@ -43,7 +43,7 @@ namespace TerrariaAchievementLib.Players
         public override void OnCatchNPC(NPC npc, Item item, bool failed)
         {
             if (!failed)
-                CustomAchievementsHelper.NotifyNpcCatch(Player, npc.type);
+                CustomAchievementsHelper.NotifyNpcCatch(Player, npc.releaseOwner != 255, npc.type);
         }
 
         public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => CustomAchievementsHelper.NotifyNpcBuy(Player, vendor.type, item.type);

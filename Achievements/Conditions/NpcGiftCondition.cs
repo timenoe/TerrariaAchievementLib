@@ -27,7 +27,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// NPC ID that should gift the item(s)
         /// </summary>
-        private short _npcId;
+        private int _npcId;
 
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that gifts the item</param>
         /// <param name="itemId">Item ID to listen for</param>
-        private NpcGiftCondition(ConditionReqs reqs, short npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(this, npcId);
+        private NpcGiftCondition(ConditionReqs reqs, int npcId, int itemId) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, [itemId]) => Listen(this, npcId);
 
         /// <summary>
         /// Creates a condition that listens for any of the items to be gifted from an NPC
@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="reqs">Conditions requirements that must be met</param>
         /// <param name="npcId">NPC ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
-        private NpcGiftCondition(ConditionReqs reqs, short npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(this, npcId);
+        private NpcGiftCondition(ConditionReqs reqs, int npcId, int[] itemIds) : base($"{CustomName}_{string.Join(",", npcId)}", reqs, itemIds) => Listen(this, npcId);
 
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that gifts the items</param>
         /// <param name="itemID">Item ID to listen for</param>
         /// <returns>Item gift achievement condition</returns>
-        public static CustomAchievementCondition Gift(ConditionReqs reqs, short npcId, int itemID) => new NpcGiftCondition(reqs, npcId, itemID);
+        public static CustomAchievementCondition Gift(ConditionReqs reqs, int npcId, int itemID) => new NpcGiftCondition(reqs, npcId, itemID);
 
         /// <summary>
         /// Helper to create a condition that listens for any of the items to be gifted from an NPC
@@ -63,7 +63,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item gift achievement condition</returns>
-        public static CustomAchievementCondition GiftAny(ConditionReqs reqs, short npcId, params int[] itemIds) => new NpcGiftCondition(reqs, npcId, itemIds);
+        public static CustomAchievementCondition GiftAny(ConditionReqs reqs, int npcId, params int[] itemIds) => new NpcGiftCondition(reqs, npcId, itemIds);
 
         /// <summary>
         /// Helper to create a condition that listens for all of the items to be gifted from an NPC
@@ -72,7 +72,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <param name="npcId">NPC ID that gifts the items</param>
         /// <param name="itemIds">Item IDs to listen for</param>
         /// <returns>Item gift achievement conditions</returns>
-        public static List<CustomAchievementCondition> GiftAll(ConditionReqs reqs, short npcId, params int[] itemIds)
+        public static List<CustomAchievementCondition> GiftAll(ConditionReqs reqs, int npcId, params int[] itemIds)
         {
             List<CustomAchievementCondition> conditions = [];
             foreach (var itemId in itemIds)
@@ -104,8 +104,9 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// <summary>
         /// Listen for events so the condition can be completed
         /// </summary>
+        /// <param name="condition">Achievement condition</param>
         /// <param name="npcId">NPC ID that should gift the item</param>
-        private static void Listen(NpcGiftCondition condition, short npcId)
+        private static void Listen(NpcGiftCondition condition, int npcId)
         {
             if (!_isHooked)
             {
