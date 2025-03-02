@@ -32,6 +32,15 @@ namespace TerrariaAchievementLib.Players
             On_Player.SetTalkNPC -= On_Player_SetTalkNPC;
         }
 
+        public override bool CanBuyItem(NPC vendor, Item[] shopInventory, Item item)
+        {
+            // Don't unlock achievements for buying if the player just sold the item to the NPC
+            if (!item.buyOnce)
+                CustomAchievementsHelper.NotifyNpcBuy(Player, vendor.type, item.type);
+
+            return true;
+        }
+
         public override bool CanUseItem(Item item)
         {
             CustomAchievementsHelper.NotifyItemUse(Player, item.type);
@@ -45,9 +54,6 @@ namespace TerrariaAchievementLib.Players
             if (!failed)
                 CustomAchievementsHelper.NotifyNpcCatch(Player, npc.releaseOwner != 255, npc.type);
         }
-
-        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item) => CustomAchievementsHelper.NotifyNpcBuy(Player, vendor.type, item.type);
-
 
         /// <summary>
         /// Detour to send a notification when the local player activates a buff
