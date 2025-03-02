@@ -24,9 +24,11 @@ namespace TerrariaAchievementLib.Items
         private bool _synced;
 
         /// <summary>
-        /// Player interaction with the NPC that dropped an item as loot if applicable
+        /// Player interaction with the NPC that dropped an item as loot if applicable<br/>
+        /// CloneByReference is to suppress an irrelevant TML warning
         /// </summary>
-        private bool[] _npcPlayerInteraction = new bool[256];
+        [CloneByReference]
+        private readonly bool[] _npcPlayerInteraction = new bool[256];
 
         /// <summary>
         /// Player nearest to the spawned item
@@ -245,6 +247,10 @@ namespace TerrariaAchievementLib.Items
         private void On_Item_SetDefaults_int(On_Item.orig_SetDefaults_int orig, Item self, int Type)
         {
             orig.Invoke(self, Type);
+
+            // Prevent items from counting during Main.CreateRecipes() during initialization
+            if (Main.gameMenu)
+                return;
 
             if (Type == ItemID.WilsonBeardLong || Type == ItemID.WilsonBeardMagnificent)
                 CustomAchievementsHelper.NotifyItemGrab(Main.LocalPlayer, (short)Type, 1);

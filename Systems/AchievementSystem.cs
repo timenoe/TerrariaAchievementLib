@@ -158,13 +158,20 @@ namespace TerrariaAchievementLib.Systems
                 name = $"{Identifier}_{name}";
 
             Achievement ach = new(name);
+            List<string> condNames = [];
             foreach (var cond in conds)
             {
-                // Enable Hardestcore if needed
-                if (cond.Reqs.PlayerDiff == PlayerDiff.Hardestcore)
-                    HardestcorePlayer.Enable();
+                if (condNames.Contains(cond.Name))
+                    LogTool.ModLog($"Blocked a duplicate condition from being added: {name} - {cond.Name}", ModLogType.Warn);
+                else
+                {
+                    // Enable Hardestcore if needed
+                    if (cond.Reqs.PlayerDiff == PlayerDiff.Hardestcore)
+                        HardestcorePlayer.Enable();
 
-                ach.AddCondition(cond);
+                    ach.AddCondition(cond);
+                    condNames.Add(cond.Name);
+                }
             }
 
             if (track)
