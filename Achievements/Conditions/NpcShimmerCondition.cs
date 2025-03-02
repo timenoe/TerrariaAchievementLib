@@ -75,7 +75,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         /// </summary>
         /// <param name="player">Player that shimmered the NPC</param>
         /// <param name="id">NPC ID that was shimmered</param>
-        private static void CustomAchievementsHelper_OnNpcCatch(Player player, int id)
+        private static void CustomAchievementsHelper_OnNpcShimmer(Player player, int id)
         {
             if (!IsListeningForId(id, _listeners, out var conditions))
                 return;
@@ -95,7 +95,7 @@ namespace TerrariaAchievementLib.Achievements.Conditions
         {
             if (!_isHooked)
             {
-                CustomAchievementsHelper.OnNpcCatch += CustomAchievementsHelper_OnNpcCatch;
+                CustomAchievementsHelper.OnNpcShimmer += CustomAchievementsHelper_OnNpcShimmer;
                 _isHooked = true;
             }
 
