@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -7,32 +6,6 @@ using TerrariaAchievementLib.Tools;
 
 namespace TerrariaAchievementLib.Systems
 {
-    /// <summary>
-    /// Filters which rare creatures are detected
-    /// </summary>
-    public enum RareCreatureFilter
-    { 
-        /// <summary>
-        /// Detect no creatures
-        /// </summary>
-        None,
-        
-        /// <summary>
-        /// Detect only enemies
-        /// </summary>
-        Enemies,
-
-        /// <summary>
-        /// Detect enemies and critters
-        /// </summary>
-        Critters,
-
-        /// <summary>
-        /// Detect all creatures
-        /// </summary>
-        NPCs
-    }
-    
     /// <summary>
     /// Used to display rare creature notifications when the Lifeform Analyzer is equipped
     /// </summary>
@@ -44,9 +17,19 @@ namespace TerrariaAchievementLib.Systems
         private static string _recentRareCreature = "";
 
         /// <summary>
-        /// Type of creatures to detect
+        /// True if enemy notifications are enabled
         /// </summary>
-        private static RareCreatureFilter _filter;
+        private static bool _enabledEnemies;
+
+        /// <summary>
+        /// True if critter notifications are enabled
+        /// </summary>
+        private static bool _enabledCritters;
+
+        /// <summary>
+        /// True if NPC notifications are enabled
+        /// </summary>
+        private static bool _enabledNpcs;
 
         public override void OnModLoad()
         {
@@ -68,9 +51,14 @@ namespace TerrariaAchievementLib.Systems
         }
 
         /// <summary>
-        /// Enables rare creature notifications
+        /// Enables specific rare creature notifications
         /// </summary>
-        public static void SetFilter(RareCreatureFilter filter) => _filter = filter;
+        public static void SetEnabled(bool enabledEnemies, bool enabledCritters, bool enabledNpcs)
+        { 
+            _enabledEnemies = enabledEnemies;
+            _enabledCritters = enabledCritters;
+            _enabledNpcs = enabledNpcs;
+        }
 
         /// <summary>
         /// Detour to reset the recent rare creature
@@ -98,26 +86,17 @@ namespace TerrariaAchievementLib.Systems
         {
             orig.Invoke(self, npc, ref infoTextColor, ref infoTextShadowColor);
 
-            switch (_filter)
+            bool isCritter = npc.CountsAsACritter;
+            bool isNpc = npc.isLikeATownNPC;
+            bool isEnemy = !isCritter && !isNpc;
+
+            if (_enabledEnemies && isEnemy || _enabledCritters && isCritter || _enabledNpcs && isNpc)
             {
-                case RareCreatureFilter.None:
-                    return;
-
-                case RareCreatureFilter.Enemies:
-                    if (npc.CountsAsACritter || npc.isLikeATownNPC)
-                        return;
-                    break;
-
-                case RareCreatureFilter.Critters:
-                    if (npc.isLikeATownNPC)
-                        return;
-                    break;
-            }
-
-            if (npc.FullName != _recentRareCreature)
-            {
-                LogTool.ChatLog($"Rare creature detected nearby: {npc.FullName}", sound: SoundID.ResearchComplete);
-                _recentRareCreature = npc.FullName;
+                if (npc.FullName != _recentRareCreature)
+                {
+                    LogTool.ChatLog($"Rare creature detected nearby: {npc.FullName}", sound: SoundID.ResearchComplete);
+                    _recentRareCreature = npc.FullName;
+                }
             }
         }
     }
