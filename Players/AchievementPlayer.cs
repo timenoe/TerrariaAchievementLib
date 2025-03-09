@@ -10,11 +10,16 @@ namespace TerrariaAchievementLib.Players
     /// </summary>
     public class AchievementPlayer : ModPlayer
     {
+        /// <summary>
+        /// True if buying an item back from an NPC
+        /// </summary>
+        private bool _buyItemBack;
+
         public override void Load()
         {
             if (Main.dedServ)
                 return;
-            
+
             On_Player.AddBuff += On_Player_AddBuff;
             On_Player.DropItemFromExtractinator += On_Player_DropItemFromExtractinator;
             On_Player.GetItem += On_Player_GetItem;
@@ -34,10 +39,7 @@ namespace TerrariaAchievementLib.Players
 
         public override bool CanBuyItem(NPC vendor, Item[] shopInventory, Item item)
         {
-            // Don't unlock achievements for buying if the player just sold the item to the NPC
-            if (!item.buyOnce)
-                CustomAchievementsHelper.NotifyNpcBuy(Player, vendor.type, item.type);
-
+            _buyItemBack = item.buyOnce;
             return true;
         }
 
@@ -53,6 +55,13 @@ namespace TerrariaAchievementLib.Players
         {
             if (!failed)
                 CustomAchievementsHelper.NotifyNpcCatch(Player, npc.releaseOwner != 255, npc.type);
+        }
+
+        public override void PostBuyItem(NPC vendor, Item[] shopInventory, Item item)
+        {
+            // Don't unlock achievements for buying items back
+            if (!_buyItemBack)
+                CustomAchievementsHelper.NotifyNpcBuy(Player, vendor.type, item.type);
         }
 
         /// <summary>
