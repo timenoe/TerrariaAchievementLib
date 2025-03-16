@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.Achievements;
@@ -45,7 +46,7 @@ namespace TerrariaAchievementLib.Tools
 
             foreach (string name in achs.Keys)
             {
-                if (Language.GetText("Achievements." + name + "_Name").Value == localizedName)
+                if (string.Equals(Language.GetText("Achievements." + name + "_Name").Value, localizedName, StringComparison.OrdinalIgnoreCase))
                     return name;
             }
 
