@@ -48,6 +48,30 @@ namespace TerrariaAchievementLib.Achievements
             { "MARTIAN_SAUCER",   [NPCID.MartianSaucer, NPCID.MartianSaucerCore] }
         };
 
+        /// <summary>
+        /// All treasure bags obtained from specific bosses
+        /// </summary>
+        public static readonly Dictionary<string, int> TreasureBags = new()
+        {
+            { "KING_SLIME",       ItemID.KingSlimeBossBag },
+            { "EYE_OF_CTHULHU",   ItemID.EyeOfCthulhuBossBag },
+            { "EATER_OF_WORLDS",  ItemID.EaterOfWorldsBossBag },
+            { "BRAIN_OF_CTHULHU", ItemID.BrainOfCthulhuBossBag },
+            { "QUEEN_BEE",        ItemID.QueenBeeBossBag },
+            { "SKELETRON",        ItemID.SkeletronBossBag },
+            { "DEERCLOPS",        ItemID.DeerclopsBossBag },
+            { "WALL_OF_FLESH",    ItemID.WallOfFleshBossBag },
+            { "QUEEN_SLIME",      ItemID.QueenSlimeBossBag },
+            { "TWINS",            ItemID.TwinsBossBag },
+            { "DESTROYER",        ItemID.DestroyerBossBag },
+            { "SKELETRON_PRIME",  ItemID.SkeletronPrimeBossBag },
+            { "PLANTERA",         ItemID.PlanteraBossBag },
+            { "GOLEM",            ItemID.GolemBossBag },
+            { "EMPRESS_OF_LIGHT", ItemID.FairyQueenBossBag },
+            { "DUKE_FISHRON",     ItemID.FishronBossBag },
+            { "MOON_LORD",        ItemID.MoonLordBossBag },
+            { "BETSY",            ItemID.BossBagBetsy }
+        };
 
         /// <summary>
         /// Extended item slot context IDs
