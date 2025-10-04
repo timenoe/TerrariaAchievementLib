@@ -4,7 +4,6 @@ using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Config;
 
 namespace TerrariaAchievementLib.Achievements
 {
