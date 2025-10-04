@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.UI;
+using TerrariaAchievementLib.Achievements.Conditions;
 using TerrariaAchievementLib.Players;
 
 namespace TerrariaAchievementLib.Achievements
@@ -49,6 +53,148 @@ namespace TerrariaAchievementLib.Achievements
         Unworthy
     }
 
+    public class ConditionHelper
+    {
+        /// <summary>
+        /// Helper to add multiple conditions to a ModAchievement
+        /// </summary>
+        /// <param name="ach">ModAchievement</param>
+        /// <param name="conds">Conditions to add to the mod achievement</param>
+        public static void AddConditions(ModAchievement ach, List<CustomAchievementCondition> conds)
+        {
+            foreach (var condition in conds)
+                ach.AddCondition(condition);
+        }
+
+        /// <summary>
+        /// Returns achievement conditions to replace a vanilla achievement
+        /// </summary>
+        /// <param name="key">Vanilla achievement key</param>
+        /// <param name="reqs">Condition requirements</param>
+        /// <returns></returns>
+        public static List<CustomAchievementCondition> GetVanillaAchievementConditions(string key, ConditionReqs reqs)
+        {
+            List<CustomAchievementCondition> conds = [];
+
+            switch (key)
+            {
+                case "TIMBER":
+                    int[] wood = [9, 619, 2504, 620, 2503, 2260, 621, 911, 1729, 5215];
+                    return [ItemGrabCondition.GrabAny(reqs, wood)];
+
+                case "BENCHED":
+                    int[] workbenches = ItemID.Sets.Workbenches.Select(s => (int)s).ToArray();
+                    return [ItemCraftCondition.CraftAny(reqs, workbenches)];
+
+                case "NO_HOBO":
+                    return [FlagProgressionCondition.Set(reqs, AchievementHelperID.Events.NPCMovedIn)];
+
+                case "OBTAIN_HAMMER":
+                    int[] hammers = [2775, 2746, 5283, 3505, 654, 3517, 7, 3493, 2780, 1513, 2516, 660, 3481, 657, 922, 3511, 2785, 3499, 3487, 196, 367, 104, 797, 2320, 787, 1234, 1262, 3465, 204, 217, 1507, 3524, 3522, 3525, 3523, 4317, 1305];
+                    return [ItemGrabCondition.GrabAny(reqs, hammers)];
+
+                case "OOO_SHINY":
+                    int[] ore = [7, 6, 9, 8, 166, 167, 168, 169, 22, 204, 58, 107, 108, 111, 221, 222, 223, 211];
+                    return [TileDestroyCondition.DestroyAny(reqs, ore)];
+
+                case "HEART_BREAKER":
+                    return [TileDestroyCondition.Destroy(reqs, TileID.Heart)];
+
+                case "HEAVY_METAL":
+                    return [ItemGrabCondition.GrabAny(reqs, [ItemID.IronAnvil, ItemID.LeadAnvil])];
+
+                case "I_AM_LOOT":
+                    return [FlagSpecialCondition.Set(reqs, AchievementHelperID.Special.PeekInGoldenChest)];
+
+                case "STAR_POWER":
+                    return [FlagSpecialCondition.Set(reqs, AchievementHelperID.Special.ConsumeStar)];
+
+                case "HOLD_ON_TIGHT":
+                    return [ItemEquipCondition.Equip(reqs, ItemSlot.Context.EquipGrapple, ItemID.None)];
+
+                case "EYE_ON_YOU":
+                    return [NpcKillCondition.Kill(reqs, true, NPCID.EyeofCthulhu)];
+
+                case "SMASHING_POPPET":
+                    return [FlagProgressionCondition.Set(reqs, AchievementHelperID.Events.SmashShadowOrb)];
+
+                case "WHERES_MY_HONEY":
+                    return [FlagSpecialCondition.Set(reqs, AchievementHelperID.Special.FoundBeeHive)];
+
+                case "STING_OPERATION":
+                    return [NpcKillCondition.Kill(reqs, true, NPCID.QueenBee)];
+
+                case "BONED":
+                    return [NpcKillCondition.Kill(reqs, true, NPCID.SkeletronHead)];
+
+                case "DUNGEON_HEIST":
+                    conds.Add(ItemGrabCondition.Grab(reqs, ItemID.GoldenKey));
+                    conds.Add(FlagProgressionCondition.Set(reqs, AchievementHelperID.Events.UnlockedGoldenChest));
+                    return conds;
+
+                case "ITS_GETTING_HOT_IN_HERE":
+                    return [FlagSpecialCondition.Set(reqs, AchievementHelperID.Special.FoundHell)];
+
+                case "MINER_FOR_FIRE":
+                    return [ItemCraftCondition.Craft(reqs, ItemID.MoltenPickaxe)];
+
+                case "STILL_HUNGRY":
+                    return [NpcKillCondition.KillAny(reqs, true, [NPCID.WallofFlesh, NPCID.WallofFleshEye])];
+
+                case "ITS_HARD":
+                    return [FlagProgressionCondition.Set(reqs, AchievementHelperID.Events.StartHardmode)];
+
+                case "BEGONE_EVIL":
+                    return [FlagProgressionCondition.Set(reqs, AchievementHelperID.Events.SmashDemonAltar)];
+
+                case "EXTRA_SHINY":
+                    int[] hardmodeOre = [107, 108, 111, 221, 222, 223];
+                    return [TileDestroyCondition.DestroyAny(reqs, hardmodeOre)];
+
+                case "HEAD_IN_THE_CLOUDS":
+                    return [ItemEquipCondition.Equip(reqs, AchievementData.CustomItemSlotContextID.EquipWings, ItemID.None)];
+
+                case "BUCKET_OF_BOLTS":
+                    conds.Add(NpcKillCondition.KillAny(reqs, false, [NPCID.Retinazer, NPCID.Spazmatism]));
+                    conds.AddRange(NpcKillCondition.KillAll(reqs, false, [NPCID.TheDestroyer, NPCID.SkeletronPrime]));
+                    return conds;
+
+                case "DRAX_ATTAX":
+                    return [ItemCraftCondition.CraftAny(reqs, [ItemID.Drax, ItemID.PickaxeAxe])];
+
+                case "PHOTOSYNTHESIS":
+                    return [TileDestroyCondition.Destroy(reqs, TileID.Chlorophyte)];
+
+                case "GET_A_LIFE":
+                    return [FlagSpecialCondition.Set(reqs, AchievementHelperID.Special.ConsumeFruit)];
+
+                case "THE_GREAT_SOUTHERN_PLANTKILL":
+                    return [NpcKillCondition.Kill(reqs, true, NPCID.Plantera)];
+
+                case "TEMPLE_RAIDER":
+                    return [FlagProgressionCondition.Set(reqs, AchievementHelperID.Events.TempleRaider)];
+
+                case "LIHZAHRDIAN_IDOL":
+                    return [NpcKillCondition.Kill(reqs, true, NPCID.Golem)];
+
+                case "ROBBING_THE_GRAVE":
+                    int[] dungeonItems = [1513, 938, 963, 977, 1300, 1254, 1514, 679, 759, 1446, 1445, 1444, 1183, 1266, 671, 3291, 4679];
+                    return [ItemGrabCondition.GrabAny(reqs, dungeonItems)];
+
+                case "OBSESSIVE_DEVOTION":
+                    return [NpcKillCondition.Kill(reqs, true, NPCID.CultistBoss)];
+
+                case "STAR_DESTROYER":
+                    return NpcKillCondition.KillAll(reqs, true, [NPCID.LunarTowerNebula, NPCID.LunarTowerSolar, NPCID.LunarTowerStardust, NPCID.LunarTowerVortex]);
+
+                case "CHAMPION_OF_TERRARIA":
+                    return [NpcKillCondition.Kill(reqs, true, NPCID.MoonLordCore)];
+
+                default:
+                    return [];
+            }
+        }
+    }
 
     /// <summary>
     /// Common condition requirements<br/><br/>

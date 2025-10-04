@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using Terraria;
 using Terraria.ModLoader;
-using TerrariaAchievementLib.Achievements;
 using TerrariaAchievementLib.Tools;
 
 namespace TerrariaAchievementLib.Systems
@@ -49,17 +47,6 @@ namespace TerrariaAchievementLib.Systems
             _instance = this;
 
             LogTool.SetDefaults(Mod);
-        }
-
-        /// <summary>
-        /// Helper to add multiple conditions to a ModAchievement
-        /// </summary>
-        /// <param name="ach">ModAchievement</param>
-        /// <param name="conds">Conditions to add to the mod achievement</param>
-        public static void AddConditions(ModAchievement ach, List<CustomAchievementCondition> conds)
-        {
-            foreach (var condition in conds)
-                ach.AddCondition(condition);
         }
     }
 }
