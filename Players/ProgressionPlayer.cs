@@ -138,10 +138,7 @@ namespace TerrariaAchievementLib.Players
         private static void UnequipDisallowedItem(Player player, Item item)
         {
             if (!AchievementProgression.IsElementAllowed(ProgressionElement.Equippable, item.type, player))
-            {
-                player.DropItem(new EntitySource_DropAsItem(player), player.Center, ref item);
-                item.ChangeItemType(0);
-            }
+                player.TryDroppingSingleItem(new EntitySource_DropAsItem(player), item);
         }
 
         /// <summary>

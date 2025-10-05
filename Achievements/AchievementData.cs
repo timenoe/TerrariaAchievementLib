@@ -9,6 +9,14 @@ namespace TerrariaAchievementLib.Achievements
     public class AchievementData
     {
         /// <summary>
+        /// Extended item slot context IDs
+        /// </summary>
+        public class CustomItemSlotContextID
+        {
+            public const int EquipWings = 1337;
+        }
+
+        /// <summary>
         /// NPC IDs that must be killed for a boss to be considered defeated<br/>
         /// If an entry has more than 1 ID, any of them can be defeated
         /// </summary>
@@ -72,13 +80,5 @@ namespace TerrariaAchievementLib.Achievements
             { "MOON_LORD",        ItemID.MoonLordBossBag },
             { "BETSY",            ItemID.BossBagBetsy }
         };
-
-        /// <summary>
-        /// Extended item slot context IDs
-        /// </summary>
-        public class CustomItemSlotContextID
-        {
-            public const int EquipWings = 1337;
-        }
     }
 }

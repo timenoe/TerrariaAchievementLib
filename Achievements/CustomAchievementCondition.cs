@@ -53,10 +53,13 @@ namespace TerrariaAchievementLib.Achievements
         Unworthy
     }
 
+    /// <summary>
+    /// Helper for achievement conditions
+    /// </summary>
     public class ConditionHelper
     {
         /// <summary>
-        /// Helper to add multiple conditions to a ModAchievement
+        /// Add multiple conditions to a ModAchievement at once
         /// </summary>
         /// <param name="ach">ModAchievement</param>
         /// <param name="conds">Conditions to add to the mod achievement</param>
@@ -71,7 +74,7 @@ namespace TerrariaAchievementLib.Achievements
         /// </summary>
         /// <param name="key">Vanilla achievement key</param>
         /// <param name="reqs">Condition requirements</param>
-        /// <returns></returns>
+        /// <returns>List of custom achievement conditions</returns>
         public static List<CustomAchievementCondition> GetVanillaAchievementConditions(string key, ConditionReqs reqs)
         {
             List<CustomAchievementCondition> conds = [];
