@@ -70,7 +70,7 @@ namespace TerrariaAchievementLib.Achievements
         }
 
         /// <summary>
-        /// Returns achievement conditions to replace a vanilla achievement
+        /// Returns achievement conditions to replicate a specific vanilla achievement
         /// </summary>
         /// <param name="key">Vanilla achievement key</param>
         /// <param name="reqs">Condition requirements</param>
