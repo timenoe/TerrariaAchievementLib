@@ -4,7 +4,6 @@ using System.Linq;
 using Terraria;
 using Terraria.Achievements;
 using Terraria.GameContent.Achievements;
-using Terraria.Localization;
 using TerrariaAchievementLib.Achievements;
 using TerrariaAchievementLib.Systems;
 
@@ -30,10 +29,10 @@ namespace TerrariaAchievementLib.Tools
             if (achs == null)
                 return "";
 
-            foreach (string name in achs.Keys)
+            foreach (KeyValuePair<string, Achievement> ach in achs)
             {
-                if (string.Equals(Language.GetText("Achievements." + name + "_Name").Value, localizedName, StringComparison.OrdinalIgnoreCase))
-                    return name;
+                if (string.Equals(ach.Value.FriendlyName.ToString(), localizedName, StringComparison.OrdinalIgnoreCase))
+                    return ach.Key;
             }
 
             return "";
