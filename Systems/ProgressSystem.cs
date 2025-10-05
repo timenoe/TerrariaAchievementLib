@@ -12,12 +12,12 @@ namespace TerrariaAchievementLib.Systems
     public class ProgressSystem : ModSystem
     {
         /// <summary>
-        /// True if progress notifications are enabled
+        /// True if progress notifications for modded achievements are enabled
         /// </summary>
-        private static bool _enabled;
+        private static bool _enabledModded;
 
         /// <summary>
-        /// True if progress notifications are enabled
+        /// True if progress notifications for vanilla achievements are enabled
         /// </summary>
         private static bool _enabledVanilla;
 
@@ -44,7 +44,7 @@ namespace TerrariaAchievementLib.Systems
         /// </summary>
         public static void SetEnabled(bool enabled, bool includeVanilla = false)
         {
-            _enabled = enabled;
+            _enabledModded = enabled;
             _enabledVanilla = enabled && includeVanilla;
         }
 
@@ -63,11 +63,12 @@ namespace TerrariaAchievementLib.Systems
             if (tracker == null || tracker is not ConditionsCompletedTracker)
                 return;
 
-            bool progressCustom = _enabled && AchievementSystem.Instance.IsCustomAchievement(self.Name);
-            bool progressVanilla = _enabledVanilla && AchievementTool.IsVanillaAchievement(self);
+            bool is_modded = AchievementTool.IsModdedAchievement(self);
+            bool progressModded = _enabledModded && is_modded;
+            bool progressVanilla = _enabledVanilla && !is_modded;
 
             // Only notifications for custom or vanilla achievements if applicable
-            if (progressCustom || progressVanilla)
+            if (progressModded || progressVanilla)
             {
                 Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", AchievementSystem.ReflectionFlags)?.GetValue(self);
                 int completedConditionsCount = (int)typeof(Achievement).GetField("_completedCount", AchievementSystem.ReflectionFlags)?.GetValue(self);

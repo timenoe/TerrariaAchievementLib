@@ -4,7 +4,6 @@ using System.Linq;
 using Terraria;
 using Terraria.Achievements;
 using Terraria.GameContent.Achievements;
-using Terraria.Localization;
 using TerrariaAchievementLib.Achievements;
 using TerrariaAchievementLib.Systems;
 
@@ -13,25 +12,11 @@ namespace TerrariaAchievementLib.Tools
     public class AchievementTool
     {
         /// <summary>
-        /// Checks if an achievement was not added with this library (even in other assemblies)
+        /// Checks if an achievement was added by a mod
         /// </summary>
         /// <param name="ach">Achievement to check</param>
-        /// <returns>True if the achievement was not added with this library</returns>
-        public static bool IsVanillaAchievement(Achievement ach)
-        {
-            Dictionary<string, AchievementCondition> conditions = (Dictionary<string, AchievementCondition>)typeof(Achievement).GetField("_conditions", AchievementSystem.ReflectionFlags)?.GetValue(ach);
-            if (conditions == null)
-                return false;
-
-            foreach (AchievementCondition condition in conditions.Values)
-            {
-                // All custom achievement conditions will inherit CustomAchievementCondition or its children
-                if (condition.GetType().BaseType.Name != "AchievementCondition")
-                    return false;
-            }
-
-            return true;
-        }
+        /// <returns>True if the achievement was added by a mod</returns>
+        public static bool IsModdedAchievement(Achievement ach) => ach.ModAchievement != null;
 
         /// <summary>
         /// Get the internal name of an achievement using its localized name
@@ -44,10 +29,10 @@ namespace TerrariaAchievementLib.Tools
             if (achs == null)
                 return "";
 
-            foreach (string name in achs.Keys)
+            foreach (KeyValuePair<string, Achievement> ach in achs)
             {
-                if (string.Equals(Language.GetText("Achievements." + name + "_Name").Value, localizedName, StringComparison.OrdinalIgnoreCase))
-                    return name;
+                if (string.Equals(ach.Value.FriendlyName.ToString(), localizedName, StringComparison.OrdinalIgnoreCase))
+                    return ach.Key;
             }
 
             return "";
